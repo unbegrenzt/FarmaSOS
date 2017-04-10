@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="color_base">#3FC3FF</color>
+    <color name="color_acentuado">#1CE8B5</color>
+    <color name="complemento_Acentuado">#95D641</color>
+    <color name="atenuante">#FF6D3F</color>
+    <color name="complemento_atenuante">#FFDA00</color>
+    <color name="color_de_texto">#fff3f3</color>
 </resources>

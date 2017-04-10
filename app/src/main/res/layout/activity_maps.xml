@@ -15,7 +15,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     map:mapType="normal"
-    tools:context="com.example.unbegrenzt.fharmaapp.MapsActivity" />
+    tools:context="com.example.unbegrenzt.fharmaapp.MapsActivity">
 
     <fragment
         android:id="@+id/place_autocomplete_fragment"
@@ -24,10 +24,13 @@
         android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
         />
 
-    <Button
-        android:layout_width="90dp"
-        android:layout_height="50dp"
-        android:id="@+id/btn_cag"
-        android:onClick="click"/>
+    </fragment>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/place_autocomplete_button_padding"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
 
 </RelativeLayout>
