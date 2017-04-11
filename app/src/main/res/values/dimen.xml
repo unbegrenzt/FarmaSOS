@@ -7,4 +7,6 @@
     <dimen name="texto_subhead1_3A">15sp</dimen>
     <dimen name="texto_body2_4B">14sp</dimen>
     <dimen name="texto_body1_4A">13sp</dimen>
+
+    <!--1B con 3A, 2 con 4A, 1A con 3A, 2A con 4A -->
 </resources>
