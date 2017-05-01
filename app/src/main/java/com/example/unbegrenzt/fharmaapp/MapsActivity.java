@@ -184,7 +184,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /*
-      terminan los metodos de la activity e inician los recurrentes a las api y demas
+     * terminan los metodos de la activity e inician los recurrentes a las api y demas
      */
 
     /**
@@ -267,34 +267,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    //TODO: voy por aqui
-    /**  @param startUpdatesButtonHandler(View view)
-     * @param stopUpdatesButtonHandler(View view)
-     * son parametros para mandar a activar o desactivar las actualizaciones a traves de un boton
-     */
-
-    /**
-     * Handles the Start Updates button and requests start of location updates. Does nothing if
-     * updates have already been requested.
-     */
-    public void startUpdatesButtonHandler(View view) {
-        if (!mRequestingLocationUpdates) {
-            mRequestingLocationUpdates = true;
-            setButtonsEnabledState();
-            startLocationUpdates();
-        }
-    }
-
-    /**
-     * Handles the Stop Updates button, and requests removal of location updates.
-     */
-    public void stopUpdatesButtonHandler(View view) {
-        // It is a good practice to remove location requests when the activity is in a paused or
-        // stopped state. Doing so helps battery performance and is especially
-        // recommended in applications that request frequent location updates.
-        stopLocationUpdates();
-    }
-
     /**
      * pide actualizaciones de ubicacion de la FusedLocationApi.
      */
@@ -304,7 +276,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mLocationSettingsRequest
         ).setResultCallback(new ResultCallback<LocationSettingsResult>() {
             @Override
-            public void onResult(LocationSettingsResult locationSettingsResult) {
+            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
                 final Status status = locationSettingsResult.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
@@ -326,7 +298,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             // Show the dialog by calling startResolutionForResult(), and check the
                             // result in onActivityResult().
                             status.startResolutionForResult(MapsActivity.this, REQUEST_CHECK_SETTINGS);
-                        } catch (IntentSender.SendIntentException e) {
+                        } catch (IntentSender.SendIntentException ignored) {
 
                         }
                         break;
@@ -355,17 +327,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * las actualizaciones al mismo tiempo
      */
     private void setButtonsEnabledState() {
-        /**
-         * @<code>
-         *     if (mRequestingLocationUpdates) {
-         *        mStartUpdatesButton.setEnabled(false);
-         *        mStopUpdatesButton.setEnabled(true);
-         *     } else {
-         *        mStartUpdatesButton.setEnabled(true);
-         *        mStopUpdatesButton.setEnabled(false);
-         *    }
-         * </code>
-         **/
     }
 
     /**
@@ -375,7 +336,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void updateLocationUI() {
         if (mCurrentLocation != null) {
 
-            /**
+            /*
              * @param mCurrentLocation es la variable que posee todos los datos del
              * usuario y aqui se actualizan
              *
@@ -388,7 +349,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
              *      mLastUpdateTime));
              * </code>
              * eso seria un buen ejemplo
-             **/
+             */
             MarkerMiUbicacion(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
         }
     }
@@ -416,14 +377,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 this
         ).setResultCallback(new ResultCallback<Status>() {
             @Override
-            public void onResult(Status status) {
+            public void onResult(@NonNull Status status) {
                 mRequestingLocationUpdates = false;
                 setButtonsEnabledState();
             }
         });
     }
 
-    //guarda los datos en un paquete
+    /**
+     * @param savedInstanceState sirve para recuperar instancias guardadas
+     */
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
@@ -431,8 +394,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onSaveInstanceState(savedInstanceState);
     }
 
-
-
+    /**
+     * @param googleMap se activa cuando el mapa está listo
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -461,11 +425,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    /**
+     * @param view recibe el click de una vista
+     */
     public void click(View view) {
 
 
     }
 
+    /**
+     * si la conexion falla se envia un sms
+     */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
@@ -475,6 +445,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         toast.show();
     }
 
+    /**
+     * si la ubicacion cambia se actualizan los parametros
+     */
     @Override
     public void onLocationChanged(Location location) {
         //actualizamos los datos si la ubicacion cambia
@@ -484,6 +457,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    /**
+     * funcion que se llama al conectarse ala api
+     */
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         //Cuando cambie el gps se actualiza
@@ -502,25 +478,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             updateLocationUI();
         }
 
-        /**
+        /*
          * cuando se conecte comienzo a recibir actualizaciones
-         **/
+         */
         if (!mRequestingLocationUpdates) {
             mRequestingLocationUpdates = true;
             setButtonsEnabledState();
             startLocationUpdates();
         }
-        /** @comentario esto es si se activo con anterioridad el gps
+        /* @comentario esto es si se activo con anterioridad el gps
            if (mRequestingLocationUpdates) {
             startLocationUpdates();
             Toast.makeText(getApplicationContext(),"seguimiento",Toast.LENGTH_LONG).show();
         }
-         **/
+         */
 
     }
 
-    //aqui se reciben las repuestas al pedirle al usuario que nos
-    //de el permiso de localizacion y ejecuto una respuesta
+    /**
+     * aqui se reciben las repuestas al pedirle al usuario que nos
+     * de el permiso de localizacion y ejecuto una respuesta
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -552,6 +530,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * ocurre si se suspende la conexión
+     */
     @Override
     public void onConnectionSuspended(int i) {
 
