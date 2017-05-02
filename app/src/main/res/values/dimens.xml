@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="borde_boton">20px</dimen>
+    <dimen name="boton_grande">48dp</dimen>
+    <dimen name="boton_pequeño">36dp</dimen>
+    <dimen name="dot_10dp">10dp</dimen>
+    <dimen name="dot_sep_3dp">3dp</dimen>
+</resources>
