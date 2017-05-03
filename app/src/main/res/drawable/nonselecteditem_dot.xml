@@ -5,5 +5,5 @@
 
     <size android:height="6dip" android:width="6dip"/>
 
-    <solid android:color="@color/color_de_texto"/>
+    <solid android:color="@color/DotNoSelecc"/>
 </shape>

@@ -7,4 +7,6 @@
     <color name="complemento_atenuante">#FFDA00</color>
     <color name="color_de_texto">#fff3f3</color>
     <color name="color_no_seleccion">#000000</color>
+    <color name="DotNoSelecc">#72ffffff</color>
+    <color name="buttonColorPressed">#20000000</color>
 </resources>

@@ -64,8 +64,8 @@ public class PagesAdapter extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         // Load parameters when the initial creation of the fragment is done
-        this.color = (getArguments() != null) ? getArguments().getInt(
-                BACKGROUND_COLOR) : Color.BLUE;
+        //this.color = (getArguments() != null) ? getArguments().getInt(
+          //      BACKGROUND_COLOR) : Color.BLUE;
         this.index = (getArguments() != null) ? getArguments().getInt(INDEX)
                 : -1;
 
@@ -80,7 +80,7 @@ public class PagesAdapter extends Fragment {
 
         // Show the current page index in the view
         TextView tvIndex = (TextView) rootView.findViewById(R.id.tvIndex);
-        tvIndex.setText(String.valueOf(this.index));
+        //tvIndex.setText(String.valueOf(this.index));
 
         // Change the background color
         rootView.setBackgroundColor(this.color);

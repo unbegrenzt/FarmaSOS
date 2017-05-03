@@ -13,32 +13,13 @@
         android:layout_alignParentEnd="true" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/boton_grande"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_above="@+id/btn_iniciar_sesion"
-        android:layout_marginBottom="6dp"
-        android:background="@drawable/borde_redondo"
-        android:textAllCaps="false"
-        android:text="@string/registrate"
-        android:textColor="@color/color_de_texto"
-        android:textSize="@dimen/texto_subhead2_3B"
-        android:id="@+id/butn_registrarse"/>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/boton_grande"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:background="@drawable/borde_redondo2"
-        android:text="@string/iniciar_sesi_n"
-        android:textAllCaps="false"
-        android:textColor="@color/color_de_texto"
-        android:textSize="@dimen/texto_subhead2_3B"
-        android:id="@+id/btn_iniciar_sesion"/>
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/dot2"
+        android:layout_centerInParent="true"
+        android:text="get Started"
+        android:background="@drawable/add_button_selector"
+        android:layout_marginBottom="@dimen/dot_marginbotom"/>
 
     <ImageView
         android:id="@+id/dot1"
@@ -47,28 +28,28 @@
         android:background="@drawable/nonselecteditem_dot"
         android:layout_toLeftOf="@+id/dot2"
         android:layout_marginRight="@dimen/dot_sep_3dp"
-        android:layout_above="@+id/butn_registrarse"
+        android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
-        android:layout_marginBottom="4dp"/>
+        android:layout_marginBottom="@dimen/dot_marginbotom"/>
 
     <ImageView
         android:id="@+id/dot2"
         android:layout_width="@dimen/dot_10dp"
         android:layout_height="@dimen/dot_10dp"
         android:background="@drawable/nonselecteditem_dot"
-        android:layout_above="@+id/butn_registrarse"
+        android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
-        android:layout_marginBottom="4dp"/>
+        android:layout_marginBottom="@dimen/dot_marginbotom"/>
 
     <ImageView
         android:id="@+id/dot3"
         android:layout_width="@dimen/dot_10dp"
         android:layout_height="@dimen/dot_10dp"
         android:background="@drawable/nonselecteditem_dot"
-        android:layout_above="@+id/butn_registrarse"
         android:layout_toRightOf="@+id/dot2"
+        android:layout_alignParentBottom="true"
         android:layout_marginLeft="@dimen/dot_sep_3dp"
-        android:layout_marginBottom="4dp"/>
+        android:layout_marginBottom="@dimen/dot_marginbotom"/>
 
 </RelativeLayout>
 

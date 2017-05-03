@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.widget.ImageView;
 
-public class Login extends FragmentActivity{
+public class Login extends FragmentActivity implements ViewPager.OnPageChangeListener{
 
     /**
      * The pager widget, which handles animation and allows swiping horizontally
@@ -43,12 +43,24 @@ public class Login extends FragmentActivity{
         adapter.addFragment(PagesAdapter.newInstance(getResources()
                 .getColor(R.color.color_base), 4));
         this.pager.setAdapter(adapter);
-        getItem();
+        this.pager.addOnPageChangeListener(this);
+
     }
 
-    //TODO:encontrar la forma de mover los circulos con las imagenes
-    public void getItem(){
-        // se trata e cambiar los circulos con las imagenes
+    @Override
+    public void onBackPressed() {
+
+        // Return to previous page when we press back button
+        if (this.pager.getCurrentItem() == 0)
+            super.onBackPressed();
+        else
+            this.pager.setCurrentItem(this.pager.getCurrentItem() - 1);
+
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        // se trata de cambiar los circulos con las imagenes
         if (this.pager.getCurrentItem() == 0) {
 
             dot1.setBackgroundResource(R.drawable.selecteditem_dot);
@@ -71,13 +83,12 @@ public class Login extends FragmentActivity{
     }
 
     @Override
-    public void onBackPressed() {
+    public void onPageSelected(int position) {
 
-        // Return to previous page when we press back button
-        if (this.pager.getCurrentItem() == 0)
-            super.onBackPressed();
-        else
-            this.pager.setCurrentItem(this.pager.getCurrentItem() - 1);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
 
     }
 }

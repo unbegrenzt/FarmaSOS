@@ -12,7 +12,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 /**
  *
- * @author amatellanes
+ * @author unbegrenzt
  *
  */
 public class ViewPagerAdapter extends FragmentPagerAdapter {
