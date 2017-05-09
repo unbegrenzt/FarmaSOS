@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/catalogo"
+            android:icon="@mipmap/ic_launcher"
+            android:title="@string/catalog" />
+        <item
+            android:id="@+id/farmatour"
+            android:icon="@drawable/placeholderblack"
+            android:title="FarmaTour" />
+        <item
+            android:id="@+id/farmacos"
+            android:icon="@drawable/farmacos"
+            android:title="@string/f_rmacos" />
+
+    </group>
+
+    <item android:title="@string/comun_cate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/comparte" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="@string/val_ranos" />
+        </menu>
+    </item>
+
+</menu>

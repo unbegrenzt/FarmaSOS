@@ -36,7 +36,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/tamaño_bottom"
+            android:layout_marginBottom="@dimen/tamaño_bottomtvdpi"
             android:background="@drawable/descarga"
             android:layout_alignParentBottom="true"
             android:layout_centerInParent="true"

@@ -12,14 +12,41 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <TextView
+        android:id="@+id/heaader"
+        android:layout_width="@dimen/headers"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@color/color_de_texto"
+        android:textIsSelectable="false"
+        android:layout_above="@+id/subheader"
+        android:textSize="@dimen/texto_headline_2"
+        android:text="Your lab, everywhere"
+        android:layout_marginBottom="@dimen/Between_header_subheader"
+        android:textAlignment="center"/>
+
+    <TextView
+        android:id="@+id/subheader"
+        android:layout_width="@dimen/subheaders"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@color/color_de_texto"
+        android:layout_marginBottom="@dimen/Between_Button_Copy"
+        android:text="Use everyday objects in your experiments"
+        android:textSize="@dimen/texto_subhead1_3A"
+        android:layout_above="@+id/BotonInicio"
+        android:textAlignment="center"/>
+
     <Button
+        android:id="@+id/BotonInicio"
         android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/dot2"
         android:layout_centerInParent="true"
-        android:text="get Started"
+        android:text="Get Started"
         android:background="@drawable/add_button_selector"
-        android:layout_marginBottom="@dimen/dot_marginbotom"/>
+        android:layout_marginBottom="@dimen/dot_marginbotom"
+        android:onClick="start"/>
 
     <ImageView
         android:id="@+id/dot1"
@@ -52,4 +79,3 @@
         android:layout_marginBottom="@dimen/dot_marginbotom"/>
 
 </RelativeLayout>
-

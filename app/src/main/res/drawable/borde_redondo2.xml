@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <solid android:color="@color/color_no_seleccion"/>
+    <solid android:color="@color/buttonColorPressed"/>
 
     <stroke android:width="3dp"
-        android:color="@color/color_de_texto"/>
+        android:color="@color/buttonColorPressed"/>
 
     <padding android:left="1dp"
         android:top="1dp"

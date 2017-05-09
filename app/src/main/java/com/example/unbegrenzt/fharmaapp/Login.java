@@ -1,9 +1,13 @@
 package com.example.unbegrenzt.fharmaapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class Login extends FragmentActivity implements ViewPager.OnPageChangeListener{
 
@@ -18,6 +22,7 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
      */
     //ViewPagerAdapter pagerAdapter;
     ImageView dot1,dot2,dot3;
+    TextView header, subheader;
 
 
 
@@ -30,18 +35,31 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
         dot2 = (ImageView)this.findViewById(R.id.dot2);
         dot3 = (ImageView)this.findViewById(R.id.dot3);
 
+        header = (TextView)this.findViewById(R.id.heaader);
+        subheader = (TextView)this.findViewById(R.id.subheader);
+
         // Instantiate a ViewPager
         this.pager = (ViewPager) this.findViewById(R.id.pager);
 
         // Create an adapter with the fragments we show on the ViewPager
         ViewPagerAdapter adapter = new ViewPagerAdapter(
                 getSupportFragmentManager());
-        adapter.addFragment(PagesAdapter.newInstance(getResources()
-                .getColor(R.color.atenuante), 0));
-        adapter.addFragment(PagesAdapter.newInstance(getResources()
-                .getColor(R.color.color_acentuado), 1));
-        adapter.addFragment(PagesAdapter.newInstance(getResources()
-                .getColor(R.color.color_base), 4));
+
+        adapter.addFragment(PagesAdapter.newInstance(getResources().getColor(R.color.color_acentuado)
+                ,getResources().getColor(R.color.acentuado_oscuro),
+                    getResources().getIdentifier("descarga" , "drawable", getPackageName())
+                        ,0));
+
+        adapter.addFragment(PagesAdapter.newInstance(getResources().getColor(R.color.color_acentuado)
+                ,getResources().getColor(R.color.acentuado_oscuro),
+                    getResources().getIdentifier("descarga1" , "drawable", getPackageName())
+                        ,1));
+
+        adapter.addFragment(PagesAdapter.newInstance(getResources().getColor(R.color.color_acentuado)
+                ,getResources().getColor(R.color.acentuado_oscuro),
+                    getResources().getIdentifier("descarga2" , "drawable", getPackageName())
+                        ,2));
+
         this.pager.setAdapter(adapter);
         this.pager.addOnPageChangeListener(this);
 
@@ -66,18 +84,24 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
             dot1.setBackgroundResource(R.drawable.selecteditem_dot);
             dot2.setBackgroundResource(R.drawable.nonselecteditem_dot);
             dot3.setBackgroundResource(R.drawable.nonselecteditem_dot);
+            header.setText(R.string.explor_n_l_map);
+            subheader.setText(R.string.encuentra);
 
         } else if (this.pager.getCurrentItem() == 1) {
 
             dot1.setBackgroundResource(R.drawable.nonselecteditem_dot);
             dot2.setBackgroundResource(R.drawable.selecteditem_dot);
             dot3.setBackgroundResource(R.drawable.nonselecteditem_dot);
+            header.setText(R.string.farma_q_busca);
+            subheader.setText(R.string.farmaco);
 
         } else if (this.pager.getCurrentItem() == 2) {
 
             dot1.setBackgroundResource(R.drawable.nonselecteditem_dot);
             dot2.setBackgroundResource(R.drawable.nonselecteditem_dot);
             dot3.setBackgroundResource(R.drawable.selecteditem_dot);
+            header.setText(R.string.no_conex);
+            subheader.setText(R.string.local_disp);
 
         }
     }
@@ -90,6 +114,16 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    public void start(View view) {
+        try {
+            Intent intent = new Intent(Login.this, menu.class);
+            startActivity(intent);
+            finish();
+        }catch (Exception e){
+            Log.e("error",e.getMessage());
+        }
     }
 }
 
