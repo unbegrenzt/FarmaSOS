@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_farmacias"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        card_view:cardElevation=""
+        card_view:cardCornerRadius="6dp"
+        android:layout_marginTop="@dimen/card_padd"
+        android:layout_marginRight="@dimen/card_padd"
+        android:layout_marginLeft="@dimen/card_padd"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="8dp"
+        android:layout_alignParentTop="true">
+
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/side_nav_bar">
+
+            <ImageView
+                android:id="@+id/imagen"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:background="@drawable/descarga"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/imagen"
+                android:id="@+id/tv_text"
+                android:text="Go to map"
+                android:background="@color/color_base"
+                android:textAlignment="center"
+                android:textSize="@dimen/texto_headline_2"
+                android:textColor="@color/color_no_seleccion"
+                android:layout_alignParentBottom="true"
+                android:paddingTop="10dp"
+                android:paddingLeft="30dp"
+                android:paddingRight="70dp"
+                android:textStyle="bold"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/imagen"
+                android:layout_toRightOf="@id/tv_text"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/im"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/color_base"
+                    android:src="@drawable/corazon"
+                    android:layout_weight="0.5"/>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:src="@drawable/ic_menu_share"
+                    android:background="@color/color_base"/>
+
+            </LinearLayout>
+
+
+
+        </RelativeLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

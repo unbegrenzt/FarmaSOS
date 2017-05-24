@@ -1,7 +1,5 @@
 package com.example.unbegrenzt.fharmaapp;
 
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;

@@ -4,7 +4,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/catalogo"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/catalogo"
             android:title="@string/catalog" />
         <item
             android:id="@+id/farmatour"
