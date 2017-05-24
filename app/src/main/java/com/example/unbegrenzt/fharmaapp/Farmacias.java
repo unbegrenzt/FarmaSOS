@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -74,7 +75,7 @@ public class Farmacias extends Fragment {
         rv.setHasFixedSize(true);
         MyAdapter adapter = new MyAdapter(new String[]{"Example One", "Example Two", "Example Three", "Example Four", "Example Five" , "Example Six" , "Example Seven"});
         rv.setAdapter(adapter);
-
+        rv.setItemAnimator(new DefaultItemAnimator());
         LinearLayoutManager layoutManager=new LinearLayoutManager(getContext());
         rv.setLayoutManager(layoutManager);
 
