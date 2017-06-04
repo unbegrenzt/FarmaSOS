@@ -9,8 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:id="@+id/heaader"
@@ -44,7 +44,7 @@
         android:layout_above="@+id/dot2"
         android:layout_centerInParent="true"
         android:text="Get Started"
-        android:background="@drawable/add_button_selector"
+        android:background="@drawable/ripple_effect"
         android:layout_marginBottom="@dimen/dot_marginbotom"
         android:onClick="start"/>
 
