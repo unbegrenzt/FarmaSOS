@@ -1,4 +1,11 @@
-package com.example.unbegrenzt.fharmaapp;
+/*
+ * Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-03-17 09:59 PM
+ * Copyright (c) 2017. All rights reserved.
+ *
+ * Last modified 06-03-17 05:05 PM
+ */
+
+package com.example.unbegrenzt.fharmaapp.actividades;
 
 import android.Manifest;
 import android.app.Activity;
@@ -14,6 +21,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.unbegrenzt.fharmaapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;

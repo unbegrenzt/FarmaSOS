@@ -1,4 +1,11 @@
-package com.example.unbegrenzt.fharmaapp;
+/*
+ * Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-03-17 09:54 PM
+ * Copyright (c) 2017. All rights reserved.
+ *
+ * Last modified 06-03-17 05:05 PM
+ */
+
+package com.example.unbegrenzt.fharmaapp.actividades;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +15,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.unbegrenzt.fharmaapp.Adapter.PagesAdapter;
+import com.example.unbegrenzt.fharmaapp.R;
+import com.example.unbegrenzt.fharmaapp.Adapter.ViewPagerAdapter;
 
 public class Login extends FragmentActivity implements ViewPager.OnPageChangeListener{
 

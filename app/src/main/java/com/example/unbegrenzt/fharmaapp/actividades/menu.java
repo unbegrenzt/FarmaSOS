@@ -1,4 +1,11 @@
-package com.example.unbegrenzt.fharmaapp;
+/*
+ * Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-03-17 09:59 PM
+ * Copyright (c) 2017. All rights reserved.
+ *
+ * Last modified 06-03-17 09:54 PM
+ */
+
+package com.example.unbegrenzt.fharmaapp.actividades;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -17,6 +24,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.example.unbegrenzt.fharmaapp.Fragments.Farmacias;
+import com.example.unbegrenzt.fharmaapp.R;
 
 public class menu extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Farmacias.OnFragmentInteractionListener {

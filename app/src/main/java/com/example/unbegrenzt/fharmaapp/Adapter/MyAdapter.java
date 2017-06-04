@@ -1,4 +1,11 @@
-package com.example.unbegrenzt.fharmaapp;
+/*
+ * Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-03-17 09:59 PM
+ * Copyright (c) 2017. All rights reserved.
+ *
+ * Last modified 06-03-17 05:05 PM
+ */
+
+package com.example.unbegrenzt.fharmaapp.Adapter;
 
 /**
  * Created by Unbegrenzt on 15/5/2017.
@@ -10,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.unbegrenzt.fharmaapp.R;
 
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {

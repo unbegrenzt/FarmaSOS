@@ -1,27 +1,35 @@
-package com.example.unbegrenzt.fharmaapp;
+/*
+ * Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-03-17 09:54 PM
+ * Copyright (c) 2017. All rights reserved.
+ *
+ * Last modified 06-03-17 05:05 PM
+ */
+
+package com.example.unbegrenzt.fharmaapp.Fragments;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+
+import com.example.unbegrenzt.fharmaapp.Adapter.MyAdapter;
+import com.example.unbegrenzt.fharmaapp.R;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link Farmacias.OnFragmentInteractionListener} interface
+ * {@link farmacos.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link Farmacias#newInstance} factory method to
+ * Use the {@link farmacos#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Farmacias extends Fragment {
+public class farmacos extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -33,7 +41,7 @@ public class Farmacias extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public Farmacias() {
+    public farmacos() {
         // Required empty public constructor
     }
 
@@ -43,11 +51,11 @@ public class Farmacias extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment Farmacias.
+     * @return A new instance of fragment farmacos.
      */
     // TODO: Rename and change types and number of parameters
-    public static Farmacias newInstance(String param1, String param2) {
-        Farmacias fragment = new Farmacias();
+    public static farmacos newInstance(String param1, String param2) {
+        farmacos fragment = new farmacos();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -68,18 +76,18 @@ public class Farmacias extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.farmacias, container, false);
+        View rootView = inflater.inflate(R.layout.farmacos, container, false);
 
         RecyclerView rv = (RecyclerView) rootView.findViewById(R.id.rv_recycler_view);
         rv.setHasFixedSize(true);
         MyAdapter adapter = new MyAdapter(new String[]{"Example One", "Example Two", "Example Three", "Example Four", "Example Five" , "Example Six" , "Example Seven"});
         rv.setAdapter(adapter);
-        rv.setItemAnimator(new DefaultItemAnimator());
-        LinearLayoutManager layoutManager=new LinearLayoutManager(getContext());
-        rv.setLayoutManager(layoutManager);
+
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        rv.setLayoutManager(llm);
 
         return rootView;
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

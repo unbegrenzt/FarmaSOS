@@ -1,3 +1,10 @@
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-03-17 12:29 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 05-09-17 08:28 AM
+  -->
+
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <gradient

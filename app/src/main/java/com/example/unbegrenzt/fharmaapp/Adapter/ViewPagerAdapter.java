@@ -1,4 +1,11 @@
-package com.example.unbegrenzt.fharmaapp;
+/*
+ * Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-03-17 10:00 PM
+ * Copyright (c) 2017. All rights reserved.
+ *
+ * Last modified 06-03-17 05:05 PM
+ */
+
+package com.example.unbegrenzt.fharmaapp.Adapter;
 
 /*
   Created by Unbegrenzt on 1/5/2017.
