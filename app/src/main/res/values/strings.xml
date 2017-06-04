@@ -31,4 +31,7 @@
     <string name="comparte">Comparte</string>
     <string name="val_ranos">Valóranos</string>
     <string name="men">Menú</string>
+    <string name="email">Correo</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Iniciar sesion</string>
 </resources>

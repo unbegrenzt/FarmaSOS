@@ -8,17 +8,25 @@
 package com.example.unbegrenzt.fharmaapp.actividades;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.unbegrenzt.fharmaapp.Adapter.PagesAdapter;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.Adapter.ViewPagerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class Login extends FragmentActivity implements ViewPager.OnPageChangeListener{
 
@@ -28,6 +36,8 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
      */
     ViewPager pager = null;
 
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     /**
      * The pager adapter, which provides the pages to the view pager widget.
      */
@@ -42,6 +52,36 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
         super.onCreate(arg0);
         this.setContentView(R.layout.login);
 
+        mAuth = FirebaseAuth.getInstance();
+
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d("info", "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d("info", "onAuthStateChanged:signed_out");
+                }
+                // ...
+            }
+        };
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // Name, email address, and profile photo Url
+            String name = user.getDisplayName();
+            String email = user.getEmail();
+            Uri photoUrl = user.getPhotoUrl();
+
+            // The user's ID, unique to the Firebase project. Do NOT use this value to
+            // authenticate with your backend server, if you have one. Use
+            // FirebaseUser.getToken() instead.
+            String uid = user.getUid();
+        }
         dot1 = (ImageView)this.findViewById(R.id.dot1);
         dot2 = (ImageView)this.findViewById(R.id.dot2);
         dot3 = (ImageView)this.findViewById(R.id.dot3);
@@ -85,6 +125,61 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
         else
             this.pager.setCurrentItem(this.pager.getCurrentItem() - 1);
 
+    }
+
+    public void singup(String email,String password){
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        //Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            //Toast.makeText(EmailPasswordActivity.this, R.string.auth_failed,
+                                    //Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
+    }
+
+    public void login(String email, String password){
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        //Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            //Log.w(TAG, "signInWithEmail:failed", task.getException());
+                            //Toast.makeText(EmailPasswordActivity.this, R.string.auth_failed,
+                                    //Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override

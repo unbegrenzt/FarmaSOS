@@ -16,6 +16,7 @@
 #   public *;
 #}
 
+
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 #-keepattributes SourceFile,LineNumberTable
@@ -26,7 +27,7 @@
 
 # Add this global rule
 -keepattributes Signature
-
+-keepattributes *Annotation*
 # This rule will properly ProGuard all the model classes in
 # the package com.yourcompany.models. Modify to fit the structure
 # of your app.
