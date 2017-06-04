@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -43,6 +44,11 @@ public class MainActivity extends AppCompatActivity {
                             fin.close();
                             Intent intent = new Intent(MainActivity.this, Login.class);
                             intent.putExtra("parametro", "entrada");
+                            startActivity(intent);
+                            finish();
+                        }else{
+                            Intent intent = new Intent(MainActivity.this, Login.class);
+                            intent.putExtra("parametro", "entrada primera vez");
                             startActivity(intent);
                             finish();
                         }

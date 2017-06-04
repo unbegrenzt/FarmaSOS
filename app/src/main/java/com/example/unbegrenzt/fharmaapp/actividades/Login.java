@@ -73,7 +73,7 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
 
         this.pager.setAdapter(adapter);
         this.pager.addOnPageChangeListener(this);
-
+        Log.i("info",getIntent().getExtras().getString("parametro"));
     }
 
     @Override
