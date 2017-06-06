@@ -24,6 +24,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 
 import com.example.unbegrenzt.fharmaapp.Fragments.Farmacias;
 import com.example.unbegrenzt.fharmaapp.R;
@@ -34,6 +36,10 @@ public class menu extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
 
         setContentView(R.layout.menu);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

@@ -1,6 +1,19 @@
 apply plugin: 'com.android.application'
 
 android {
+
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:1.3.9'
+    }
+
+    signingConfigs {
+        config {
+            keyAlias 'unbegrenzt'
+            keyPassword 'elpapi123'
+            storeFile file('C:/Users/Unbegrenzt/AndroidStudioProjects/FharmaApp/FharmaApp.jks')
+            storePassword 'elcraken1525'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
     defaultConfig {
@@ -15,6 +28,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 }
@@ -31,6 +45,13 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services-location:10.0.1'
     compile 'com.google.android.gms:play-services-maps:10.0.1'
+    compile('com.google.api-client:google-api-client-android:1.22.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    compile('com.google.apis:google-api-services-gmail:v1-rev66-1.22.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.android.support:cardview-v7:25.3.1'
     compile 'com.google.firebase:firebase-auth:10.0.1'

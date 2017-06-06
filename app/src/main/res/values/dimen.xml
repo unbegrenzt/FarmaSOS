@@ -3,6 +3,7 @@
     <dimen name="texto_header_1B">45sp</dimen>
     <dimen name="texto_header_1A">34sp</dimen>
     <dimen name="texto_headline_2">24sp</dimen>
+    <dimen name="text_face">18sp</dimen>
     <dimen name="texto_subhead2_3B">16sp</dimen>
     <dimen name="texto_subhead1_3A">15sp</dimen>
     <dimen name="texto_body2_4B">14sp</dimen>

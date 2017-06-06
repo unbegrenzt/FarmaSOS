@@ -20,4 +20,5 @@
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="card_padd">8dp</dimen>
+    <dimen name="margen_izq">25dp</dimen>
 </resources>

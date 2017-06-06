@@ -8,11 +8,15 @@
 package com.example.unbegrenzt.fharmaapp.actividades;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,13 +24,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.unbegrenzt.fharmaapp.Adapter.PagesAdapter;
-import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.Adapter.ViewPagerAdapter;
+import com.example.unbegrenzt.fharmaapp.R;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class Login extends FragmentActivity implements ViewPager.OnPageChangeListener{
 
@@ -34,7 +51,9 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
      * The pager widget, which handles animation and allows swiping horizontally
      * to access previous and next pages.
      */
-    ViewPager pager = null;
+    private ViewPager pager = null;
+
+    CallbackManager callbackManager;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -42,9 +61,11 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
      * The pager adapter, which provides the pages to the view pager widget.
      */
     //ViewPagerAdapter pagerAdapter;
-    ImageView dot1,dot2,dot3;
-    TextView header, subheader;
+    private ImageView dot1,dot2,dot3;
+    private TextView header, subheader;
 
+    //face boton
+    private LoginButton FaceButton;
 
 
     @Override
@@ -52,8 +73,27 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
         super.onCreate(arg0);
         this.setContentView(R.layout.login);
 
+
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.example.unbegrenzt.fharmaapp",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
+
+        callbackManager = CallbackManager.Factory.create();
         mAuth = FirebaseAuth.getInstance();
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -82,6 +122,32 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
             // FirebaseUser.getToken() instead.
             String uid = user.getUid();
         }
+
+        FaceButton = (LoginButton) findViewById(R.id.login_button);
+        FaceButton.setReadPermissions("email","public_profile");
+        // If using in a fragment
+        //FaceButton.setFragment(this);
+        // Other app specific specialization
+
+        // Callback registration
+        FaceButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                // App code
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
+
         dot1 = (ImageView)this.findViewById(R.id.dot1);
         dot2 = (ImageView)this.findViewById(R.id.dot2);
         dot3 = (ImageView)this.findViewById(R.id.dot3);
@@ -113,7 +179,20 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
 
         this.pager.setAdapter(adapter);
         this.pager.addOnPageChangeListener(this);
-        Log.i("info",getIntent().getExtras().getString("parametro"));
+
+    }
+
+    @Override
+    public void onDestroy(){
+        FirebaseAuth.getInstance().signOut();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i("asdf", String.valueOf(requestCode) + "  " + String.valueOf(resultCode));
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -127,40 +206,23 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
 
     }
 
-    public void singup(String email,String password){
-        mAuth.createUserWithEmailAndPassword(email, password)
+    private void handleFacebookAccessToken(AccessToken token) {
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        //Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            //Toast.makeText(EmailPasswordActivity.this, R.string.auth_failed,
-                                    //Toast.LENGTH_SHORT).show();
-                        }
-
-                        // ...
-                    }
-                });
-    }
-
-    public void login(String email, String password){
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        //Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            //Log.w(TAG, "signInWithEmail:failed", task.getException());
-                            //Toast.makeText(EmailPasswordActivity.this, R.string.auth_failed,
-                                    //Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(Login.this, "Authentication success.",
+                                    Toast.LENGTH_SHORT).show();
                         }
 
                         // ...
@@ -223,13 +285,7 @@ public class Login extends FragmentActivity implements ViewPager.OnPageChangeLis
     }
 
     public void start(View view) {
-        try {
-            Intent intent = new Intent(Login.this, menu.class);
-            startActivity(intent);
-            finish();
-        }catch (Exception e){
-            Log.e("error",e.getMessage());
-        }
+        FaceButton.performClick();
     }
 }
 

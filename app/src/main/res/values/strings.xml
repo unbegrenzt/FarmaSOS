@@ -8,10 +8,11 @@
 <resources>
     <string name="app_name">PharmaApp</string>
     <string name="title_activity_maps">Map</string>
+    <string name="facebook_app_id">446267069084972</string>
+    <string name="fb_login_protocol_scheme">fb446267069084972</string>
     <string name="Máx_preg">Máximo de preguntas excedido</string>
     <string name="nombreapp">PharmaApp</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="explor_n_l_map">Explora el app</string>
     <string name="encuentra">Obtén información de un local</string>
@@ -34,4 +35,15 @@
     <string name="email">Correo</string>
     <string name="password">Contraseña</string>
     <string name="login">Iniciar sesion</string>
+    <string name="no_account_yet_create_one">No tienes una cuenta?</string>
+    <string name="hola_de_nuevo">HOLA DE NUEVO</string>
+    <string name="facebook">Facebook</string>
+    <string name="iniciar_sesion_usando">Iniciar sesion usando</string>
+    <string name="google">Google</string>
+    <string name="or">OR</string>
+    <string name="olvid_su_contrase_a">Olvidó su contraseña?</string>
+    <string name="crear_cuenta">Crear Cuenta</string>
+    <string name="nombre_de_usuario">Nombre de usuario</string>
+    <string name="nete_a_trav_z_de">Únete a travéz de</string>
+    <string name="iniciar_sesion_con_facebook">Continuar con Facebook</string>
 </resources>
