@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-10-17 07:47 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 06-10-17 07:47 PM
+  -->
+
+<tabs>
+    <tab
+        id="@+id/tab_catalogo"
+        icon="@drawable/ic_home"
+        title="@string/catalog" />
+    <tab
+        id="@+id/tab_mapa"
+        icon="@mipmap/ic_map"
+        title="@string/map" />
+    <tab
+        id="@+id/tab_farmaco"
+        icon="@mipmap/ic_farmaco"
+        title="@string/f_rmacos" />
+    <tab
+        id="@+id/tab_profile"
+        icon="@mipmap/ic_profie"
+        title="@string/perfil"/>
+</tabs>

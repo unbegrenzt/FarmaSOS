@@ -7,11 +7,9 @@
 
 <resources>
     <string name="app_name">PharmaApp</string>
-    <string name="title_activity_maps">Map</string>
     <string name="facebook_app_id">446267069084972</string>
     <string name="fb_login_protocol_scheme">fb446267069084972</string>
     <string name="Máx_preg">Máximo de preguntas excedido</string>
-    <string name="nombreapp">PharmaApp</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="explor_n_l_map">Explora el app</string>
@@ -20,7 +18,6 @@
     <string name="farmaco">Informate acerca del fármaco que nescesitas</string>
     <string name="no_conex">Sin conexión</string>
     <string name="local_disp">puedes tenerlo todo de forma local en tu dispositivo</string>
-    <string name="title_activity_menu">Menu</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -28,22 +25,12 @@
     <string name="action_settings">Settings</string>
     <string name="catalog">Catálogo</string>
     <string name="f_rmacos">Fármacos</string>
+    <string name="perfil">Perfil</string>
+    <string name="map">Mapa</string>
     <string name="comun_cate">Comunícate</string>
     <string name="comparte">Comparte</string>
     <string name="val_ranos">Valóranos</string>
     <string name="men">Menú</string>
-    <string name="email">Correo</string>
-    <string name="password">Contraseña</string>
-    <string name="login">Iniciar sesion</string>
-    <string name="no_account_yet_create_one">No tienes una cuenta?</string>
-    <string name="hola_de_nuevo">HOLA DE NUEVO</string>
-    <string name="facebook">Facebook</string>
-    <string name="iniciar_sesion_usando">Iniciar sesion usando</string>
-    <string name="google">Google</string>
-    <string name="or">OR</string>
-    <string name="olvid_su_contrase_a">Olvidó su contraseña?</string>
-    <string name="crear_cuenta">Crear Cuenta</string>
-    <string name="nombre_de_usuario">Nombre de usuario</string>
-    <string name="nete_a_trav_z_de">Únete a travéz de</string>
     <string name="iniciar_sesion_con_facebook">Continuar con Facebook</string>
+    <string name="continuar">Continuar</string>
 </resources>

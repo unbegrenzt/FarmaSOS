@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,7 +22,7 @@ import java.io.OutputStreamWriter;
 public class MainActivity extends AppCompatActivity {
 
     //Clase que presenta el SplashScreen si es primera vez nos dirigimos a una
-    //vista guiada sino al login screen
+    //vista guiada sino al vista screen
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
@@ -42,13 +41,22 @@ public class MainActivity extends AppCompatActivity {
                         }
                         if (texto.compareTo("no es primera vez") == 0) {
                             fin.close();
-                            Intent intent = new Intent(MainActivity.this, Login.class);
-                            intent.putExtra("parametro", "entrada");
+                            Intent intent = new Intent(MainActivity.this, Navigation.class);
                             startActivity(intent);
                             finish();
                         }else{
-                            Intent intent = new Intent(MainActivity.this, Login.class);
-                            intent.putExtra("parametro", "entrada primera vez");
+                            try {
+                                File fichero = new File(getFilesDir().getPath() + "momento.txt");
+                            } catch (Exception e) {
+
+                            }
+
+                            OutputStreamWriter fout = new OutputStreamWriter(openFileOutput("momento.txt", Context.MODE_PRIVATE));
+                            String cad = "no es primera vez";
+                            fout.write(cad);
+                            fout.close();
+
+                            Intent intent = new Intent(MainActivity.this, Vista.class);
                             startActivity(intent);
                             finish();
                         }
@@ -56,30 +64,28 @@ public class MainActivity extends AppCompatActivity {
                 }catch (Exception ex) {
                     try {
                         try {
-                            File fichero = new File("/data/data/com.example.unbegrenzt.fisicab/files/momento.txt");
+                            File fichero = new File(getFilesDir().getPath() + "momento.txt");
                         } catch (Exception e) {
 
                         }
-                        OutputStreamWriter fout = new OutputStreamWriter(openFileOutput("momento.txt", Context.MODE_PRIVATE));
 
+                        OutputStreamWriter fout = new OutputStreamWriter(openFileOutput("momento.txt", Context.MODE_PRIVATE));
                         String cadena = "no es primera vez";
                         fout.write(cadena);
                         fout.close();
 
-                        Intent intent = new Intent(MainActivity.this, Login.class);
-                        intent.putExtra("parametro", "entrada primera vez");
+                        Intent intent = new Intent(MainActivity.this, Vista.class);
                         startActivity(intent);
                         finish();
                     } catch (Exception edx) {
                         edx.printStackTrace();
-                        Intent intent = new Intent(MainActivity.this, Login.class);
-                        intent.putExtra("parametro", "entrada primera vez");
+                        Intent intent = new Intent(MainActivity.this, Vista.class);
                         startActivity(intent);
                         finish();
                     }
                 }
             }
-        },1500);
+        },500);
         //tiempo en ms en que se presenta el SplashScreen
     }
 

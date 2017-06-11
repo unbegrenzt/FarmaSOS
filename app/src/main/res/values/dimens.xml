@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="borde_boton">5px</dimen>
-    <dimen name="boton_grande">48dp</dimen>
-    <dimen name="boton_pequeño">36dp</dimen>
     <dimen name="dot_10dp">8dp</dimen>
     <dimen name="dot_sep_3dp">5dp</dimen>
     <dimen name="subheaders">150dp</dimen>
     <dimen name="headers">260dp</dimen>
-    <dimen name="margen_boton">20dp</dimen>
     <dimen name="dot_marginbotom">24dp</dimen>
     <dimen name="Between_Button_Copy">34dp</dimen>
     <dimen name="Between_header_subheader">12dp</dimen>
@@ -20,5 +17,4 @@
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="card_padd">8dp</dimen>
-    <dimen name="margen_izq">25dp</dimen>
 </resources>

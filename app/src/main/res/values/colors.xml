@@ -11,15 +11,20 @@
     <color name="color_acentuado">#1CE8B5</color>
     <color name="complemento_Acentuado">#95D641</color>
     <color name="atenuante">#FF6D3F</color>
-    <color name="atenuante_ripple1">#da4c1f</color>
-    <color name="atenuante_ripple2">#a9482a</color>
-    <color name="complemento_atenuante">#FFDA00</color>
     <color name="color_de_texto">#fff3f3</color>
     <color name="color_no_seleccion">#000000</color>
     <color name="DotNoSelecc">#72ffffff</color>
-    <color name="buttonColorPressed">#268cba</color>
     <color name="gray">#716e6e</color>
     <color name="acentuado_oscuro">#139b79</color>
     <color name="facebook_color">#4267B2</color>
     <color name="facebook_pressed">#224386</color>
+
+    <color name="primary1">#E91E63</color>
+    <color name="primary_dark1">#C2185B</color>
+    <color name="primary_light1">#F8BBD0</color>
+    <color name="accent1">#E040FB</color>
+    <color name="primary_text1">#212121</color>
+    <color name="secondary_text1">#757575</color>
+    <color name="icons1">#FFFFFF</color>
+    <color name="divider1">#BDBDBD</color>
 </resources>

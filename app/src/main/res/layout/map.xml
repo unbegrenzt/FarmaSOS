@@ -1,9 +1,16 @@
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-10-17 11:31 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 06-10-17 11:31 PM
+  -->
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/atenuante"
-    tools:context="com.example.unbegrenzt.fharmaapp.Fragments.farmacos">
+    android:background="@color/color_no_seleccion"
+    tools:context="com.example.unbegrenzt.fharmaapp.Fragments.Map">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
