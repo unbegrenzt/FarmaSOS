@@ -10,10 +10,12 @@ package com.example.unbegrenzt.fharmaapp.actividades;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.XmlRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Xml;
 
 import com.example.unbegrenzt.fharmaapp.Fragments.Farmacias;
 import com.example.unbegrenzt.fharmaapp.Fragments.Map;
@@ -36,7 +38,6 @@ public class Navigation extends AppCompatActivity implements Farmacias.OnFragmen
         setContentView(R.layout.navigation);
 
         bottomBar = (BottomBar) findViewById(R.id.bottomBar);
-
         bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-11-17 09:44 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 06-11-17 09:44 PM
+  -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/mapsvg" android:state_selected="true" />
+    <item android:drawable="@mipmap/ic_map" android:state_selected="false" />
+</selector>

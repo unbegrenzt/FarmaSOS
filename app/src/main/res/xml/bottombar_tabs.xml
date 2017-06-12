@@ -9,18 +9,18 @@
 <tabs>
     <tab
         id="@+id/tab_catalogo"
-        icon="@drawable/ic_home"
+        icon="@drawable/home"
         title="@string/catalog" />
     <tab
         id="@+id/tab_mapa"
-        icon="@mipmap/ic_map"
+        icon="@drawable/map"
         title="@string/map" />
     <tab
         id="@+id/tab_farmaco"
-        icon="@mipmap/ic_farmaco"
+        icon="@drawable/farmaco"
         title="@string/f_rmacos" />
     <tab
         id="@+id/tab_profile"
-        icon="@mipmap/ic_profie"
+        icon="@drawable/profile"
         title="@string/perfil"/>
 </tabs>
