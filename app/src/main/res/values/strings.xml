@@ -25,12 +25,13 @@
     <string name="action_settings">Settings</string>
     <string name="catalog">Catálogo</string>
     <string name="f_rmacos">Fármacos</string>
-    <string name="perfil">Perfil</string>
-    <string name="map">Mapa</string>
     <string name="comun_cate">Comunícate</string>
     <string name="comparte">Comparte</string>
     <string name="val_ranos">Valóranos</string>
     <string name="men">Menú</string>
-    <string name="iniciar_sesion_con_facebook">Continuar con Facebook</string>
     <string name="continuar">Continuar</string>
+    <string name="hom">Home</string>
+    <string name="map">Mapa</string>
+    <string name="farm">Fármaco</string>
+    <string name="per">Perfil</string>
 </resources>

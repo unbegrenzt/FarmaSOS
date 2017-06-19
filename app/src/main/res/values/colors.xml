@@ -9,7 +9,6 @@
 <resources>
     <color name="color_base">#3FC3FF</color>
     <color name="color_acentuado">#1CE8B5</color>
-    <color name="complemento_Acentuado">#95D641</color>
     <color name="atenuante">#FF6D3F</color>
     <color name="color_de_texto">#fff3f3</color>
     <color name="color_no_seleccion">#000000</color>

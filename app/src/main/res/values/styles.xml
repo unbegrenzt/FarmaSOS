@@ -15,7 +15,7 @@
         <item name="colorPrimaryDark">@color/primary_dark1</item>
         <item name="colorAccent">@color/accent1</item>
         <item name="android:colorForeground">@color/primary_dark1</item>
-        <item name="android:textColorPrimary">@color/primary_text1</item>
+        <item name="android:textColorPrimary">@color/icons1</item>
         <item name="android:textColorSecondaryInverse">@color/divider1</item>
         <item name="android:textColorSecondary">@color/secondary_text1</item>
         <item name="android:colorBackground">@color/icons1</item>

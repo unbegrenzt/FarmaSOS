@@ -101,7 +101,7 @@ public class menu extends AppCompatActivity
             String uid = user.getUid();
         }*/
 
-        FaceButton = (LoginButton) findViewById(R.id.login_button);
+        /*FaceButton = (LoginButton) findViewById(R.id.login_button);
         FaceButton.setReadPermissions("email", "public_profile");
         // If using in a fragment
         //FaceButton.setFragment(this);
@@ -124,7 +124,7 @@ public class menu extends AppCompatActivity
             public void onError(FacebookException exception) {
                 // App code
             }
-        });
+        });*/
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
