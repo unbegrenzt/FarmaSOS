@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.unbegrenzt.fharmaapp.R;
+import com.example.unbegrenzt.fharmaapp.actividades.Navigation;
 
 
 public class Perfil extends Fragment {
@@ -59,11 +60,16 @@ public class Perfil extends Fragment {
         View view = inflater.inflate(R.layout.perfil, container, false);
 
         boton = (Button)view.findViewById(R.id.login);
+        if (((Navigation)getActivity()).getloged()){
+            boton.setText("nolog");
+        }else{
+            boton.setText("log");
+        }
 
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                
             }
         });
 

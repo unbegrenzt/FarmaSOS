@@ -38,7 +38,7 @@ public class Navigation extends AppCompatActivity implements Farmacias.OnFragmen
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
+    private boolean isLoged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +63,10 @@ public class Navigation extends AppCompatActivity implements Farmacias.OnFragmen
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
-                    Log.d("asdf", "onAuthStateChanged:signed_in:" + user.getUid());
+                    isLoged = true;
                 } else {
                     // User is signed out
-                    Log.d("asdf", "onAuthStateChanged:signed_out");
+                    isLoged = false;
                 }
                 // ...
             }
@@ -153,5 +153,9 @@ public class Navigation extends AppCompatActivity implements Farmacias.OnFragmen
         transaction.replace(R.id.frag, fragment);
         transaction.commit();
         return true;
+    }
+
+    public boolean getloged(){
+        return this.isLoged;
     }
 }
