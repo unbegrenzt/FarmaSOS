@@ -10,11 +10,13 @@ package com.example.unbegrenzt.fharmaapp.actividades;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
@@ -23,12 +25,19 @@ import com.example.unbegrenzt.fharmaapp.Fragments.Map;
 import com.example.unbegrenzt.fharmaapp.Fragments.Perfil;
 import com.example.unbegrenzt.fharmaapp.Fragments.farmacos;
 import com.example.unbegrenzt.fharmaapp.R;
+import com.facebook.CallbackManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class Navigation extends AppCompatActivity implements Farmacias.OnFragmentInteractionListener,
         Map.OnFragmentInteractionListener, farmacos.OnFragmentInteractionListener,
             Perfil.OnFragmentInteractionListener,AHBottomNavigation.OnTabSelectedListener{
 
     AHBottomNavigation bottomNavigation;
+    CallbackManager callbackManager;
+
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
 
     @Override
@@ -40,11 +49,43 @@ public class Navigation extends AppCompatActivity implements Farmacias.OnFragmen
         setSupportActionBar(toolbar);
         setTitle(getString(R.string.hom));
 
+        callbackManager = CallbackManager.Factory.create();
+        mAuth = FirebaseAuth.getInstance();
+
 
         bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnTabSelectedListener(this);
         this.CreateItems();
 
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d("asdf", "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d("asdf", "onAuthStateChanged:signed_out");
+                }
+                // ...
+            }
+        };
+
+    }
+
+    @Override
+    public void onStop(){
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+        super.onStop();
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
     private void CreateItems(){

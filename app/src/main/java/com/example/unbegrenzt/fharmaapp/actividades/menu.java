@@ -194,6 +194,7 @@ public class menu extends AppCompatActivity
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+        super.onStop();
     }
 
     @Override
