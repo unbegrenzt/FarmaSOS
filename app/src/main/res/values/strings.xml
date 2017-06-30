@@ -34,4 +34,6 @@
     <string name="map">Mapa</string>
     <string name="farm">Fármaco</string>
     <string name="per">Perfil</string>
+    <string name="inicia_sesion">Inicia Sesión </string>
+    <string name="an">Aún no te has conectado!</string>
 </resources>

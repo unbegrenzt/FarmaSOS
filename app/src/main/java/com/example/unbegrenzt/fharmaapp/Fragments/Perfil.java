@@ -11,13 +11,21 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.unbegrenzt.fharmaapp.Adapter.AdapterFarma;
+import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
-import com.example.unbegrenzt.fharmaapp.actividades.Navigation;
+import com.example.unbegrenzt.fharmaapp.touchlistener.ClicklistenerFarma;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Perfil extends Fragment {
@@ -28,7 +36,6 @@ public class Perfil extends Fragment {
 
     private String mParam1;
     private String mParam2;
-    private Button boton;
 
     private OnFragmentInteractionListener mListener;
 
@@ -57,23 +64,83 @@ public class Perfil extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.perfil, container, false);
+        View rootView = inflater.inflate(R.layout.perfil, container, false);
 
-        boton = (Button)view.findViewById(R.id.login);
-        if (((Navigation)getActivity()).getloged()){
-            boton.setText("nolog");
-        }else{
-            boton.setText("log");
-        }
+        RecyclerView Farma_recycler = (RecyclerView) rootView.findViewById(R.id.recycler_profes);
+        Farma_recycler.addOnItemTouchListener(new ClicklistenerFarma(getContext(),Farma_recycler,
+                new ClicklistenerFarma.OnItemClickListener(){
 
-        boton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                
-            }
-        });
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Toast.makeText(getContext(),String.valueOf(position),Toast.LENGTH_LONG).show();
+                    }
 
-        return view;
+                    @Override
+                    public void onItemLongClick(View view, int position) {
+
+                    }
+                }));
+        Farma_recycler.setHasFixedSize(true);
+        Farma_recycler.setItemViewCacheSize(10);
+        Farma_recycler.setDrawingCacheEnabled(true);
+        Farma_recycler.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        //MyAdapter adapter = new MyAdapter(new String[]{"Example One", "Example Two", "Example Three", "Example Four", "Example Five" , "Example Six" , "Example Seven"});
+        Farma_recycler.setAdapter(new AdapterFarma(true,getApps()));
+        Farma_recycler.setItemAnimator(new DefaultItemAnimator());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        Farma_recycler.setLayoutManager(layoutManager);
+
+        RecyclerView recycler2 = (RecyclerView) rootView.findViewById(R.id.recycler_profs);
+        recycler2.addOnItemTouchListener(new ClicklistenerFarma(getContext(),recycler2,
+                new ClicklistenerFarma.OnItemClickListener(){
+
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Toast.makeText(getContext(),String.valueOf(position),Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onItemLongClick(View view, int position) {
+
+                    }
+                }));
+        recycler2.setHasFixedSize(true);
+        recycler2.setItemViewCacheSize(10);
+        recycler2.setDrawingCacheEnabled(true);
+        recycler2.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        //MyAdapter adapter = new MyAdapter(new String[]{"Example One", "Example Two", "Example Three", "Example Four", "Example Five" , "Example Six" , "Example Seven"});
+        recycler2.setAdapter(new AdapterFarma(true,getApps()));
+        recycler2.setItemAnimator(new DefaultItemAnimator());
+        LinearLayoutManager layoutManagers = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        recycler2.setLayoutManager(layoutManagers);
+
+        return rootView;
+    }
+
+    private List<Farmacia> getApps(){
+
+        List<Farmacia> apps = new ArrayList<>();
+        apps.add(new Farmacia("Gooogle",R.drawable.cloud_off,4.5f));
+        apps.add(new Farmacia("Gmail",R.drawable.common_google_signin_btn_icon_dark_focused,3.5f));
+        apps.add(new Farmacia("Mail",R.drawable.ic_profile,2.5f));
+        apps.add(new Farmacia("Mail",R.drawable.ic_star,1.5f));
+        apps.add(new Farmacia("Mail",R.drawable.ic_profile,2.5f));
+        apps.add(new Farmacia("Gmail",R.drawable.common_google_signin_btn_icon_dark_focused,3.5f));
+        apps.add(new Farmacia("Mail",R.drawable.ic_exit,2.5f));
+        apps.add(new Farmacia("Gmail",R.drawable.ic_info,3.5f));
+        apps.add(new Farmacia("Gooogle",R.drawable.cloud_off,4.5f));
+        apps.add(new Farmacia(" Gmail",R.drawable.common_google_signin_btn_icon_dark_focused,3.5f));
+        apps.add(new Farmacia("Mail",R.drawable.ic_profile,2.5f));
+        apps.add(new Farmacia("Mail",R.drawable.ic_star,1.5f));
+        apps.add(new Farmacia("Mail",R.drawable.ic_profile,2.5f));
+        apps.add(new Farmacia("Gmail",R.drawable.common_google_signin_btn_icon_dark_focused,3.5f));
+        apps.add(new Farmacia("Mail",R.drawable.ic_exit,2.5f));
+        apps.add(new Farmacia("Gmail",R.drawable.ic_info,3.5f));
+
+        return apps;
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

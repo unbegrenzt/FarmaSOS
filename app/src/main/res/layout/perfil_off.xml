@@ -1,0 +1,37 @@
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-20-17 08:07 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 06-20-17 08:07 PM
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.unbegrenzt.fharmaapp.Fragments.perfil_off">
+
+    <ImageView
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:id="@+id/cloud"
+        android:src="@drawable/cloud_off"
+        android:layout_centerInParent="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/cloud"
+        android:layout_alignLeft="@+id/cloud"
+        android:id="@+id/aun"
+        android:text="@string/an"
+        android:textSize="@dimen/texto_subhead1_3A"/>
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/aun"
+        android:layout_alignLeft="@+id/aun" />
+
+</RelativeLayout>

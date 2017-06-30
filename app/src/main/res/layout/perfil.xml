@@ -5,18 +5,157 @@
   ~ Last modified 06-10-17 11:23 PM
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.unbegrenzt.fharmaapp.Fragments.Perfil">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/login"
-        android:layout_centerInParent="true"
-        android:background="@color/accent1"
-        android:text="login"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-</RelativeLayout>
+            <TextView
+                android:id="@+id/Id"
+                android:layout_marginTop="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jorge Luis Morales Centeno"
+                android:textColor="@color/color_no_seleccion"
+                android:layout_marginLeft="10dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+            <TextView
+                android:id="@+id/as"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cuenta Común"
+                android:layout_below="@+id/Id"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/color_no_seleccion"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+            <TextView
+                android:id="@+id/cambiar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cambiar"
+                android:textColor="?colorPrimary"
+                android:layout_toRightOf="@+id/as"
+                android:layout_below="@+id/Id"
+                android:layout_marginLeft="5dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+            <android.support.v7.widget.CardView
+                android:layout_below="@+id/cambiar"
+                android:id="@+id/sp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:elevation="@dimen/cardview_default_elevation">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_marginTop="10dp"
+                        android:id="@+id/Cardtitle1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lo más Buscado"
+                        android:textColor="@color/color_no_seleccion"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/recycler_profes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/Cardtitle1"/>
+                    <android.support.v4.widget.Space
+                        android:layout_width="3dp"
+                        android:layout_height="3dp"
+                        android:layout_below="@+id/recycler_profes"/>
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_below="@+id/sp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:elevation="@dimen/cardview_default_elevation">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_marginTop="10dp"
+                        android:id="@+id/Cardtitles"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lo nuevo"
+                        android:textColor="@color/color_no_seleccion"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/recycler_profs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/Cardtitles"/>
+
+                    <android.support.v4.widget.Space
+                        android:layout_width="3dp"
+                        android:layout_height="3dp"
+                        android:layout_below="@+id/recycler_profs"/>
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_below="@+id/sp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:elevation="@dimen/cardview_default_elevation">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_marginTop="10dp"
+                        android:id="@+id/Cardtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lo nuevo"
+                        android:textColor="@color/color_no_seleccion"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/recycler_prof"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/Cardtitle"/>
+                    <android.support.v4.widget.Space
+                        android:layout_width="3dp"
+                        android:layout_height="3dp"
+                        android:layout_below="@+id/recycler_prof"/>
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </RelativeLayout>
+</ScrollView>

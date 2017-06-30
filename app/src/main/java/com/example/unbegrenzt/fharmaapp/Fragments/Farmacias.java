@@ -18,27 +18,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.unbegrenzt.fharmaapp.Adapter.MyAdapter;
+import com.example.unbegrenzt.fharmaapp.Adapter.AdapterBannerCards;
+import com.example.unbegrenzt.fharmaapp.Adapter.Banners;
+import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
 
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link Farmacias.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link Farmacias#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class Farmacias extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -46,20 +35,9 @@ public class Farmacias extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Farmacias.
-     */
-    // TODO: Rename and change types and number of parameters
     public static Farmacias newInstance(String param1, String param2) {
         Farmacias fragment = new Farmacias();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,8 +46,8 @@ public class Farmacias extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            //mParam1 = getArguments().getString(ARG_PARAM1);
+            //mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -80,18 +58,31 @@ public class Farmacias extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.farmacias, container, false);
 
-        RecyclerView rv = (RecyclerView) rootView.findViewById(R.id.rv_recycler_view);
-        rv.setHasFixedSize(true);
-        MyAdapter adapter = new MyAdapter(new String[]{"Example One", "Example Two", "Example Three", "Example Four", "Example Five" , "Example Six" , "Example Seven"});
-        rv.setAdapter(adapter);
-        rv.setItemAnimator(new DefaultItemAnimator());
-        LinearLayoutManager layoutManager=new LinearLayoutManager(getContext());
-        rv.setLayoutManager(layoutManager);
+        RecyclerView CardItems = (RecyclerView) rootView.findViewById(R.id.recyclerCards);
+        CardItems.setHasFixedSize(true);
+        CardItems.setItemViewCacheSize(1);
+        CardItems.setDrawingCacheEnabled(true);
+        CardItems.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        //MyAdapter adapter = new MyAdapter(new String[]{"Example One", "Example Two", "Example Three", "Example Four", "Example Five" , "Example Six" , "Example Seven"});
+        CardItems.setAdapter(new AdapterBannerCards(getContext(),true,getCards()));
+        CardItems.setItemAnimator(new DefaultItemAnimator());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.VERTICAL, false);
+        CardItems.setLayoutManager(layoutManager);
 
         return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    private List<Banners> getCards(){
+
+        List<Banners> apps = new ArrayList<>();
+        apps.add(new Banners("Lo mas buscado", new RecyclerView(getContext())));
+        apps.add(new Banners("Lo mejor", new RecyclerView(getContext())));
+        apps.add(new Banners("Lo nuevo", new RecyclerView(getContext())));
+        return apps;
+
+    }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -115,16 +106,6 @@ public class Farmacias extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

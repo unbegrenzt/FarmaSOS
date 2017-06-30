@@ -7,16 +7,29 @@
 
 package com.example.unbegrenzt.fharmaapp.actividades;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
@@ -24,17 +37,28 @@ import com.example.unbegrenzt.fharmaapp.Fragments.Farmacias;
 import com.example.unbegrenzt.fharmaapp.Fragments.Map;
 import com.example.unbegrenzt.fharmaapp.Fragments.Perfil;
 import com.example.unbegrenzt.fharmaapp.Fragments.farmacos;
+import com.example.unbegrenzt.fharmaapp.Fragments.perfil_off;
 import com.example.unbegrenzt.fharmaapp.R;
-import com.facebook.CallbackManager;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+
+
 public class Navigation extends AppCompatActivity implements Farmacias.OnFragmentInteractionListener,
         Map.OnFragmentInteractionListener, farmacos.OnFragmentInteractionListener,
-            Perfil.OnFragmentInteractionListener,AHBottomNavigation.OnTabSelectedListener{
+            Perfil.OnFragmentInteractionListener,perfil_off.OnFragmentInteractionListener
+                ,AHBottomNavigation.OnTabSelectedListener{
 
     AHBottomNavigation bottomNavigation;
-    CallbackManager callbackManager;
+    Toolbar toolbar;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -45,13 +69,13 @@ public class Navigation extends AppCompatActivity implements Farmacias.OnFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        //se crea el toolbar
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle(getString(R.string.hom));
 
-        callbackManager = CallbackManager.Factory.create();
+        //callbackManager = CallbackManager.Factory.create();
         mAuth = FirebaseAuth.getInstance();
-
 
         bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnTabSelectedListener(this);
@@ -75,11 +99,86 @@ public class Navigation extends AppCompatActivity implements Farmacias.OnFragmen
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
+    public void login(String email, String password){
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(Navigation.this, "Fallo de conexión",
+                                    Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(Navigation.this, ";) bien",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
+    }
+
+    public void handleFacebookAccessToken(AccessToken token) {
+        Log.d("asdf", "handleFacebookAccessToken:" + token);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d("asdf", "signInWithCredential:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.w("asdf", "signInWithCredential", task.getException());
+                            Toast.makeText(Navigation.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
+    }
+
+    /*@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_farma, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }*/
+
+    @Override
     public void onStop(){
+        super.onStop();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
-        super.onStop();
     }
 
     @Override
@@ -114,6 +213,7 @@ public class Navigation extends AppCompatActivity implements Farmacias.OnFragmen
 
         // Manage titles
         bottomNavigation.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
+        bottomNavigation.setCurrentItem(0);
 
     }
 
@@ -142,9 +242,15 @@ public class Navigation extends AppCompatActivity implements Farmacias.OnFragmen
             setTitle(getString(R.string.farm));
 
         }else if (position == 3){
-
-            fragment = new Perfil();
-            setTitle(getString(R.string.per));
+            //si la persona se logea ser presenta su perfil en
+            //caso contrario se muestra un sms de que debe conectarse
+            if (isLoged) {
+                fragment = new Perfil();
+                setTitle(getString(R.string.per));
+            }else{
+                fragment = new perfil_off();
+                setTitle(getString(R.string.per));
+            }
 
         }
 
@@ -155,7 +261,18 @@ public class Navigation extends AppCompatActivity implements Farmacias.OnFragmen
         return true;
     }
 
+    public boolean isLog(boolean log) {
+        return this.isLoged = log;
+    }
+
+    public void refresh(){
+        bottomNavigation.setCurrentItem(3);
+        bottomNavigation.refresh();
+    }
+
     public boolean getloged(){
         return this.isLoged;
     }
+
+
 }

@@ -28,17 +28,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
-
 import com.example.unbegrenzt.fharmaapp.Fragments.Farmacias;
 import com.example.unbegrenzt.fharmaapp.R;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -50,13 +41,13 @@ import com.google.firebase.auth.FirebaseUser;
 public class menu extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Farmacias.OnFragmentInteractionListener {
 
-    CallbackManager callbackManager;
+    //CallbackManager callbackManager;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     //face boton
-    private LoginButton FaceButton;
+    //private LoginButton FaceButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +58,7 @@ public class menu extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-        callbackManager = CallbackManager.Factory.create();
+        /*callbackManager = CallbackManager.Factory.create();
         mAuth = FirebaseAuth.getInstance();
 
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -86,7 +77,7 @@ public class menu extends AppCompatActivity
                 }
                 // ...
             }
-        };
+        };*/
 
         /*FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -160,12 +151,12 @@ public class menu extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        //callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
 
 
-    private void handleFacebookAccessToken(AccessToken token) {
+    /*private void handleFacebookAccessToken(AccessToken token) {
 
         Log.i("asdf","Entre a face");
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
@@ -188,22 +179,22 @@ public class menu extends AppCompatActivity
                         // ...
                     }
                 });
-    }
+    }*/
 
     public void onStop(){
-        if (mAuthListener != null) {
+        /*if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
-        }
+        }*/
         super.onStop();
     }
 
     @Override
     public void onStart(){
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        //mAuth.addAuthStateListener(mAuthListener);
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -218,12 +209,12 @@ public class menu extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.layout_type) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -269,6 +260,6 @@ public class menu extends AppCompatActivity
     }
 
     public void csd(View view) {
-        FaceButton.performClick();
+        //FaceButton.performClick();
     }
 }

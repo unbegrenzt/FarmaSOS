@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="borde_boton">5px</dimen>
     <dimen name="dot_10dp">8dp</dimen>
     <dimen name="dot_sep_3dp">5dp</dimen>
     <dimen name="subheaders">150dp</dimen>
