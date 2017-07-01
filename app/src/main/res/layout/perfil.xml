@@ -16,12 +16,41 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="170dp"
+                android:id="@+id/banner"
+                android:src="@drawable/side_nav_bar"/>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profile"
+                        app:civ_fill_color="@color/color_de_texto"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:src="@drawable/ic_person"
+                        android:layout_marginTop="55dp"
+                        android:elevation="@dimen/cardview_compat_inset_shadow"
+                        android:layout_marginLeft="30dp"/>
+
+                </RelativeLayout>
+
+            </FrameLayout>
+
             <TextView
                 android:id="@+id/Id"
+                android:layout_below="@+id/banner"
                 android:layout_marginTop="15dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Jorge Luis Morales Centeno"
+                android:text="asdasdsa"
                 android:textColor="@color/color_no_seleccion"
                 android:layout_marginLeft="10dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>

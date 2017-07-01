@@ -14,18 +14,32 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.unbegrenzt.fharmaapp.Adapter.AdapterFarma;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.touchlistener.ClicklistenerFarma;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class Perfil extends Fragment {
@@ -65,6 +79,26 @@ public class Perfil extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.perfil, container, false);
+
+        //configurar la User interface conforme al usuario actual
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // Name, email address, and profile photo Url
+            TextView name = (TextView)rootView.findViewById(R.id.Id);
+            name.setText(user.getDisplayName());
+            //String name = user.getDisplayName();
+            //String email = user.getEmail();
+
+            //se carga ña imagen dentro de un cricular image view
+            ImageView profile = (ImageView)rootView.findViewById(R.id.profile);
+            Picasso.with(getApplicationContext()).load(user.getPhotoUrl())
+                    .error(R.drawable.ic_person).into(profile);
+
+            // The user's ID, unique to the Firebase project. Do NOT use this value to
+            // authenticate with your backend server, if you have one. Use
+            // FirebaseUser.getToken() instead.
+            String uid = user.getUid();
+        }
 
         RecyclerView Farma_recycler = (RecyclerView) rootView.findViewById(R.id.recycler_profes);
         Farma_recycler.addOnItemTouchListener(new ClicklistenerFarma(getContext(),Farma_recycler,
