@@ -18,8 +18,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
@@ -99,7 +102,8 @@ public class Perfil extends Fragment{
     int latitude; // latitude
     int longitude; // longitude
     boolean hay_location = false;
-
+    private LocationManager locationManager;
+    private LocationListener listener;
 
     private Switch hrs24;
     private GPSTracker gps;
@@ -141,12 +145,35 @@ public class Perfil extends Fragment{
         //capturar location
         location = (Button)rootView.findViewById(R.id.qwe);
 
-        location.setOnClickListener(new View.OnClickListener() {
+        locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+
+        listener = new LocationListener() {
             @Override
-            public void onClick(View v) {
+            public void onLocationChanged(Location location) {
+                Toast.makeText(getApplicationContext(),
+                        "\n " + location.getLongitude() + " " + location.getLatitude(),
+                        Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
 
             }
-        });
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+
+                Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(i);
+            }
+        };
+
+        configure_button();
 
         //captura de fecha y hora entrada
         bentrada = (Button) rootView.findViewById(R.id.Entrada);
@@ -233,6 +260,40 @@ public class Perfil extends Fragment{
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 10:
+                configure_button();
+                break;
+            default:
+                break;
+        }
+    }
+
+    void configure_button(){
+        // first check for permissions
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET}
+                        ,10);
+            }
+            return;
+        }
+        // this code won't execute IF permissions are not allowed, because in the line above there is return statement.
+        location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //noinspection MissingPermission
+                locationManager.requestLocationUpdates("gps", 5000, 0, listener);
+            }
+        });
     }
 
     //secrea el dialogo para la salida
