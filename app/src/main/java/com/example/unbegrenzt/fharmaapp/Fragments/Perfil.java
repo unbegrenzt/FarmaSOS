@@ -7,15 +7,23 @@
 
 package com.example.unbegrenzt.fharmaapp.Fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
@@ -23,17 +31,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
+import com.example.unbegrenzt.fharmaapp.Services.GPSTracker;
+import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -41,7 +64,7 @@ import java.util.List;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 
-public class Perfil extends Fragment {
+public class Perfil extends Fragment{
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -54,13 +77,32 @@ public class Perfil extends Fragment {
     public TextView textName, txtDirecc, txt_numero;
     public LatLng mipos;
     public ImageView logo;
-    Uri imageUri;
-    private Button bentrada,bsalida;
-    private int hora,minutos;
+    private Uri imageUri;
+    private Button bentrada, bsalida,location;
+    private int hora, minutos;
 
     private OnFragmentInteractionListener mListener;
     private TextView text_horaentrada;
     private TextView text_horasalida;
+    private boolean existphoto = false;
+
+    //campos enviados a firebase
+    private String name = "";
+    private String direcc = "";
+    private String numero = "";
+    private boolean is24hrs = false;
+    private String h_entrada = "";
+    private String h_salida = "";
+    private Uri photo;
+
+    //variables para la pos actual
+    int latitude; // latitude
+    int longitude; // longitude
+    boolean hay_location = false;
+
+
+    private Switch hrs24;
+    private GPSTracker gps;
 
     public Perfil() {
         // Required empty public constructor
@@ -90,15 +132,26 @@ public class Perfil extends Fragment {
         View rootView = inflater.inflate(R.layout.perfil, container, false);
 
         //se instancian las View de la cuenta_administrador
-        Button send = (Button)rootView.findViewById(R.id.valid);
-        textName = (TextView)rootView.findViewById(R.id.txt_nombre);
-        txtDirecc = (TextView)rootView.findViewById(R.id.txt_Dirección);
-        txt_numero = (TextView)rootView.findViewById(R.id.txt_telefono);
+        Button send = (Button) rootView.findViewById(R.id.valid);
+        textName = (TextView) rootView.findViewById(R.id.txt_nombre);
+        txtDirecc = (TextView) rootView.findViewById(R.id.txt_Dirección);
+        txt_numero = (TextView) rootView.findViewById(R.id.txt_telefono);
+
+
+        //capturar location
+        location = (Button)rootView.findViewById(R.id.qwe);
+
+        location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         //captura de fecha y hora entrada
-        bentrada = (Button)rootView.findViewById(R.id.Entrada);
-        bsalida = (Button)rootView.findViewById(R.id.Salida);
-        text_horaentrada = (TextView)rootView.findViewById(R.id.hora_entrada);
+        bentrada = (Button) rootView.findViewById(R.id.Entrada);
+        bsalida = (Button) rootView.findViewById(R.id.Salida);
+        text_horaentrada = (TextView) rootView.findViewById(R.id.hora_entrada);
         final Calendar c = Calendar.getInstance();
         // Current Hour
         hora = c.get(Calendar.HOUR_OF_DAY);
@@ -113,7 +166,7 @@ public class Perfil extends Fragment {
         });
 
         //captura de fecha y hora salida
-        text_horasalida = (TextView)rootView.findViewById(R.id.hora_salida);
+        text_horasalida = (TextView) rootView.findViewById(R.id.hora_salida);
         // Current Hour
         hora = c.get(Calendar.HOUR_OF_DAY);
         // Current Minute
@@ -126,11 +179,15 @@ public class Perfil extends Fragment {
             }
         });
 
+        //verifica si el local es 24 horas
+        hrs24 = (Switch) rootView.findViewById(R.id.hrs24);
+
         // set current time into output textview
-        updateTime(hora, minutos);
+        //updateTime(hora, minutos);
+        //updateTime2(hora,minutos);
 
         //logo de la foto de perfil
-        logo = (ImageView)rootView.findViewById(R.id.logo);
+        logo = (ImageView) rootView.findViewById(R.id.logo);
         logo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,22 +203,23 @@ public class Perfil extends Fragment {
         });
 
 
+
         //configurar la User interface conforme al usuario actual
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             // Name, email address, and profile photo Url
-            TextView name = (TextView)rootView.findViewById(R.id.Id);
+            TextView name = (TextView) rootView.findViewById(R.id.Id);
             name.setText(user.getDisplayName());
             //String name = user.getDisplayName();
             //String email = user.getEmail();
 
             //se carga ña imagen dentro de un cricular image view
-            ImageView profile = (ImageView)rootView.findViewById(R.id.profile);
+            ImageView profile = (ImageView) rootView.findViewById(R.id.profile);
             Picasso.with(getApplicationContext()).load(user.getPhotoUrl())
                     .error(R.drawable.ic_person).placeholder(R.drawable.ic_person).into(profile);
 
             //se carga la cover foto
-            ImageView banner = (ImageView)rootView.findViewById(R.id.banner);
+            ImageView banner = (ImageView) rootView.findViewById(R.id.banner);
 
             Picasso.with(getApplicationContext()).load("https://assets.vg247.it/current//2015/03/" +
                     "video-games-black-broken-sony-console-crash-playstation-destroyed-crush-dualsh" +
@@ -204,6 +262,8 @@ public class Perfil extends Fragment {
         }
 
     };
+
+
 
     private void updateTime2(int hora, int mins) {
         String timeSet = "";
@@ -302,6 +362,7 @@ public class Perfil extends Fragment {
             imageUri = data.getData();
             Picasso.with(getApplicationContext()).load(imageUri).placeholder(R.drawable.ic_add)
                     .error(R.drawable.ic_add).into(logo);
+            existphoto = true;
         }else{
             Toast.makeText(getApplicationContext(),"Debe seleccionar una imagen",Toast.LENGTH_LONG)
                     .show();
@@ -318,14 +379,24 @@ public class Perfil extends Fragment {
         if (!validate()) {
             return;
         }
+        if(is24hrs){
+
+        }else{
+            /*DatabaseReference databaseArtists;
+            databaseArtists = FirebaseDatabase.getInstance().getReference("artists");
+            Farmacia = new*/
+        }
     }
 
     public boolean validate() {
         boolean valid = true;
 
-        String name = textName.getText().toString();
-        String direcc = txtDirecc.getText().toString();
-        String numero = txt_numero.getText().toString();
+        name = textName.getText().toString();
+        direcc = txtDirecc.getText().toString();
+        numero = txt_numero.getText().toString();
+        is24hrs = hrs24.isChecked();
+        h_entrada = text_horaentrada.getText().toString();
+        h_salida = text_horasalida.getText().toString();
 
         if (name.isEmpty() || name.length() < 3) {
             textName.setError(geterrorColor(getString(R.string.least), R.color.icons1));
@@ -349,9 +420,38 @@ public class Perfil extends Fragment {
             txt_numero.setError(null);
         }
 
+        //si no es 24 se pider el turno
+        if((h_entrada.compareTo("00:00") == 0)
+                || (h_salida.compareTo("00:00") == 0)){
 
+            Toast.makeText(getApplicationContext(),"no puede quedar vacio el turno"
+                    ,Toast.LENGTH_LONG).show();
+            valid = false;
+        }
+        if(!(h_entrada.contains("AM"))){
+            Toast.makeText(getApplicationContext(),"primero AM luego PM en el turno"
+                    ,Toast.LENGTH_LONG).show();
+            valid = false;
+        }
+
+        if(!existphoto){
+            Toast.makeText(getApplicationContext(),"Ingrese un logo"
+                    ,Toast.LENGTH_LONG).show();
+            valid = false;
+        }
+
+        if(!hay_location){
+            Toast.makeText(getApplicationContext(),"Envienos su ubicación"
+                    ,Toast.LENGTH_LONG).show();
+            valid = false;
+        }
 
         return valid;
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
     }
 
     public SpannableStringBuilder geterrorColor(String estring, int ecolor){
@@ -362,7 +462,7 @@ public class Perfil extends Fragment {
         return ssbuilder;
     }
 
-    private List<Farmacia> getApps(){
+    /*private List<Farmacia> getApps(){
 
         List<Farmacia> apps = new ArrayList<>();
         apps.add(new Farmacia("Gooogle",R.drawable.cloud_off,4.5f));
@@ -384,7 +484,7 @@ public class Perfil extends Fragment {
 
         return apps;
 
-    }
+    }*/
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
