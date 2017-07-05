@@ -84,6 +84,17 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/cuentaComun"
+                android:layout_below="@+id/cambiar"
+                android:visibility="gone">
+
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:id="@+id/administrador"
                 android:layout_below="@+id/cambiar">
 

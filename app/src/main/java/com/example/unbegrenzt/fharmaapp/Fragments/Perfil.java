@@ -13,20 +13,17 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.telephony.TelephonyManager;
-import android.telephony.gsm.GsmCellLocation;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
@@ -39,35 +36,37 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
-import com.example.unbegrenzt.fharmaapp.Services.GPSTracker;
-import com.google.android.gms.common.api.BooleanResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
+import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Date;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 
-public class Perfil extends Fragment{
+public class Perfil extends Fragment implements OnMapReadyCallback,
+        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -99,14 +98,82 @@ public class Perfil extends Fragment{
     private Uri photo;
 
     //variables para la pos actual
-    int latitude; // latitude
-    int longitude; // longitude
     boolean hay_location = false;
-    private LocationManager locationManager;
-    private LocationListener listener;
+    /**
+     * variable que almacena el numero del caso que contiene los resultados a la peticion de enceder
+     * gps
+     */
+    private final static int REQUEST_LOCATION = 199;
+    /**
+     * Objeto que contiene el mapa de google
+     */
+    private GoogleMap mMap;
+    /**
+     * Objeto que contiene la barra de busqueda
+     */
+    private PlaceAutocompleteFragment autocompleteFragment;
+    /**
+     * Marker que muestra las actualizaciones de ubicacion del usuario
+     */
+    private Marker MiUbicacion;
+    /**
+     * Numero enlazado ala caja de dialogo para configurar el gps.
+     */
+    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
+    /**
+     * El intervalo deseado para actualizaciones de ubicación. Inexacta. Las actualizaciones pueden
+     * ser más o menos muy frecuentes.
+     */
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 6000;
+    /**
+     * el intervalo de tiempo más rapido para las actualizaciones de ubicación
+     */
+    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 3000;
+    /**
+     * variables "clave" para almacenar el estado de la actividad en el bundle
+     */
+    protected final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
+    protected final static String KEY_LOCATION = "location";
+    protected final static String KEY_LAST_UPDATED_TIME_STRING = "last-updated-time-string";
+    /**
+     * provee el punto de acceso a la Google Play services.
+     */
+    protected GoogleApiClient mGoogleApiClient;
+    /**
+     * Almacena parámetros de peticiones al FusedLocationProviderApi.
+     */
+    protected LocationRequest mLocationRequest;
+    /**
+     * Almacena los tipos de servicios de localización interesados en el cliente que se está
+     * utilizando. Se utiliza para determinar la configuración, para comprobar el si el
+     * dispositivo tiene una configuración óptima ubicación.
+     */
+    protected LocationSettingsRequest mLocationSettingsRequest;
+    /**
+     * Posee los datos de la ubicacion actual
+     */
+    protected Location mCurrentLocation;
+
+    /**
+     * Realiza un seguimiento del estado de las actualizaciones de solicitud de ubicación
+     */
+    protected Boolean mRequestingLocationUpdates;
+    /**
+     * El tiempo en que se actualiza la ubicación y se representada como una cadena.
+     */
+    protected String mLastUpdateTime;
+
+    //our database reference object
+    DatabaseReference databaseArtists;
+
+    /**
+     * fin de declaracion de las variables e inicio de los metodos de la activity
+     */
 
     private Switch hrs24;
-    private GPSTracker gps;
+    private double latitude;
+    private double longitud;
+    private boolean enabled_gps = false;
 
     public Perfil() {
         // Required empty public constructor
@@ -131,6 +198,53 @@ public class Perfil extends Fragment{
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+        updateUI();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+        }
+    }
+
+    protected void stopLocationUpdates() {
+        // It is a good practice to remove location requests when the activity is in a paused or
+        // stopped state. Doing so helps battery performance and is especially
+        // recommended in applications that request frequent location updates.
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient,
+                this
+        ).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                mRequestingLocationUpdates = false;
+            }
+        });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.perfil, container, false);
@@ -141,39 +255,36 @@ public class Perfil extends Fragment{
         txtDirecc = (TextView) rootView.findViewById(R.id.txt_Dirección);
         txt_numero = (TextView) rootView.findViewById(R.id.txt_telefono);
 
+        // incializamos variables de localizacion
+        mRequestingLocationUpdates = false;
+        mLastUpdateTime = "";
+
+        // actualizamos a partir de un instancia guardada
+        updateValuesFromBundle(savedInstanceState);
+
+        // construimos el cliente desde la api en google
+        // creamos una peticion de ubicacion
+        // se instancia el constructor de las peticiones de ubicacion
+        buildGoogleApiClient();
+        createLocationRequest();
+        buildLocationSettingsRequest();
 
         //capturar location
         location = (Button)rootView.findViewById(R.id.qwe);
 
-        locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-
-        listener = new LocationListener() {
+        location.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onLocationChanged(Location location) {
-                Toast.makeText(getApplicationContext(),
-                        "\n " + location.getLongitude() + " " + location.getLatitude(),
-                        Toast.LENGTH_LONG).show();
+            public void onClick(View view) {
+                if (enabled_gps){
+                    updateLocationUI();
+                    Toast.makeText(getApplicationContext(),"Ubicación tomada con exito",
+                            Toast.LENGTH_LONG).show();
+                    hay_location = true;
+                }else{
+                    check_gps();
+                }
             }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-                Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(i);
-            }
-        };
-
-        configure_button();
+        });
 
         //captura de fecha y hora entrada
         bentrada = (Button) rootView.findViewById(R.id.Entrada);
@@ -262,38 +373,175 @@ public class Perfil extends Fragment{
         return rootView;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        switch (requestCode){
-            case 10:
-                configure_button();
-                break;
-            default:
-                break;
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
+        savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
+        savedInstanceState.putString(KEY_LAST_UPDATED_TIME_STRING, mLastUpdateTime);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+
+        mGoogleApiClient = new GoogleApiClient
+                .Builder(getApplicationContext())
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+    }
+
+    protected void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        mLocationSettingsRequest = builder.build();
+    }
+
+    protected void createLocationRequest() {
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    private void updateValuesFromBundle(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            // Actualiza el valor de mRequestingLocationUpdates de el Bundle, y asegurate de que
+            // el inicio de las actualizaciones y termino de actualizaciones en algun boton
+            // son habilitadas o deshabilitadas.
+            if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
+                mRequestingLocationUpdates = savedInstanceState.getBoolean(
+                        KEY_REQUESTING_LOCATION_UPDATES);
+            }
+
+            // Actualiza el valor de mCurrentLocation de el Bundle y actualiza la UI para mostrar la
+            // latitude y longitude correcta.
+            if (savedInstanceState.keySet().contains(KEY_LOCATION)) {
+                // ya que KEY_LOCATION fue encontrada en el Bundle, nosotros debemos asegurarnos
+                // que mCurrentLocation no es null.
+                mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+            }
+
+            // Actualiza el valor de mLastUpdateTime de el Bundle y actualiza el UI.
+            if (savedInstanceState.keySet().contains(KEY_LAST_UPDATED_TIME_STRING)) {
+                mLastUpdateTime = savedInstanceState.getString(KEY_LAST_UPDATED_TIME_STRING);
+            }
+            updateUI();
         }
     }
 
-    void configure_button(){
-        // first check for permissions
-        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.INTERNET}
-                        ,10);
-            }
-            return;
-        }
-        // this code won't execute IF permissions are not allowed, because in the line above there is return statement.
-        location.setOnClickListener(new View.OnClickListener() {
+    protected void startLocationUpdates() {
+        LocationServices.SettingsApi.checkLocationSettings(
+                mGoogleApiClient,
+                mLocationSettingsRequest
+        ).setResultCallback(new ResultCallback<LocationSettingsResult>() {
             @Override
-            public void onClick(View view) {
-                //noinspection MissingPermission
-                locationManager.requestLocationUpdates("gps", 5000, 0, listener);
+            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+                final Status status = locationSettingsResult.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return;
+                        }
+                        LocationServices.FusedLocationApi.requestLocationUpdates(
+                                mGoogleApiClient, mLocationRequest,Perfil.this);
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+
+                        try {
+                            // Show the dialog by calling startResolutionForResult(), and check the
+                            // result in onActivityResult().
+                            status.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException ignored) {
+
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        String errorMessage = "Location settings are inadequate, and cannot be " +
+                                "fixed here. Fix in Settings.";
+                        Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+                        mRequestingLocationUpdates = false;
+                }
+                updateUI();
             }
         });
+
+    }
+
+    private void check_gps(){
+        LocationServices.SettingsApi.checkLocationSettings(
+                mGoogleApiClient,
+                mLocationSettingsRequest
+        ).setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+                final Status status = locationSettingsResult.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return;
+                        }
+                        enabled_gps = true;
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+
+                        try {
+                            // Show the dialog by calling startResolutionForResult(), and check the
+                            // result in onActivityResult().
+                            status.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException ignored) {
+
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        String errorMessage = "Location settings are inadequate, and cannot be " +
+                                "fixed here. Fix in Settings.";
+                        Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+                        mRequestingLocationUpdates = false;
+                }
+                updateUI();
+            }
+        });
+    }
+
+    private void updateUI() {
+        updateLocationUI();
+    }
+
+    private void updateLocationUI() {
+        if (mCurrentLocation != null) {
+
+            /*
+             * @param mCurrentLocation es la variable que posee todos los datos del
+             * usuario y aqui se actualizan
+             *
+             * @<code>
+             *  mLatitudeTextView.setText(String.format("%s: %f", mLatitudeLabel,
+             *mCurrentLocation.getLatitude()));
+             * mLongitudeTextView.setText(String.format("%s: %f", mLongitudeLabel,
+             *      mCurrentLocation.getLongitude()));
+             * mLastUpdateTimeTextView.setText(String.format("%s: %s", mLastUpdateTimeLabel,
+             *      mLastUpdateTime));
+             * </code>
+             * eso seria un buen ejemplo
+             */
+            latitude = mCurrentLocation.getLatitude();
+            longitud = mCurrentLocation.getLongitude();
+        }
     }
 
     //secrea el dialogo para la salida
@@ -419,6 +667,7 @@ public class Perfil extends Fragment{
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if(resultCode == Activity.RESULT_OK && requestCode == PICK_IMAGE && data != null){
             imageUri = data.getData();
             Picasso.with(getApplicationContext()).load(imageUri).placeholder(R.drawable.ic_add)
@@ -427,6 +676,34 @@ public class Perfil extends Fragment{
         }else{
             Toast.makeText(getApplicationContext(),"Debe seleccionar una imagen",Toast.LENGTH_LONG)
                     .show();
+        }
+
+        //final LocationSettingsStates states = LocationSettingsStates.fromIntent(data);
+        switch (requestCode)
+        {
+            case REQUEST_LOCATION:
+                switch (resultCode)
+                {
+                    case Activity.RESULT_OK:
+                    {
+                        // El usuario nos concedio el permiso
+                        Toast.makeText(getApplicationContext(),
+                                "Operación exitosa", Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    case Activity.RESULT_CANCELED:
+                    {
+                        // El usuario no otorgo el permiso
+                        Toast.makeText(getApplicationContext(),
+                                "Operación no otorgada", Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    default:
+                    {
+                        break;
+                    }
+                }
+                break;
         }
 
     }
@@ -502,17 +779,12 @@ public class Perfil extends Fragment{
         }
 
         if(!hay_location){
-            Toast.makeText(getApplicationContext(),"Envienos su ubicación"
+            Toast.makeText(getApplicationContext(),"Envíenos la ubicación del local"
                     ,Toast.LENGTH_LONG).show();
             valid = false;
         }
 
         return valid;
-    }
-
-    @Override
-    public void onStop(){
-        super.onStop();
     }
 
     public SpannableStringBuilder geterrorColor(String estring, int ecolor){
@@ -568,6 +840,60 @@ public class Perfil extends Fragment{
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (mCurrentLocation == null) {
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(getApplicationContext(),
+                            Manifest.permission.ACCESS_COARSE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+            updateLocationUI();
+        }
+
+        /*
+         * cuando se conecte comienzo a recibir actualizaciones
+         */
+        if (!mRequestingLocationUpdates) {
+            mRequestingLocationUpdates = true;
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast toast = Toast.makeText(getApplicationContext(), "Sin conexión", Toast.LENGTH_LONG);
+        toast.show();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        updateLocationUI();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
     }
 
     public interface OnFragmentInteractionListener {
