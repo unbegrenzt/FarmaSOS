@@ -60,6 +60,7 @@ public class Perfil extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private TextView text_horaentrada;
+    private TextView text_horasalida;
 
     public Perfil() {
         // Required empty public constructor
@@ -94,7 +95,7 @@ public class Perfil extends Fragment {
         txtDirecc = (TextView)rootView.findViewById(R.id.txt_Dirección);
         txt_numero = (TextView)rootView.findViewById(R.id.txt_telefono);
 
-        //captura de fecha y hora
+        //captura de fecha y hora entrada
         bentrada = (Button)rootView.findViewById(R.id.Entrada);
         bsalida = (Button)rootView.findViewById(R.id.Salida);
         text_horaentrada = (TextView)rootView.findViewById(R.id.hora_entrada);
@@ -108,6 +109,20 @@ public class Perfil extends Fragment {
             @Override
             public void onClick(View v) {
                 createDialog(TIME_DIALOG_ID).show();
+            }
+        });
+
+        //captura de fecha y hora salida
+        text_horasalida = (TextView)rootView.findViewById(R.id.hora_salida);
+        // Current Hour
+        hora = c.get(Calendar.HOUR_OF_DAY);
+        // Current Minute
+        minutos = c.get(Calendar.MINUTE);
+
+        bsalida.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createDialog2(TIME_DIALOG_ID).show();
             }
         });
 
@@ -160,6 +175,61 @@ public class Perfil extends Fragment {
         }
 
         return rootView;
+    }
+
+    //secrea el dialogo para la salida
+    private Dialog createDialog2(int timeDialogId) {
+        switch (timeDialogId) {
+            case TIME_DIALOG_ID:
+
+                // set time picker as current time
+                return new TimePickerDialog(getActivity(), timePickerListener2, hora, minutos, false);
+
+        }
+        return null;
+    }
+
+    //Listener de la salida
+    private TimePickerDialog.OnTimeSetListener timePickerListener2 = new TimePickerDialog.OnTimeSetListener() {
+
+
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minutes) {
+            // TODO Auto-generated method stub
+            hora   = hourOfDay;
+            minutos = minutes;
+
+            updateTime2(hora,minutos);
+
+        }
+
+    };
+
+    private void updateTime2(int hora, int mins) {
+        String timeSet = "";
+        if (hora > 12) {
+            hora -= 12;
+            timeSet = "PM";
+        } else if (hora == 0) {
+            hora += 12;
+            timeSet = "AM";
+        } else if (hora == 12)
+            timeSet = "PM";
+        else
+            timeSet = "AM";
+
+
+        String minutes = "";
+        if (mins < 10)
+            minutes = "0" + mins;
+        else
+            minutes = String.valueOf(mins);
+
+        // Append in a StringBuilder
+        String aTime = new StringBuilder().append(hora).append(':')
+                .append(minutes).append(" ").append(timeSet).toString();
+
+        text_horasalida.setText(aTime);
     }
 
     //listener de la hora
