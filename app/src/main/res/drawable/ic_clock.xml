@@ -1,0 +1,11 @@
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 07-02-17 02:06 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 07-02-17 02:06 PM
+  -->
+
+<vector android:height="48dp" android:viewportHeight="97"
+    android:viewportWidth="97" android:width="48dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#000" android:name="Forma 1" android:pathData="m47.99 16.8c-2.21 0 -3.99 1.79 -3.99 3.99v30.2c0 2.21 1.79 3.99 3.99 3.99h25.79c2.21 0 3.99 -1.79 3.99 -3.99c0 -2.21 -1.79 -3.99 -3.99 -3.99h-21.8v-26.21c0 -2.21 -1.79 -3.99 -3.99 -3.99zm0.51 -6.48c21.05 0 38.18 17.13 38.18 38.18c0 21.05 -17.13 38.18 -38.18 38.18c-21.05 0 -38.18 -17.13 -38.18 -38.18c0 -21.05 17.13 -38.18 38.18 -38.18zm0 -10.32c-26.74 0 -48.5 21.76 -48.5 48.5c0 26.74 21.76 48.5 48.5 48.5c26.74 0 48.5 -21.76 48.5 -48.5c0 -26.74 -21.76 -48.5 -48.5 -48.5z"/>
+</vector>

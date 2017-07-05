@@ -1,8 +1,8 @@
 /*
- * Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-10-17 11:31 PM
+ * Created  by Unbegrenzt for Jorge Luis Morales Centeno on 07-04-17 11:47 AM
  * Copyright (c) 2017. All rights reserved.
  *
- * Last modified 06-10-17 11:31 PM
+ * Last modified 07-04-17 11:46 AM
  */
 
 package com.example.unbegrenzt.fharmaapp.Fragments;
@@ -71,7 +71,6 @@ public class Map extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.map, container, false);
     }
 
@@ -80,6 +79,12 @@ public class Map extends Fragment {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
     }
 
     @Override
@@ -99,7 +104,7 @@ public class Map extends Fragment {
         mListener = null;
     }
 
-    /**
+     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that

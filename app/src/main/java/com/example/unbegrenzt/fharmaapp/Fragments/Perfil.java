@@ -7,36 +7,35 @@
 
 package com.example.unbegrenzt.fharmaapp.Fragments;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.unbegrenzt.fharmaapp.Adapter.AdapterFarma;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
-import com.example.unbegrenzt.fharmaapp.touchlistener.ClicklistenerFarma;
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
-
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -46,12 +45,21 @@ public class Perfil extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int PICK_IMAGE = 100;
+    private static final int TIME_DIALOG_ID = 1111;
 
 
     private String mParam1;
     private String mParam2;
+    public TextView textName, txtDirecc, txt_numero;
+    public LatLng mipos;
+    public ImageView logo;
+    Uri imageUri;
+    private Button bentrada,bsalida;
+    private int hora,minutos;
 
     private OnFragmentInteractionListener mListener;
+    private TextView text_horaentrada;
 
     public Perfil() {
         // Required empty public constructor
@@ -80,6 +88,49 @@ public class Perfil extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.perfil, container, false);
 
+        //se instancian las View de la cuenta_administrador
+        Button send = (Button)rootView.findViewById(R.id.valid);
+        textName = (TextView)rootView.findViewById(R.id.txt_nombre);
+        txtDirecc = (TextView)rootView.findViewById(R.id.txt_Dirección);
+        txt_numero = (TextView)rootView.findViewById(R.id.txt_telefono);
+
+        //captura de fecha y hora
+        bentrada = (Button)rootView.findViewById(R.id.Entrada);
+        bsalida = (Button)rootView.findViewById(R.id.Salida);
+        text_horaentrada = (TextView)rootView.findViewById(R.id.hora_entrada);
+        final Calendar c = Calendar.getInstance();
+        // Current Hour
+        hora = c.get(Calendar.HOUR_OF_DAY);
+        // Current Minute
+        minutos = c.get(Calendar.MINUTE);
+
+        bentrada.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createDialog(TIME_DIALOG_ID).show();
+            }
+        });
+
+        // set current time into output textview
+        updateTime(hora, minutos);
+
+        //logo de la foto de perfil
+        logo = (ImageView)rootView.findViewById(R.id.logo);
+        logo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OpenGallery();
+            }
+        });
+
+        send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                send_farmacia();
+            }
+        });
+
+
         //configurar la User interface conforme al usuario actual
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -92,7 +143,15 @@ public class Perfil extends Fragment {
             //se carga ña imagen dentro de un cricular image view
             ImageView profile = (ImageView)rootView.findViewById(R.id.profile);
             Picasso.with(getApplicationContext()).load(user.getPhotoUrl())
-                    .error(R.drawable.ic_person).into(profile);
+                    .error(R.drawable.ic_person).placeholder(R.drawable.ic_person).into(profile);
+
+            //se carga la cover foto
+            ImageView banner = (ImageView)rootView.findViewById(R.id.banner);
+
+            Picasso.with(getApplicationContext()).load("https://assets.vg247.it/current//2015/03/" +
+                    "video-games-black-broken-sony-console-crash-playstation-destroyed-crush-dualsh" +
+                    "ock-gamepad-controller_www.wall321.com_71.jpg").placeholder(R.drawable.load)
+                    .error(R.drawable.side_nav_bar).into(banner);
 
             // The user's ID, unique to the Firebase project. Do NOT use this value to
             // authenticate with your backend server, if you have one. Use
@@ -100,57 +159,137 @@ public class Perfil extends Fragment {
             String uid = user.getUid();
         }
 
-        RecyclerView Farma_recycler = (RecyclerView) rootView.findViewById(R.id.recycler_profes);
-        Farma_recycler.addOnItemTouchListener(new ClicklistenerFarma(getContext(),Farma_recycler,
-                new ClicklistenerFarma.OnItemClickListener(){
-
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Toast.makeText(getContext(),String.valueOf(position),Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onItemLongClick(View view, int position) {
-
-                    }
-                }));
-        Farma_recycler.setHasFixedSize(true);
-        Farma_recycler.setItemViewCacheSize(10);
-        Farma_recycler.setDrawingCacheEnabled(true);
-        Farma_recycler.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        //MyAdapter adapter = new MyAdapter(new String[]{"Example One", "Example Two", "Example Three", "Example Four", "Example Five" , "Example Six" , "Example Seven"});
-        Farma_recycler.setAdapter(new AdapterFarma(true,getApps()));
-        Farma_recycler.setItemAnimator(new DefaultItemAnimator());
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
-                LinearLayoutManager.HORIZONTAL, false);
-        Farma_recycler.setLayoutManager(layoutManager);
-
-        RecyclerView recycler2 = (RecyclerView) rootView.findViewById(R.id.recycler_profs);
-        recycler2.addOnItemTouchListener(new ClicklistenerFarma(getContext(),recycler2,
-                new ClicklistenerFarma.OnItemClickListener(){
-
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Toast.makeText(getContext(),String.valueOf(position),Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onItemLongClick(View view, int position) {
-
-                    }
-                }));
-        recycler2.setHasFixedSize(true);
-        recycler2.setItemViewCacheSize(10);
-        recycler2.setDrawingCacheEnabled(true);
-        recycler2.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        //MyAdapter adapter = new MyAdapter(new String[]{"Example One", "Example Two", "Example Three", "Example Four", "Example Five" , "Example Six" , "Example Seven"});
-        recycler2.setAdapter(new AdapterFarma(true,getApps()));
-        recycler2.setItemAnimator(new DefaultItemAnimator());
-        LinearLayoutManager layoutManagers = new LinearLayoutManager(getContext(),
-                LinearLayoutManager.HORIZONTAL, false);
-        recycler2.setLayoutManager(layoutManagers);
-
         return rootView;
+    }
+
+    //listener de la hora
+    private TimePickerDialog.OnTimeSetListener timePickerListener = new TimePickerDialog.OnTimeSetListener() {
+
+
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minutes) {
+            // TODO Auto-generated method stub
+            hora   = hourOfDay;
+            minutos = minutes;
+
+            updateTime(hora,minutos);
+
+        }
+
+    };
+
+    private static String utilTime(int value) {
+
+        if (value < 10)
+            return "0" + String.valueOf(value);
+        else
+            return String.valueOf(value);
+    }
+
+    private void updateTime(int hours, int mins) {
+
+        String timeSet = "";
+        if (hours > 12) {
+            hours -= 12;
+            timeSet = "PM";
+        } else if (hours == 0) {
+            hours += 12;
+            timeSet = "AM";
+        } else if (hours == 12)
+            timeSet = "PM";
+        else
+            timeSet = "AM";
+
+
+        String minutes = "";
+        if (mins < 10)
+            minutes = "0" + mins;
+        else
+            minutes = String.valueOf(mins);
+
+        // Append in a StringBuilder
+        String aTime = new StringBuilder().append(hours).append(':')
+                .append(minutes).append(" ").append(timeSet).toString();
+
+        text_horaentrada.setText(aTime);
+    }
+
+    public Dialog createDialog(int id) {
+        switch (id) {
+            case TIME_DIALOG_ID:
+
+                // set time picker as current time
+                return new TimePickerDialog(getActivity(), timePickerListener, hora, minutos, false);
+
+        }
+        return null;
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == Activity.RESULT_OK && requestCode == PICK_IMAGE && data != null){
+            imageUri = data.getData();
+            Picasso.with(getApplicationContext()).load(imageUri).placeholder(R.drawable.ic_add)
+                    .error(R.drawable.ic_add).into(logo);
+        }else{
+            Toast.makeText(getApplicationContext(),"Debe seleccionar una imagen",Toast.LENGTH_LONG)
+                    .show();
+        }
+
+    }
+
+    private void OpenGallery(){
+        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        startActivityForResult(gallery, PICK_IMAGE);
+    }
+
+    public void send_farmacia(){
+        if (!validate()) {
+            return;
+        }
+    }
+
+    public boolean validate() {
+        boolean valid = true;
+
+        String name = textName.getText().toString();
+        String direcc = txtDirecc.getText().toString();
+        String numero = txt_numero.getText().toString();
+
+        if (name.isEmpty() || name.length() < 3) {
+            textName.setError(geterrorColor(getString(R.string.least), R.color.icons1));
+            valid = false;
+        } else {
+            textName.setError(null);
+        }
+
+        //!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        if (direcc.isEmpty() || direcc.length() < 3) {
+            txtDirecc.setError(geterrorColor("Este campo es obligatorio",R.color.icons1));
+            valid = false;
+        } else {
+            txtDirecc.setError(null);
+        }
+
+        if (numero.isEmpty() || numero.length() < 3) {
+            txt_numero.setError(geterrorColor("Este campo es obligatorio",R.color.icons1));
+            valid = false;
+        } else {
+            txt_numero.setError(null);
+        }
+
+
+
+        return valid;
+    }
+
+    public SpannableStringBuilder geterrorColor(String estring, int ecolor){
+        ForegroundColorSpan fgcspan = new ForegroundColorSpan(getResources().getColor(ecolor));
+        SpannableStringBuilder ssbuilder = new SpannableStringBuilder(estring);
+        ssbuilder.setSpan(fgcspan, 0, estring.length(), 0);
+
+        return ssbuilder;
     }
 
     private List<Farmacia> getApps(){
@@ -177,7 +316,6 @@ public class Perfil extends Fragment {
 
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);

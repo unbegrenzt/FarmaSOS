@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.unbegrenzt.fharmaapp.Objects.Banners;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
 
@@ -28,11 +29,11 @@ import java.util.List;
 
 public class AdapterBannerCards extends RecyclerView.Adapter<AdapterBannerCards.ViewHolder> {
 
-    private List<com.example.unbegrenzt.fharmaapp.Adapter.Banners> mApps;
+    private List<Banners> mApps;
     private boolean mPager;
     private Context context;
 
-    public AdapterBannerCards(Context context, boolean pager, List<com.example.unbegrenzt.fharmaapp.Adapter.Banners> banners){
+    public AdapterBannerCards(Context context, boolean pager, List<Banners> banners){
         mApps = banners;
         mPager = pager;
         this.context = context;
@@ -55,7 +56,7 @@ public class AdapterBannerCards extends RecyclerView.Adapter<AdapterBannerCards.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position){
-        com.example.unbegrenzt.fharmaapp.Adapter.Banners app = mApps.get(position);
+        Banners app = mApps.get(position);
         holder.Title.setText(app.getTitle());
         holder.recycler.setHasFixedSize(true);
         holder.recycler.setItemViewCacheSize(10);

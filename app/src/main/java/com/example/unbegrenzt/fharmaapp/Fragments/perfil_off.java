@@ -15,7 +15,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.actividades.Navigation;
@@ -24,8 +23,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-
-import org.w3c.dom.Text;
 
 
 /**
@@ -37,8 +34,6 @@ import org.w3c.dom.Text;
  * create an instance of this fragment.
  */
 public class perfil_off extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -122,7 +117,7 @@ public class perfil_off extends Fragment {
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-
+        super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
     }

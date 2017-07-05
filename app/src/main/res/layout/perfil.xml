@@ -5,22 +5,27 @@
   ~ Last modified 06-10-17 11:23 PM
   -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:fitsSystemWindows="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.unbegrenzt.fharmaapp.Fragments.Perfil">
 
-        <RelativeLayout
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="170dp"
                 android:id="@+id/banner"
-                android:src="@drawable/side_nav_bar"/>
+                android:background="@drawable/side_nav_bar"/>
 
             <FrameLayout
                 android:layout_width="wrap_content"
@@ -76,115 +81,236 @@
                 android:layout_marginLeft="5dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
-            <android.support.v7.widget.CardView
-                android:layout_below="@+id/cambiar"
-                android:id="@+id/sp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
+            <RelativeLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:elevation="@dimen/cardview_default_elevation">
+                android:id="@+id/administrador"
+                android:layout_below="@+id/cambiar">
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_pharmacy"
+                    android:id="@+id/uid"/>
 
-                    <TextView
-                        android:layout_marginTop="10dp"
-                        android:id="@+id/Cardtitle1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Lo más Buscado"
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/uid"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/as1"
+                    android:layout_marginBottom="8dp">
+
+                    <EditText android:id="@+id/txt_nombre"
+                        android:layout_width="match_parent"
                         android:textColor="@color/color_no_seleccion"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
-
-                    <android.support.v7.widget.RecyclerView
-                        android:layout_marginTop="5dp"
-                        android:id="@+id/recycler_profes"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/Cardtitle1"/>
-                    <android.support.v4.widget.Space
-                        android:layout_width="3dp"
-                        android:layout_height="3dp"
-                        android:layout_below="@+id/recycler_profes"/>
+                        android:inputType="textPersonName"
+                        android:hint="Nombre" />
 
-                </RelativeLayout>
+                </android.support.design.widget.TextInputLayout>
 
-            </android.support.v7.widget.CardView>
 
-            <android.support.v7.widget.CardView
-                android:layout_below="@+id/sp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:elevation="@dimen/cardview_default_elevation">
+                <!--Direccion-->
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="35dp"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_location"
+                    android:layout_toLeftOf="@+id/ads"
+                    android:layout_below="@+id/uid"
+                    android:id="@+id/des"/>
 
-                    <TextView
-                        android:layout_marginTop="10dp"
-                        android:id="@+id/Cardtitles"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Lo nuevo"
+                <android.support.design.widget.TextInputLayout
+                    android:layout_below="@+id/as1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/uid"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/ads"
+                    android:layout_marginBottom="8dp">
+
+                    <EditText android:id="@+id/txt_Dirección"
+                        android:layout_width="match_parent"
                         android:textColor="@color/color_no_seleccion"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
-
-                    <android.support.v7.widget.RecyclerView
-                        android:layout_marginTop="5dp"
-                        android:id="@+id/recycler_profs"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/Cardtitles"/>
+                        android:inputType="text"
+                        android:hint="Dirección" />
 
-                    <android.support.v4.widget.Space
-                        android:layout_width="3dp"
-                        android:layout_height="3dp"
-                        android:layout_below="@+id/recycler_profs"/>
+                </android.support.design.widget.TextInputLayout>
 
-                </RelativeLayout>
+                <!--ubicación-->
 
-            </android.support.v7.widget.CardView>
+                <Button
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:text="Marcar ubicación en el mapa"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/ripple_buttons"
+                    android:drawableLeft="@drawable/ic_add_location"
+                    android:layout_below="@+id/ads"
+                    android:id="@+id/qwe"/>
 
-            <android.support.v7.widget.CardView
-                android:layout_below="@+id/sp"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:elevation="@dimen/cardview_default_elevation">
+                <!--Telefono-->
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_phone"
+                    android:layout_toLeftOf="@+id/ads"
+                    android:layout_below="@+id/qwe"
+                    android:id="@+id/dos" />
 
-                    <TextView
-                        android:layout_marginTop="10dp"
-                        android:id="@+id/Cardtitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Lo nuevo"
+                <android.support.design.widget.TextInputLayout
+                    android:layout_below="@+id/qwe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/uid"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/ados"
+                    android:layout_marginBottom="8dp">
+
+                    <EditText
+                        android:id="@+id/txt_telefono"
+                        android:layout_width="match_parent"
                         android:textColor="@color/color_no_seleccion"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
-
-                    <android.support.v7.widget.RecyclerView
-                        android:layout_marginTop="5dp"
-                        android:id="@+id/recycler_prof"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/Cardtitle"/>
-                    <android.support.v4.widget.Space
-                        android:layout_width="3dp"
-                        android:layout_height="3dp"
-                        android:layout_below="@+id/recycler_prof"/>
+                        android:inputType="phone"
+                        android:hint="Telefono" />
 
-                </RelativeLayout>
+                </android.support.design.widget.TextInputLayout>
 
-            </android.support.v7.widget.CardView>
+                <!--logo-->
 
-        </RelativeLayout>
-</ScrollView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Envíar logo"
+                    android:id="@+id/kag"
+                    android:layout_below="@+id/ados"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/color_no_seleccion"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"/>
+
+                <ImageView
+                    android:id="@+id/logo"
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@+id/kag"
+                    android:layout_centerInParent="true"
+                    android:background="@color/secondary_text1"
+                    android:src="@drawable/ic_add" />
+
+                <!--Turno-->
+
+                <ImageView
+                    android:id="@+id/cvb"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_below="@+id/logo"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_clock"/>
+
+                <TextView
+                    android:id="@+id/rt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tu_no"
+                    android:layout_toRightOf="@+id/cvb"
+                    android:layout_marginTop="15dp"
+                    android:textColor="@color/secondary_text1"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                    android:layout_below="@+id/logo"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Entrada"
+                    android:layout_marginTop="12dp"
+                    android:textAllCaps="false"
+                    android:background="@drawable/ripple_buttons"
+                    android:layout_below="@id/rt"
+                    android:layout_toRightOf="@+id/cvb"
+                    android:id="@+id/Entrada"/>
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textColor="@color/color_no_seleccion"
+                    android:layout_marginTop="18dp"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                    android:layout_below="@id/rt"
+                    android:layout_toRightOf="@+id/Entrada"
+                    android:layout_marginLeft="15dp"
+                    android:id="@+id/hora_entrada"/>
+
+
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Salida"
+                    android:layout_marginTop="12dp"
+                    android:textAllCaps="false"
+                    android:background="@drawable/ripple_buttons"
+                    android:layout_below="@+id/Entrada"
+                    android:layout_toRightOf="@+id/cvb"
+                    android:id="@+id/Salida" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textColor="@color/color_no_seleccion"
+                    android:layout_below="@+id/hora_entrada"
+                    android:layout_marginLeft="15dp"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                    android:layout_toRightOf="@+id/Salida"
+                    android:layout_marginTop="35dp"
+                    android:id="@+id/hora_salida"/>
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    android:textAllCaps="false"
+                    android:layout_below="@id/Salida"
+                    android:text="24 horas"
+                    android:layout_toRightOf="@+id/cvb"
+                    android:id="@+id/hrs24"/>
+
+                <Button
+                    android:id="@+id/valid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Enviar"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/ripple_buttons"
+                    android:drawableRight="@drawable/ic_send"
+                    android:layout_below="@+id/hrs24"
+                    android:layout_alignLeft="@+id/des"
+                    android:layout_alignStart="@+id/des"
+                    android:layout_marginBottom="45dp"/>
+
+            </RelativeLayout>
+
+            </RelativeLayout>
+        </android.support.v4.widget.NestedScrollView>
+</RelativeLayout>

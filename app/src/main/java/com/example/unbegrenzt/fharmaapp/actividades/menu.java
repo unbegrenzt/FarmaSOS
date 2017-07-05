@@ -225,7 +225,7 @@ public class menu extends AppCompatActivity
 
         if (id == R.id.catalogo) {
             // Handle the camera action
-            fragment = new Farmacias();
+            //fragment = new Farmacias();
             setTitle("Catálogo");
         } else if (id == R.id.farmatour) {
             Intent intent = new Intent(menu.this, MapsActivity.class);

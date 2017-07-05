@@ -7,20 +7,19 @@
 
 package com.example.unbegrenzt.fharmaapp.Fragments;
 
+
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.unbegrenzt.fharmaapp.Adapter.AdapterBannerCards;
-import com.example.unbegrenzt.fharmaapp.Adapter.Banners;
-import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
+import com.example.unbegrenzt.fharmaapp.Objects.Banners;
 import com.example.unbegrenzt.fharmaapp.R;
 
 import java.util.ArrayList;
@@ -51,6 +50,7 @@ public class Farmacias extends Fragment {
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,7 +58,7 @@ public class Farmacias extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.farmacias, container, false);
 
-        RecyclerView CardItems = (RecyclerView) rootView.findViewById(R.id.recyclerCards);
+        /*RecyclerView CardItems = (RecyclerView) rootView.findViewById(R.id.recyclerCards);
         CardItems.setHasFixedSize(true);
         CardItems.setItemViewCacheSize(1);
         CardItems.setDrawingCacheEnabled(true);
@@ -68,11 +68,12 @@ public class Farmacias extends Fragment {
         CardItems.setItemAnimator(new DefaultItemAnimator());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
-        CardItems.setLayoutManager(layoutManager);
+        CardItems.setLayoutManager(layoutManager);*/
 
         return rootView;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private List<Banners> getCards(){
 
         List<Banners> apps = new ArrayList<>();
@@ -96,7 +97,7 @@ public class Farmacias extends Fragment {
             mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnFragmentInt eractionListener");
         }
     }
 
@@ -107,7 +108,7 @@ public class Farmacias extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         void onFragmentInteraction(Uri uri);
     }
 }

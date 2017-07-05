@@ -1,11 +1,11 @@
 /*
- * Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-28-17 09:54 AM
+ * Created  by Unbegrenzt for Jorge Luis Morales Centeno on 07-01-17 03:58 PM
  * Copyright (c) 2017. All rights reserved.
  *
- * Last modified 06-28-17 09:54 AM
+ * Last modified 06-28-17 10:38 AM
  */
 
-package com.example.unbegrenzt.fharmaapp.Adapter;
+package com.example.unbegrenzt.fharmaapp.Objects;
 
 import android.support.v7.widget.RecyclerView;
 
