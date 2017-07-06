@@ -38,4 +38,5 @@
     <string name="an">Aún no te has conectado!</string>
     <string name="least">Mínimo 3 caracteres</string>
     <string name="tu_no">Turno</string>
+    <string name="get_ref_farma">farmacias</string>
 </resources>

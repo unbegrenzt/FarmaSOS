@@ -12,9 +12,11 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -24,6 +26,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
@@ -36,7 +42,10 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.unbegrenzt.fharmaapp.Adapter.AdapterFarma;
+import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
+import com.example.unbegrenzt.fharmaapp.touchlistener.ClicklistenerFarma;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -55,12 +64,22 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -73,6 +92,20 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
     private static final int PICK_IMAGE = 100;
     private static final int TIME_DIALOG_ID = 1111;
 
+
+    //campos del storage
+    // Create a storage reference from our app
+    private StorageReference mStorageRef;
+
+    private FirebaseDatabase storage;
+    // Create a storage reference from our app
+    private StorageReference storageRef;
+
+    // Create a reference to "mountains.jpg"
+    private StorageReference mountainsRef;
+
+    // Create a reference to 'images/mountains.jpg'
+    private StorageReference mountainImagesRef;
 
     private String mParam1;
     private String mParam2;
@@ -96,6 +129,9 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
     private String h_entrada = "";
     private String h_salida = "";
     private Uri photo;
+
+    //variables del Recycler
+    List<Farmacia> farmacias;
 
     //variables para la pos actual
     boolean hay_location = false;
@@ -164,7 +200,7 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
     protected String mLastUpdateTime;
 
     //our database reference object
-    DatabaseReference databaseArtists;
+    DatabaseReference databaseFarma;
 
     /**
      * fin de declaracion de las variables e inicio de los metodos de la activity
@@ -174,6 +210,8 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
     private double latitude;
     private double longitud;
     private boolean enabled_gps = false;
+    private StorageReference imagesRef;
+    private RecyclerView CardItems;
 
     public Perfil() {
         // Required empty public constructor
@@ -286,6 +324,13 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
             }
         });
 
+        // Create a storage reference from our app
+        storageRef = FirebaseStorage.getInstance().getReference();
+
+        //getting the reference of farmacias node
+        databaseFarma = FirebaseDatabase.getInstance().getReference(getString(R.string.get_ref_farma));
+        farmacias = new ArrayList<>();
+
         //captura de fecha y hora entrada
         bentrada = (Button) rootView.findViewById(R.id.Entrada);
         bsalida = (Button) rootView.findViewById(R.id.Salida);
@@ -340,7 +385,9 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
             }
         });
 
-
+        //Recycler para las farmacias de la persona
+        CardItems = (RecyclerView) rootView.findViewById(R.id.myfarmas);
+        updateRecycler();
 
         //configurar la User interface conforme al usuario actual
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -359,6 +406,8 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
             //se carga la cover foto
             ImageView banner = (ImageView) rootView.findViewById(R.id.banner);
 
+
+            //foto de perdil
             Picasso.with(getApplicationContext()).load("https://assets.vg247.it/current//2015/03/" +
                     "video-games-black-broken-sony-console-crash-playstation-destroyed-crush-dualsh" +
                     "ock-gamepad-controller_www.wall321.com_71.jpg").placeholder(R.drawable.load)
@@ -369,8 +418,115 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
             // FirebaseUser.getToken() instead.
             String uid = user.getUid();
         }
+        updateRecycler();
 
         return rootView;
+    }
+
+    private String get_userid(){
+        //configurar la User interface conforme al usuario actual
+        String uid = "?";
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            uid = user.getUid();
+        }else{
+            Toast.makeText(getApplicationContext(),"Desliza hacia arriba\npara actualizar",Toast.LENGTH_LONG);
+            recargar1();
+        }
+        return uid;
+    }
+
+    private void recargar1() {
+        //TODO: recarga el usuario actual
+    }
+
+    private void recargar() {
+
+    }
+
+    private void updateRecycler() {
+        databaseFarma.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                farmacias.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Farmacia farmacia = postSnapshot.getValue(Farmacia.class);
+                    farmacias.add(farmacia);
+                }
+                updateRecycler(farmacias);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    //TODO: ver cuestiomes de performance en el adapter
+    private void updateRecycler(List<Farmacia> farmacia) {
+        CardItems.setHasFixedSize(true);
+        CardItems.setItemViewCacheSize(1);
+        CardItems.addOnItemTouchListener(new ClicklistenerFarma(getApplicationContext(),
+                CardItems, new ClicklistenerFarma.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                /*Toast.makeText(getApplicationContext(),String.valueOf(view.getId())
+                        ,Toast.LENGTH_LONG).show();*/
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+                Dialog(position);
+            }
+        }));
+        CardItems.setDrawingCacheEnabled(true);
+        CardItems.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        CardItems.setAdapter(new AdapterFarma(true,farmacia, getApplicationContext(),
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getApplicationContext(),String.valueOf(v.getId()),
+                                Toast.LENGTH_LONG).show();
+                    }
+                }));
+        CardItems.setItemAnimator(new DefaultItemAnimator());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
+                LinearLayoutManager.VERTICAL, false);
+        CardItems.setLayoutManager(layoutManager);
+    }
+
+    //creating mi own Dialog box
+    public void Dialog(int position){
+        LayoutInflater Layout = LayoutInflater.from(getApplicationContext());
+        final View deleteDialogView = Layout.inflate(R.layout.dialogfarmacia, null);
+        final AlertDialog UpdateDeleteDialog = new AlertDialog.Builder(getApplicationContext()).create();
+        UpdateDeleteDialog.setView(deleteDialogView);
+        deleteDialogView.findViewById(R.id.yes).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //your business logic
+                UpdateDeleteDialog.dismiss();
+            }
+        });
+        deleteDialogView.findViewById(R.id.no).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UpdateDeleteDialog.dismiss();
+            }
+        });
+        UpdateDeleteDialog.show();
+    }
+
+    private boolean deleteArtist(String id) {
+        //getting the specified artist reference
+        DatabaseReference dR = FirebaseDatabase.getInstance()
+                .getReference(getString(R.string.get_ref_farma)).child(id);
+
+        //removing artist
+        dR.removeValue();
+
+        return true;
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -562,7 +718,6 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
 
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minutes) {
-            // TODO Auto-generated method stub
             hora   = hourOfDay;
             minutos = minutes;
 
@@ -607,7 +762,6 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
 
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minutes) {
-            // TODO Auto-generated method stub
             hora   = hourOfDay;
             minutos = minutes;
 
@@ -713,16 +867,51 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
         startActivityForResult(gallery, PICK_IMAGE);
     }
 
+    //TODO: aqui se sube una farmacia
     public void send_farmacia(){
         if (!validate()) {
             return;
         }
+        String uid;
         if(is24hrs){
 
-        }else{
-            /*DatabaseReference databaseArtists;
-            databaseArtists = FirebaseDatabase.getInstance().getReference("artists");
-            Farmacia = new*/
+        }else {
+            //getting a unique id using push().getKey() method
+            //it will create a unique id and we will use it as the Primary Key for our Artist
+            String id = databaseFarma.push().getKey();
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                uid = user.getUid();
+            }else{
+                Toast.makeText(getApplicationContext(),"Inicie sesion Con facebook"
+                        ,Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            //creating an Artist Object
+            Farmacia nueva_farmacia = new Farmacia(id, uid, name,direcc,numero,h_entrada,h_salida
+            ,String.valueOf(latitude),String.valueOf(longitud),"https://assets.vg247.it/current//2015/03/" +
+                    "video-games-black-broken-sony-console-crash-playstation-destroyed-crush-dualsh" +
+                    "ock-gamepad-controller_www.wall321.com_71.jpg");
+
+            //Saving the Artist
+            databaseFarma.child(id).setValue(nueva_farmacia);
+
+            /*
+            id_farma
+            id_tendero
+            name = textName.getText().toString();
+            direcc = txtDirecc.getText().toString();
+            numero = txt_numero.getText().toString();
+            is24hrs = hrs24.isChecked();
+            h_entrada = text_horaentrada.getText().toString();
+            h_salida = text_horasalida.getText().toString();
+            latitude;
+            longitud;*/
+
+            //displaying a success toast
+            Toast.makeText(getApplicationContext(), "Farmacia subida", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -776,6 +965,65 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
             Toast.makeText(getApplicationContext(),"Ingrese un logo"
                     ,Toast.LENGTH_LONG).show();
             valid = false;
+        }else{
+
+            /*// Get the data from an ImageView as bytes
+            logo.setDrawingCacheEnabled(true);
+            logo.buildDrawingCache();
+            Bitmap bitmap = logo.getDrawingCache();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
+
+            UploadTask uploadTask = mountainsRef.putBytes(data);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                }
+            });
+
+            // File or Blob
+            file = Uri.fromFile(new File("path/to/mountains.jpg"));
+
+            // Create the file metadata
+            metadata = new StorageMetadata.Builder()
+                    .setContentType("image/jpeg")
+                    .build();
+
+            // Upload file and metadata to the path 'images/mountains.jpg'
+            uploadTask = storageRef.child("images/"+file.getLastPathSegment()).putFile(file, metadata);
+
+            // Listen for state changes, errors, and completion of the upload.
+            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    System.out.println("Upload is " + progress + "% done");
+                }
+            }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                    System.out.println("Upload is paused");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // Handle successful uploads on complete
+                    Uri downloadUrl = taskSnapshot.getMetadata().getDownloadUrl();
+                }
+            });*/
         }
 
         if(!hay_location){
@@ -794,30 +1042,6 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
 
         return ssbuilder;
     }
-
-    /*private List<Farmacia> getApps(){
-
-        List<Farmacia> apps = new ArrayList<>();
-        apps.add(new Farmacia("Gooogle",R.drawable.cloud_off,4.5f));
-        apps.add(new Farmacia("Gmail",R.drawable.common_google_signin_btn_icon_dark_focused,3.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_profile,2.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_star,1.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_profile,2.5f));
-        apps.add(new Farmacia("Gmail",R.drawable.common_google_signin_btn_icon_dark_focused,3.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_exit,2.5f));
-        apps.add(new Farmacia("Gmail",R.drawable.ic_info,3.5f));
-        apps.add(new Farmacia("Gooogle",R.drawable.cloud_off,4.5f));
-        apps.add(new Farmacia(" Gmail",R.drawable.common_google_signin_btn_icon_dark_focused,3.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_profile,2.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_star,1.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_profile,2.5f));
-        apps.add(new Farmacia("Gmail",R.drawable.common_google_signin_btn_icon_dark_focused,3.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_exit,2.5f));
-        apps.add(new Farmacia("Gmail",R.drawable.ic_info,3.5f));
-
-        return apps;
-
-    }*/
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

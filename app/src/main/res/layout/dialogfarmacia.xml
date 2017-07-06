@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 07-05-17 05:26 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 07-05-17 05:26 PM
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffffff">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:id="@+id/a"
+        android:gravity="center"
+        android:background="@color/primary_dark1"
+        android:src="@drawable/ic_web"
+        android:scaleType="fitCenter" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="¿que desea hacer?"
+        android:id="@+id/text_dialog"
+        android:layout_below="@+id/a"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="20dp"
+        android:textSize="18sp"
+        android:textColor="#ff000000"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_below="@+id/text_dialog"
+        android:layout_marginBottom="20dp"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="Actualizar"
+            android:textAllCaps="false"
+            android:id="@+id/yes"
+            android:gravity="center_vertical|center_horizontal"
+            android:background="@drawable/ripple_buttons"
+            android:textColor="#ffffffff" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="Eliminar"
+            android:layout_marginLeft="10dp"
+            android:textAllCaps="false"
+            android:id="@+id/no"
+            android:gravity="center_vertical|center_horizontal"
+            android:background="@drawable/ripple_effect_secondary"
+            android:textColor="#ffffffff"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

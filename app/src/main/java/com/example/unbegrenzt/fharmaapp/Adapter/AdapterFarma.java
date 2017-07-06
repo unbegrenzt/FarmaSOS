@@ -7,6 +7,7 @@
 
 package com.example.unbegrenzt.fharmaapp.Adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,32 +17,41 @@ import android.widget.TextView;
 
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by Unbegrenzt on 26/6/2017.
  */
-//Adapter Farma se encarga de la tarjetas de tienda
+
+
+//Adapter Farma se encarga de la tarjetas del admin
 public class AdapterFarma  extends RecyclerView.Adapter<AdapterFarma.ViewHolder> {
 
     private List<Farmacia> mApps;
     private boolean mPager;
+    private Context context;
+    private View.OnClickListener clickListener;
 
-    public AdapterFarma(boolean pager, List<Farmacia> Farmacias){
+    public AdapterFarma(boolean pager, List<Farmacia> Farmacias, Context context,View.OnClickListener clickListener){
         mApps = Farmacias;
         mPager = pager;
+        this.context = context;
+        this.clickListener = clickListener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
 
         if(mPager){
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_farma, parent, false);
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_farmacias, parent, false);
             ViewHolder vh = new ViewHolder(v);
             return vh;
         }else {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_farma_horizontal, parent, false);
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_farmacias, parent, false);
             ViewHolder vh = new ViewHolder(v);
             return vh;
         }
@@ -51,9 +61,22 @@ public class AdapterFarma  extends RecyclerView.Adapter<AdapterFarma.ViewHolder>
     @Override
     public void onBindViewHolder(ViewHolder holder, int position){
         Farmacia app = mApps.get(position);
-        holder.imageView.setImageResource(app.getmDrawable());
+        Picasso.with(context).load(app.getProfile()).placeholder(R.drawable.load)
+                .error(R.drawable.ic_person).resize(50,50).centerCrop().into(holder.imageView);
+
         holder.nameFarma.setText(app.getmName());
-        holder.ratingText.setText(String.valueOf(app.getmRating()));
+
+        holder.update.setImageResource(R.drawable.ic_update);
+
+        if(app.getAcepted().compareTo("true") == 0){
+            holder.acepted.setImageResource(R.drawable.ic_info_green);
+        }else{
+            holder.acepted.setImageResource(R.drawable.ic_info_red);
+        }
+
+        holder.imageView.setOnClickListener(clickListener);
+        holder.acepted.setOnClickListener(clickListener);
+        holder.update.setOnClickListener(clickListener);
     }
 
     @Override
@@ -70,13 +93,15 @@ public class AdapterFarma  extends RecyclerView.Adapter<AdapterFarma.ViewHolder>
 
         public ImageView imageView;
         public TextView nameFarma;
-        public TextView ratingText;
+        public ImageView update;
+        public ImageView acepted;
 
         public ViewHolder(View itemView){
             super(itemView);
-            imageView = (ImageView)itemView.findViewById(R.id.photofarma);
-            nameFarma = (TextView)itemView.findViewById(R.id.FarmName);
-            ratingText = (TextView)itemView.findViewById(R.id.ratingText);
+            imageView = (ImageView)itemView.findViewById(R.id.ic_farma);
+            nameFarma = (TextView)itemView.findViewById(R.id.namefarma);
+            update = (ImageView) itemView.findViewById(R.id.update);
+            acepted = (ImageView) itemView.findViewById(R.id.acepted);
         }
 
     }

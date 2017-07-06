@@ -27,7 +27,7 @@ import java.util.List;
  * Created by Unbegrenzt on 28/6/2017.
  */
 
-public class AdapterBannerCards extends RecyclerView.Adapter<AdapterBannerCards.ViewHolder> {
+/*public class AdapterBannerCards extends RecyclerView.Adapter<AdapterBannerCards.ViewHolder> {
 
     private List<Banners> mApps;
     private boolean mPager;
@@ -70,7 +70,7 @@ public class AdapterBannerCards extends RecyclerView.Adapter<AdapterBannerCards.
         holder.recycler.setLayoutManager(layoutManager);
     }
 
-    public List<Farmacia> getApps(){
+    /*public List<Farmacia> getApps(){
 
         List<Farmacia> apps = new ArrayList<>();
         apps.add(new Farmacia("Gooogle",R.drawable.cloud_off,4.5f));
@@ -91,9 +91,9 @@ public class AdapterBannerCards extends RecyclerView.Adapter<AdapterBannerCards.
         apps.add(new Farmacia("Gmail",R.drawable.ic_info,3.5f));
 
         return apps;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public int getItemViewType(int position){
         return super.getItemViewType(position);
     }
@@ -114,6 +114,6 @@ public class AdapterBannerCards extends RecyclerView.Adapter<AdapterBannerCards.
             recycler = (RecyclerView) itemView.findViewById(R.id.recycler_cards);
         }
 
-    }
+    }*/
 
-}
+//}

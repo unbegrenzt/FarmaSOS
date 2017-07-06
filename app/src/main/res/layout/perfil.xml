@@ -92,11 +92,19 @@
 
             </RelativeLayout>
 
+                <!--aqui cuenta admin-->
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/cambiar"
+                    android:id="@+id/myfarmas"/>
+
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/administrador"
-                android:layout_below="@+id/cambiar">
+                android:layout_below="@+id/myfarmas">
 
                 <ImageView
                     android:layout_width="36dp"
