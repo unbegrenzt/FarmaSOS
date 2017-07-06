@@ -21,9 +21,6 @@
             android:id="@+id/photofarma"
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:scaleType="fitXY"
-            android:scaleX="1.25"
-            android:scaleY="1.25"
             android:src="@drawable/placeholderblack" />
 
         <LinearLayout
@@ -48,7 +45,7 @@
                 android:textSize="12sp"/>
 
             <TextView
-                android:id="@+id/ratingText"
+                android:id="@+id/turno"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"
@@ -56,7 +53,7 @@
                 android:drawablePadding="2dp"
                 android:drawableRight="@drawable/ic_star"
                 android:gravity="center"
-                android:text="4.5"
+                android:text="Abierto"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/color_no_seleccion"
                 android:textSize="12sp" />

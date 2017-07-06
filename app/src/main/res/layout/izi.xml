@@ -1,0 +1,19 @@
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 07-05-17 11:17 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 07-05-17 11:17 PM
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.unbegrenzt.fharmaapp.Fragments.izi">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/Cards"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>

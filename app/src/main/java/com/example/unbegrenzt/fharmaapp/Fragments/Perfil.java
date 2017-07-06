@@ -19,7 +19,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -32,9 +35,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -68,6 +73,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -212,6 +218,8 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
     private boolean enabled_gps = false;
     private StorageReference imagesRef;
     private RecyclerView CardItems;
+    private String uid;
+    private boolean es_actualizar;
 
     public Perfil() {
         // Required empty public constructor
@@ -416,11 +424,40 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
             // The user's ID, unique to the Firebase project. Do NOT use this value to
             // authenticate with your backend server, if you have one. Use
             // FirebaseUser.getToken() instead.
-            String uid = user.getUid();
+            uid = user.getUid();
         }
-        updateRecycler();
-
+        if(isNetDisponible() && isOnlineNet()){
+            updateRecycler();
+        }else{
+            Toast.makeText(getApplicationContext(),"Conectese a internet",
+                    Toast.LENGTH_SHORT).show();
+        }
         return rootView;
+    }
+
+    private boolean isNetDisponible() {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo actNetInfo = connectivityManager.getActiveNetworkInfo();
+
+        return (actNetInfo != null && actNetInfo.isConnected());
+    }
+
+    public Boolean isOnlineNet() {
+
+        try {
+            Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.es");
+
+            int val = p.waitFor();
+            boolean reachable = (val == 0);
+            return reachable;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private String get_userid(){
@@ -464,20 +501,20 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
     }
 
     //TODO: ver cuestiomes de performance en el adapter
-    private void updateRecycler(List<Farmacia> farmacia) {
+    private void updateRecycler(final List<Farmacia> farmacia) {
         CardItems.setHasFixedSize(true);
         CardItems.setItemViewCacheSize(1);
         CardItems.addOnItemTouchListener(new ClicklistenerFarma(getApplicationContext(),
                 CardItems, new ClicklistenerFarma.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                /*Toast.makeText(getApplicationContext(),String.valueOf(view.getId())
-                        ,Toast.LENGTH_LONG).show();*/
+
             }
 
             @Override
             public void onItemLongClick(View view, int position) {
-                Dialog(position);
+                Farmacia fm = farmacias.get(position);
+                Dialog(position,fm.getID());
             }
         }));
         CardItems.setDrawingCacheEnabled(true);
@@ -486,8 +523,11 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getApplicationContext(),String.valueOf(v.getId()),
-                                Toast.LENGTH_LONG).show();
+                        if(v.getId() == R.id.update){
+
+                        }else if (v.getId() == R.id.acepted){
+
+                        }
                     }
                 }));
         CardItems.setItemAnimator(new DefaultItemAnimator());
@@ -497,34 +537,82 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
     }
 
     //creating mi own Dialog box
-    public void Dialog(int position){
-        LayoutInflater Layout = LayoutInflater.from(getApplicationContext());
-        final View deleteDialogView = Layout.inflate(R.layout.dialogfarmacia, null);
-        final AlertDialog UpdateDeleteDialog = new AlertDialog.Builder(getApplicationContext()).create();
-        UpdateDeleteDialog.setView(deleteDialogView);
-        deleteDialogView.findViewById(R.id.yes).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //your business logic
-                UpdateDeleteDialog.dismiss();
-            }
-        });
-        deleteDialogView.findViewById(R.id.no).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UpdateDeleteDialog.dismiss();
-            }
-        });
-        UpdateDeleteDialog.show();
+    public void Dialog(final int position, final String idu){
+        final AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(getContext());
+        }
+        builder.setTitle("Información")
+                .setMessage("¿Qué deseas hacer?")
+                .setPositiveButton("Actualizar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        updateFarma(farmacias.get(position));
+
+                    }
+                })
+                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        deleteArtist(idu);
+
+                    }
+                })
+                .setIcon(R.drawable.ic_web)
+                .show();
+    }
+
+    private void updateFarma(Farmacia farmacia) {
+
+    }
+
+    //es para preguntar si el usuario está seguro
+    private boolean[] Dialogsecure(){
+        final boolean[] response = {false};
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(getContext());
+        }
+        builder.setTitle("Advertencia!")
+                .setMessage("Estas seguro de borrar?")
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // continue with delete
+                        response[0] = true;
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setIcon(R.drawable.ic_web)
+                .show();
+        return response;
     }
 
     private boolean deleteArtist(String id) {
         //getting the specified artist reference
-        DatabaseReference dR = FirebaseDatabase.getInstance()
-                .getReference(getString(R.string.get_ref_farma)).child(id);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        Query applesQuery = ref.child("farmacias").equalTo(id);
 
-        //removing artist
-        dR.removeValue();
+        applesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
+                    appleSnapshot.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("asdf", "onCancelled", databaseError.toException());
+            }
+        });
 
         return true;
     }
@@ -913,6 +1001,22 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
             //displaying a success toast
             Toast.makeText(getApplicationContext(), "Farmacia subida", Toast.LENGTH_LONG).show();
         }
+
+    }
+
+    public void send_farmacia(String id, String uid, String name, String direcc, String numero,
+                              String h_entrada, String h_salida,String lat, String longitud,
+                              String Uri){
+        if (!validate()) {
+            return;
+        }
+        DatabaseReference dR = FirebaseDatabase.getInstance().getReference("farmacias").child(id);
+
+        //updating artist
+        Farmacia artist = new Farmacia(id, uid, name, direcc, numero, h_entrada, h_salida, lat,
+                longitud, Uri);
+        dR.setValue(artist);
+        Toast.makeText(getApplicationContext(), "Farmacia Actualizada", Toast.LENGTH_LONG).show();
     }
 
     public boolean validate() {

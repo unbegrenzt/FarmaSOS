@@ -22,6 +22,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.unbegrenzt.fharmaapp.Fragments.Map;
+import com.example.unbegrenzt.fharmaapp.Fragments.izi;
 import com.facebook.AccessToken;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -41,7 +42,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 
 
-public class Navigation extends AppCompatActivity implements Farmacias.OnFragmentInteractionListener,
+public class Navigation extends AppCompatActivity implements izi.OnFragmentInteractionListener,
         Map.OnFragmentInteractionListener, farmacos.OnFragmentInteractionListener,
             Perfil.OnFragmentInteractionListener,perfil_off.OnFragmentInteractionListener
                 ,AHBottomNavigation.OnTabSelectedListener{
@@ -217,7 +218,7 @@ public class Navigation extends AppCompatActivity implements Farmacias.OnFragmen
 
         if(position == 0){
 
-            fragment = new Farmacias();
+            fragment = new izi();
             setTitle(getString(R.string.hom));
 
         }else if (position == 1){

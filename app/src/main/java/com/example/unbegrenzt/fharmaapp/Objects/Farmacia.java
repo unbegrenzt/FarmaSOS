@@ -32,7 +32,7 @@ public class Farmacia {
     private String hora_cierre;
     private String ID;
     private String Uid;
-    private boolean disponible = false;
+    private boolean disponible = true;
     private String acepted = "true";
 
     public Farmacia(){
