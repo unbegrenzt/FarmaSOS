@@ -37,6 +37,7 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -47,10 +48,13 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.unbegrenzt.fharmaapp.Adapter.AdapterCnClick;
 import com.example.unbegrenzt.fharmaapp.Adapter.AdapterFarma;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.touchlistener.ClicklistenerFarma;
+import com.example.unbegrenzt.fharmaapp.touchlistener.ItemClickListener;
+import com.example.unbegrenzt.fharmaapp.touchlistener.ItemClickSupport;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -87,6 +91,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static android.R.attr.id;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 
@@ -97,21 +102,15 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
     private static final String ARG_PARAM2 = "param2";
     private static final int PICK_IMAGE = 100;
     private static final int TIME_DIALOG_ID = 1111;
+    private static final int PLACE_PICKER_REQUEST = 1;
 
 
     //campos del storage
     // Create a storage reference from our app
     private StorageReference mStorageRef;
 
-    private FirebaseDatabase storage;
+    private FirebaseStorage storage;
     // Create a storage reference from our app
-    private StorageReference storageRef;
-
-    // Create a reference to "mountains.jpg"
-    private StorageReference mountainsRef;
-
-    // Create a reference to 'images/mountains.jpg'
-    private StorageReference mountainImagesRef;
 
     private String mParam1;
     private String mParam2;
@@ -216,10 +215,10 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
     private double latitude;
     private double longitud;
     private boolean enabled_gps = false;
-    private StorageReference imagesRef;
     private RecyclerView CardItems;
     private String uid;
     private boolean es_actualizar;
+    private int pos;
 
     public Perfil() {
         // Required empty public constructor
@@ -305,6 +304,8 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
         mRequestingLocationUpdates = false;
         mLastUpdateTime = "";
 
+        farmacias = new ArrayList<>();
+
         // actualizamos a partir de un instancia guardada
         updateValuesFromBundle(savedInstanceState);
 
@@ -332,12 +333,8 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
             }
         });
 
-        // Create a storage reference from our app
-        storageRef = FirebaseStorage.getInstance().getReference();
-
         //getting the reference of farmacias node
         databaseFarma = FirebaseDatabase.getInstance().getReference(getString(R.string.get_ref_farma));
-        farmacias = new ArrayList<>();
 
         //captura de fecha y hora entrada
         bentrada = (Button) rootView.findViewById(R.id.Entrada);
@@ -393,9 +390,7 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
             }
         });
 
-        //Recycler para las farmacias de la persona
-        CardItems = (RecyclerView) rootView.findViewById(R.id.myfarmas);
-        updateRecycler();
+        //updateRecycler();
 
         //configurar la User interface conforme al usuario actual
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -426,8 +421,9 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
             // FirebaseUser.getToken() instead.
             uid = user.getUid();
         }
+        //storageRef = storage.getReferenceFromUrl("gs://fharmaapp.appspot.com/");
         if(isNetDisponible() && isOnlineNet()){
-            updateRecycler();
+            //updateRecycler();
         }else{
             Toast.makeText(getApplicationContext(),"Conectese a internet",
                     Toast.LENGTH_SHORT).show();
@@ -488,6 +484,8 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
                 farmacias.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Farmacia farmacia = postSnapshot.getValue(Farmacia.class);
+                    farmacia.setID(postSnapshot.getKey());
+                    Toast.makeText(getApplicationContext(),farmacia.getProfile(),Toast.LENGTH_SHORT);
                     farmacias.add(farmacia);
                 }
                 updateRecycler(farmacias);
@@ -504,36 +502,34 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
     private void updateRecycler(final List<Farmacia> farmacia) {
         CardItems.setHasFixedSize(true);
         CardItems.setItemViewCacheSize(1);
-        CardItems.addOnItemTouchListener(new ClicklistenerFarma(getApplicationContext(),
-                CardItems, new ClicklistenerFarma.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-
-            }
-
-            @Override
-            public void onItemLongClick(View view, int position) {
-                Farmacia fm = farmacias.get(position);
-                Dialog(position,fm.getID());
-            }
-        }));
         CardItems.setDrawingCacheEnabled(true);
+        ItemClickSupport.addTo(CardItems).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                updatesate(position);
+                Toast.makeText(getApplicationContext(),String.valueOf(v.getId()),Toast.LENGTH_LONG)
+                        .show();
+            }
+        });
         CardItems.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        CardItems.setAdapter(new AdapterFarma(true,farmacia, getApplicationContext(),
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(v.getId() == R.id.update){
-
-                        }else if (v.getId() == R.id.acepted){
-
-                        }
-                    }
-                }));
+        CardItems.setAdapter(new AdapterFarma(getApplicationContext(), farmacias));
         CardItems.setItemAnimator(new DefaultItemAnimator());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
         CardItems.setLayoutManager(layoutManager);
+    }
+
+    private void updatesate(int position) {
+        Farmacia farmacia = farmacias.get(position);
+        if(farmacia.isDisponible()) {
+            DatabaseReference databaseReference;
+            databaseReference = FirebaseDatabase.getInstance().getReference("farmacias");
+            databaseReference.child(farmacia.getID()).child("disponible").setValue(false);
+        }else{
+            DatabaseReference databaseReference;
+            databaseReference = FirebaseDatabase.getInstance().getReference("farmacias");
+            databaseReference.child(farmacia.getID()).child("disponible").setValue(true);
+        }
     }
 
     //creating mi own Dialog box
@@ -815,8 +811,6 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
 
     };
 
-
-
     private void updateTime2(int hora, int mins) {
         String timeSet = "";
         if (hora > 12) {
@@ -978,10 +972,16 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
             }
 
             //creating an Artist Object
+            List<String> eString = new ArrayList<>();
+            eString.add("hola");
+            eString.add("adios :v ");
             Farmacia nueva_farmacia = new Farmacia(id, uid, name,direcc,numero,h_entrada,h_salida
             ,String.valueOf(latitude),String.valueOf(longitud),"https://assets.vg247.it/current//2015/03/" +
                     "video-games-black-broken-sony-console-crash-playstation-destroyed-crush-dualsh" +
-                    "ock-gamepad-controller_www.wall321.com_71.jpg");
+                    "ock-gamepad-controller_www.wall321.com_71.jpg",1,"https://assets.vg247.it/current//2015/03/" +
+                    "video-games-black-broken-sony-console-crash-playstation-destroyed-crush-dualsh" +
+                    "ock-gamepad-controller_www.wall321.com_71.jpg",false,"lunes,jueves",
+                    "www.google.com", eString,true);
 
             //Saving the Artist
             databaseFarma.child(id).setValue(nueva_farmacia);
@@ -1002,21 +1002,6 @@ public class Perfil extends Fragment implements OnMapReadyCallback,
             Toast.makeText(getApplicationContext(), "Farmacia subida", Toast.LENGTH_LONG).show();
         }
 
-    }
-
-    public void send_farmacia(String id, String uid, String name, String direcc, String numero,
-                              String h_entrada, String h_salida,String lat, String longitud,
-                              String Uri){
-        if (!validate()) {
-            return;
-        }
-        DatabaseReference dR = FirebaseDatabase.getInstance().getReference("farmacias").child(id);
-
-        //updating artist
-        Farmacia artist = new Farmacia(id, uid, name, direcc, numero, h_entrada, h_salida, lat,
-                longitud, Uri);
-        dR.setValue(artist);
-        Toast.makeText(getApplicationContext(), "Farmacia Actualizada", Toast.LENGTH_LONG).show();
     }
 
     public boolean validate() {

@@ -32,7 +32,8 @@
         android:layout_margin="@dimen/place_autocomplete_button_padding"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:src="@drawable/plus"
+        android:id="@+id/mi_ub"
+        android:src="@drawable/ic_location_searching"
         android:onClick="click"/>
 
 </RelativeLayout>

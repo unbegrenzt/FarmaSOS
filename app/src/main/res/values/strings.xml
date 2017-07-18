@@ -6,7 +6,7 @@
   -->
 
 <resources>
-    <string name="app_name">PharmaApp</string>
+    <string name="app_name">PharmaSOS</string>
     <string name="facebook_app_id">446267069084972</string>
     <string name="fb_login_protocol_scheme">fb446267069084972</string>
     <string name="Máx_preg">Máximo de preguntas excedido</string>
@@ -39,4 +39,6 @@
     <string name="least">Mínimo 3 caracteres</string>
     <string name="tu_no">Turno</string>
     <string name="get_ref_farma">farmacias</string>
+    <string name="title_activity_farmacia">Farmacia</string>
+    <string name="title_activity_maps_activityas">Map</string>
 </resources>

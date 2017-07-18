@@ -9,18 +9,31 @@ package com.example.unbegrenzt.fharmaapp.actividades;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.unbegrenzt.fharmaapp.Objects.*;
+import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -37,15 +50,29 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.util.Date;
+
+import static com.example.unbegrenzt.fharmaapp.R.layout.farmacias;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -113,6 +140,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * El tiempo en que se actualiza la ubicación y se representada como una cadena.
      */
     protected String mLastUpdateTime;
+    private boolean primeravez = true;
+    private LatLng pos;
+    private Uri photo;
+    private DatabaseReference databaseFarma;
+    private ValueEventListener listener;
+    private Marker places;
+    private int x = 0;
 
     /**
      * fin de declaracion de las variables e inicio de los metodos de la activity
@@ -128,6 +162,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        databaseFarma = FirebaseDatabase.getInstance().getReference(getString(R.string.get_ref_farma));
+
         // Instanciamos la barra de busqueda
         autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -135,6 +171,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // incializamos variables de localizacion
         mRequestingLocationUpdates = false;
         mLastUpdateTime = "";
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            photo = user.getPhotoUrl();
+        }
+
+        FloatingActionButton mi_ub = (FloatingActionButton)findViewById(R.id.mi_ub);
+
+        mi_ub.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                move_to_my_pos();
+            }
+        });
 
          // actualizamos a partir de un instancia guardada
         updateValuesFromBundle(savedInstanceState);
@@ -145,6 +195,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         buildGoogleApiClient();
         createLocationRequest();
         buildLocationSettingsRequest();
+        updatelistener();
+    }
+
+    private void updatelistener() {
+        databaseFarma.addValueEventListener(listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    com.example.unbegrenzt.fharmaapp.Objects.Farmacia farmacia = postSnapshot.getValue(com.example.unbegrenzt.fharmaapp.Objects.Farmacia.class);
+                    addMarker(farmacia);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     /**
@@ -155,6 +224,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStart();
 
         mGoogleApiClient.connect();
+
     }
 
     /**
@@ -189,6 +259,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStop();
 
         mGoogleApiClient.disconnect();
+        databaseFarma.removeEventListener(listener);
     }
 
     /*
@@ -366,12 +437,94 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * es una marker que se mueve con tu ubicación
      */
     private void MarkerMiUbicacion(double latitude, double longitude) {
-        LatLng pos = new LatLng(latitude,longitude);
-
+        pos = new LatLng(latitude,longitude);
+        if(primeravez){
+            move_to_my_pos();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                photo = user.getPhotoUrl();
+            }
+            primeravez = false;
+        }
         if(MiUbicacion != null)MiUbicacion.remove();
         MiUbicacion = mMap.addMarker(new MarkerOptions()
-        .position(pos)
+        .position(pos).icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView(photo)))
         .title("mi ubicación"));
+
+    }
+
+    private void addMarker(Farmacia farmacia){
+        pos = new LatLng(Double.parseDouble(farmacia.getLat()),Double.parseDouble(
+                farmacia.getLong()));
+
+        if(x == 1){
+            places.remove();
+            x = 0;
+        }
+        if(farmacia.isDisponible()){
+            places = mMap.addMarker(new MarkerOptions()
+                    .position(pos).icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView
+                            (farmacia.getProfile())))
+                    .title(farmacia.getmName()).snippet("Abierta"));
+        }else {
+            places = mMap.addMarker(new MarkerOptions()
+                    .position(pos).icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmapFromView
+                            (farmacia.getProfile())))
+                    .title(farmacia.getmName()).snippet("Cerrada"));
+        }
+        x = 1;
+    }
+
+    private Bitmap getMarkerBitmapFromView(String url) {
+
+        View customMarkerView = ((LayoutInflater)
+                getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .inflate(R.layout.view_custom_marker, null);
+        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.marker);
+        Picasso.with(this).load(url).placeholder(R.drawable.load).error(R.drawable.ic_person)
+                .into(markerImageView);
+        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+        customMarkerView.buildDrawingCache();
+        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        Drawable drawable = customMarkerView.getBackground();
+        if (drawable != null)
+            drawable.draw(canvas);
+        customMarkerView.draw(canvas);
+        return returnedBitmap;
+    }
+
+    private Bitmap getMarkerBitmapFromView(Uri url) {
+
+        View customMarkerView = ((LayoutInflater)
+                getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .inflate(R.layout.view_custom_marker, null);
+        ImageView markerImageView = (ImageView) customMarkerView.findViewById(R.id.marker);
+        Picasso.with(this).load(url).placeholder(R.drawable.ic_person).error(R.drawable.ic_person)
+                .into(markerImageView);
+        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+        customMarkerView.buildDrawingCache();
+        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        Drawable drawable = customMarkerView.getBackground();
+        if (drawable != null)
+            drawable.draw(canvas);
+        customMarkerView.draw(canvas);
+        return returnedBitmap;
+    }
+
+
+    private void move_to_my_pos() {
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(pos).zoom(15).build();
+        mMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
     }
 
     /**

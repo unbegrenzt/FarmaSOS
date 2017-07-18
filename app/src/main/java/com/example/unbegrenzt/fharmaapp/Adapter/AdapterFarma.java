@@ -19,6 +19,8 @@ import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -32,51 +34,38 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class AdapterFarma  extends RecyclerView.Adapter<AdapterFarma.ViewHolder> {
 
     private List<Farmacia> mApps;
-    private boolean mPager;
     private Context context;
-    private View.OnClickListener clickListener;
 
-    public AdapterFarma(boolean pager, List<Farmacia> Farmacias, Context context,View.OnClickListener clickListener){
+    public AdapterFarma(Context context, List<Farmacia> Farmacias){
         mApps = Farmacias;
-        mPager = pager;
         this.context = context;
-        this.clickListener = clickListener;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        if(mPager){
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_farmacias, parent, false);
-            ViewHolder vh = new ViewHolder(v);
-            return vh;
-        }else {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_farmacias, parent, false);
-            ViewHolder vh = new ViewHolder(v);
-            return vh;
-        }
-
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_vertical, parent, false);
+        ViewHolder vh = new ViewHolder(v);
+        return vh;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position){
         Farmacia app = mApps.get(position);
-        Picasso.with(context).load(app.getProfile()).placeholder(R.drawable.load)
-                .error(R.drawable.ic_person).resize(50,50).centerCrop().into(holder.imageView);
+        Picasso.with(context).load(app.getProfile()).placeholder(R.color.transparent)
+                .error(R.color.transparent).resize(50,50).centerCrop().into(holder.perfil);
 
-        holder.nameFarma.setText(app.getmName());
+        holder.nombre.setText(app.getmName());
 
-        holder.update.setImageResource(R.drawable.ic_update);
-
-        if(app.getAcepted().compareTo("true") == 0){
-            holder.acepted.setImageResource(R.drawable.ic_info_green);
+        if(app.isDisponible()){
+            holder.disp.setText("Abierto");
+            holder.disp_ic.setImageResource(R.drawable.ic_local_green);
         }else{
-            holder.acepted.setImageResource(R.drawable.ic_info_red);
+            holder.disp.setText("Cerrado");
+            holder.disp_ic.setImageResource(R.drawable.ic_local_red);
         }
 
-        holder.imageView.setOnClickListener(clickListener);
-        holder.acepted.setOnClickListener(clickListener);
-        holder.update.setOnClickListener(clickListener);
+        holder.rating.setText(String.valueOf(app.getmRating()));
     }
 
     @Override
@@ -89,19 +78,25 @@ public class AdapterFarma  extends RecyclerView.Adapter<AdapterFarma.ViewHolder>
         return mApps.size();
     }
 
+    public void add(Farmacia farmacia) {
+        mApps.add(farmacia);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView imageView;
-        public TextView nameFarma;
-        public ImageView update;
-        public ImageView acepted;
+        public ImageView perfil;
+        public TextView nombre;
+        public TextView disp;
+        public ImageView disp_ic;
+        public TextView rating;
 
         public ViewHolder(View itemView){
             super(itemView);
-            imageView = (ImageView)itemView.findViewById(R.id.ic_farma);
-            nameFarma = (TextView)itemView.findViewById(R.id.namefarma);
-            update = (ImageView) itemView.findViewById(R.id.update);
-            acepted = (ImageView) itemView.findViewById(R.id.acepted);
+            perfil = (ImageView) itemView.findViewById(R.id.imageView);
+            nombre =  (TextView) itemView.findViewById(R.id.nameTextView);
+            disp = (TextView) itemView.findViewById(R.id.disponible);
+            disp_ic = (ImageView) itemView.findViewById(R.id.disp_ic);
+            rating = (TextView) itemView.findViewById(R.id.rating);
         }
 
     }

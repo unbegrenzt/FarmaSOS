@@ -9,11 +9,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/color_de_texto"
     tools:context="com.example.unbegrenzt.fharmaapp.Fragments.perfil_off">
 
     <ImageView
-        android:layout_width="170dp"
-        android:layout_height="170dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:id="@+id/cloud"
         android:src="@drawable/cloud_off"
         android:layout_centerInParent="true"/>

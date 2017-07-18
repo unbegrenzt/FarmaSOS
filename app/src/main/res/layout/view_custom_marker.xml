@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 07-09-17 10:30 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 07-09-17 10:30 PM
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/marker"
+        app:civ_fill_color="@color/color_de_texto"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_person"
+        android:layout_marginTop="55dp"
+        android:layout_marginLeft="30dp"/>
+
+</LinearLayout>

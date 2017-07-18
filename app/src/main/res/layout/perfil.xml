@@ -10,6 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fitsSystemWindows="true"
+    android:background="@color/color_de_texto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.unbegrenzt.fharmaapp.Fragments.Perfil">
 

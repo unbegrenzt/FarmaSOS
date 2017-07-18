@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 07-07-17 10:16 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 07-07-17 10:16 PM
+  -->
+
+<resources>
+    <item name="item_click_support" type="id" />
+</resources>

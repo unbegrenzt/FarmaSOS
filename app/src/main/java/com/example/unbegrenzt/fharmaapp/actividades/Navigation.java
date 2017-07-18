@@ -13,25 +13,29 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.example.unbegrenzt.fharmaapp.Fragments.Map;
+import com.example.unbegrenzt.fharmaapp.Fragments.Tienda_frag;
 import com.example.unbegrenzt.fharmaapp.Fragments.izi;
 import com.facebook.AccessToken;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
-import com.example.unbegrenzt.fharmaapp.Fragments.Farmacias;
 import com.example.unbegrenzt.fharmaapp.Fragments.Perfil;
 import com.example.unbegrenzt.fharmaapp.Fragments.farmacos;
 import com.example.unbegrenzt.fharmaapp.Fragments.perfil_off;
 import com.example.unbegrenzt.fharmaapp.R;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -45,7 +49,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class Navigation extends AppCompatActivity implements izi.OnFragmentInteractionListener,
         Map.OnFragmentInteractionListener, farmacos.OnFragmentInteractionListener,
             Perfil.OnFragmentInteractionListener,perfil_off.OnFragmentInteractionListener
-                ,AHBottomNavigation.OnTabSelectedListener{
+                ,AHBottomNavigation.OnTabSelectedListener, Tienda_frag.OnFragmentInteractionListener{
 
     AHBottomNavigation bottomNavigation;
     Toolbar toolbar;
@@ -53,11 +57,14 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private boolean isLoged = false;
+    private FrameLayout frame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation);
+
+        frame = (FrameLayout)findViewById(R.id.farma);
 
         //se crea el toolbar
         toolbar = (Toolbar)findViewById(R.id.toolbar);
@@ -67,9 +74,13 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
         //callbackManager = CallbackManager.Factory.create();
         mAuth = FirebaseAuth.getInstance();
 
+
+
         bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnTabSelectedListener(this);
         this.CreateItems();
+
+        getWindow().setBackgroundDrawable(null);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -186,8 +197,8 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
         AHBottomNavigationItem MapItem = new AHBottomNavigationItem(getString(R.string.map)
                 ,R.drawable.ic_map);
 
-        AHBottomNavigationItem MedItem = new AHBottomNavigationItem(getString(R.string.farm)
-                ,R.drawable.ic_farmaco);
+        /*AHBottomNavigationItem MedItem = new AHBottomNavigationItem(getString(R.string.farm)
+                ,R.drawable.ic_farmaco);*/
 
         AHBottomNavigationItem ProfItem = new AHBottomNavigationItem(getString(R.string.per)
                 ,R.drawable.ic_profile);
@@ -195,7 +206,7 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
         //añadiendo los items
         bottomNavigation.addItem(FarmaItem);
         bottomNavigation.addItem(MapItem);
-        bottomNavigation.addItem(MedItem);
+        //bottomNavigation.addItem(MedItem);
         bottomNavigation.addItem(ProfItem);
 
         //propiedades
@@ -204,7 +215,8 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
         // Manage titles
         bottomNavigation.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
         bottomNavigation.setCurrentItem(0);
-
+        // Enable the translation of the FloatingActionButton
+        //bottomNavigation.manageFloatingActionButtonBehavior(mwnu);
     }
 
     @Override
@@ -216,30 +228,35 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
     public boolean onTabSelected(int position, boolean wasSelected) {
         Fragment fragment = null;
 
-        if(position == 0){
-
+        if (position == 0) {
+            //mwnu.setVisibility(View.GONE);
             fragment = new izi();
             setTitle(getString(R.string.hom));
 
-        }else if (position == 1){
+        } else if (position == 1) {
+            //Intent intent = new Intent(this, MapsActivity.class);
+            //startActivity(intent);
+            //mwnu.setVisibility(View.VISIBLE);
             fragment = new Map();
-            setTitle("Map");
+            setTitle("Mapa");
+            //bottomNavigation.setCurrentItem(anterior);
 
-        }else if (position == 2){
-
-            fragment = new farmacos();
-            setTitle(getString(R.string.farm));
-
-        }else if (position == 3){
-            //si la persona se logea ser presenta su perfil en
-            //caso contrario se muestra un sms de que debe conectarse
+        } else if (position == 2) {
+            //mwnu.setVisibility(View.GONE);
             if (isLoged) {
                 fragment = new Perfil();
                 setTitle(getString(R.string.per));
-            }else{
+            } else {
                 fragment = new perfil_off();
                 setTitle(getString(R.string.per));
             }
+            /*fragment = new farmacos();
+            setTitle(getString(R.string.farm));*/
+
+        } else if (position == 3) {
+            //si la persona se logea ser presenta su perfil en
+            //caso contrario se muestra un sms de que debe conectarse
+
 
         }
 
@@ -247,6 +264,7 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.frag, fragment);
         transaction.commit();
+
         return true;
     }
 
@@ -259,9 +277,26 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
         bottomNavigation.refresh();
     }
 
-    public boolean getloged(){
-        return this.isLoged;
+
+    public void showtienda(com.example.unbegrenzt.fharmaapp.Objects.Farmacia farmaciasx) {
+        frame.setVisibility(View.VISIBLE);
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.farma, Tienda_frag.newInstance(farmaciasx));
+        transaction.commit();
     }
 
+    public void disposetienda() {
+        if(frame != null)
+        frame.setVisibility(View.GONE);
+    }
 
+    @Override
+    public void onBackPressed(){
+        if (frame.getVisibility() == View.VISIBLE){
+            disposetienda();
+        }else{
+            super.onBackPressed();
+        }
+    }
 }

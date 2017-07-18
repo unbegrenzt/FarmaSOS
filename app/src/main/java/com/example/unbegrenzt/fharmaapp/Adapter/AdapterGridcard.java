@@ -73,6 +73,11 @@ public class AdapterGridcard extends RecyclerView.Adapter<AdapterGridcard.ViewHo
         return mApps.size();
     }
 
+    public void notifyData(List<Farmacia> myList) {
+        this.mApps = myList;
+        notifyDataSetChanged();
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imageView;

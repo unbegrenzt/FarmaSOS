@@ -27,36 +27,30 @@ import java.util.List;
  * Created by Unbegrenzt on 28/6/2017.
  */
 
-/*public class AdapterBannerCards extends RecyclerView.Adapter<AdapterBannerCards.ViewHolder> {
+/*public class AdapterFinal extends RecyclerView.Adapter<AdapterFinal.ViewHolder> {
 
-    private List<Banners> mApps;
+    private List<Farmacia> mApps;
     private boolean mPager;
     private Context context;
 
-    public AdapterBannerCards(Context context, boolean pager, List<Banners> banners){
+    public AdapterFinal(Context context, List<Farmacia> banners){
         mApps = banners;
-        mPager = pager;
         this.context = context;
     }
 
     @Override
-    public AdapterBannerCards.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+    public AdapterFinal.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        if(mPager){
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.farma_item, parent, false);
-            AdapterBannerCards.ViewHolder vh = new AdapterBannerCards.ViewHolder(v);
-            return vh;
-        }else {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.farma_item, parent, false);
-            AdapterBannerCards.ViewHolder vh = new AdapterBannerCards.ViewHolder(v);
-            return vh;
-        }
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_vertical, parent, false);
+        AdapterFinal.ViewHolder vh = new AdapterFinal.ViewHolder(v);
+        return vh;
+
 
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position){
-        Banners app = mApps.get(position);
+        Farmacia app = mApps.get(position);
         holder.Title.setText(app.getTitle());
         holder.recycler.setHasFixedSize(true);
         holder.recycler.setItemViewCacheSize(10);
@@ -70,30 +64,7 @@ import java.util.List;
         holder.recycler.setLayoutManager(layoutManager);
     }
 
-    /*public List<Farmacia> getApps(){
-
-        List<Farmacia> apps = new ArrayList<>();
-        apps.add(new Farmacia("Gooogle",R.drawable.cloud_off,4.5f));
-        apps.add(new Farmacia("Gmail",R.drawable.common_google_signin_btn_icon_dark_focused,3.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_profile,2.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_star,1.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_profile,2.5f));
-        apps.add(new Farmacia("Gmail",R.drawable.common_google_signin_btn_icon_dark_focused,3.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_exit,2.5f));
-        apps.add(new Farmacia("Gmail",R.drawable.ic_info,3.5f));
-        apps.add(new Farmacia("Gooogle",R.drawable.cloud_off,4.5f));
-        apps.add(new Farmacia(" Gmail",R.drawable.common_google_signin_btn_icon_dark_focused,3.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_profile,2.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_star,1.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_profile,2.5f));
-        apps.add(new Farmacia("Gmail",R.drawable.common_google_signin_btn_icon_dark_focused,3.5f));
-        apps.add(new Farmacia("Mail",R.drawable.ic_exit,2.5f));
-        apps.add(new Farmacia("Gmail",R.drawable.ic_info,3.5f));
-
-        return apps;
-    }*/
-
-    /*@Override
+    @Override
     public int getItemViewType(int position){
         return super.getItemViewType(position);
     }
@@ -114,6 +85,6 @@ import java.util.List;
             recycler = (RecyclerView) itemView.findViewById(R.id.recycler_cards);
         }
 
-    }*/
+    }
 
-//}
+}*/

@@ -8,20 +8,25 @@
 package com.example.unbegrenzt.fharmaapp.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.example.unbegrenzt.fharmaapp.Adapter.AdapterGridcard;
+import com.example.unbegrenzt.fharmaapp.Adapter.AdapterFarma;
+import com.example.unbegrenzt.fharmaapp.Adapter.SnapAdapter;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
+import com.example.unbegrenzt.fharmaapp.Objects.Snap;
 import com.example.unbegrenzt.fharmaapp.R;
+import com.example.unbegrenzt.fharmaapp.touchlistener.ClicklistenerFarma;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -56,6 +61,7 @@ public class izi extends Fragment {
     private DatabaseReference databaseFarma;
     private List<Farmacia> farmacias;
     private ValueEventListener listener;
+    private AdapterFarma adapter;
 
     public izi() {
         // Required empty public constructor
@@ -96,21 +102,25 @@ public class izi extends Fragment {
         CardItems = (RecyclerView) rootView.findViewById(R.id.Cards);
         databaseFarma = FirebaseDatabase.getInstance().getReference(getString(R.string.get_ref_farma));
         farmacias = new ArrayList<>();
-        update_cards();
+        InstanceRecycler();
 
         return rootView;
     }
 
-    private void update_cards(){
+    @Override
+    public void onResume(){
+        super.onResume();
         databaseFarma.addValueEventListener(listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 farmacias.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Farmacia farmacia = postSnapshot.getValue(Farmacia.class);
+                    String key = postSnapshot.getKey();
+                    farmacia.setID(key);
                     farmacias.add(farmacia);
                 }
-                RecyclerCards(farmacias);
+                UpdateAdapter(farmacias);
             }
 
             @Override
@@ -120,17 +130,45 @@ public class izi extends Fragment {
         });
     }
 
-    private void RecyclerCards(List<Farmacia> farmacias){
+    private void UpdateAdapter(List<Farmacia> farmacias) {
+
+        adapter = new AdapterFarma(getApplicationContext(),farmacias);
+        CardItems.setAdapter(adapter);
+
+    }
+
+
+
+    //quito listeners para ahorrar memoria
+    @Override
+    public void onPause(){
+        super.onPause();
+        databaseFarma.removeEventListener(listener);
+    }
+
+    private void InstanceRecycler(){
         CardItems.setHasFixedSize(true);
         CardItems.setItemViewCacheSize(1);
         CardItems.setDrawingCacheEnabled(true);
+        CardItems.addOnItemTouchListener(new ClicklistenerFarma(getApplicationContext(),
+                CardItems, new ClicklistenerFarma.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Intent intent = new Intent(getActivity(),
+                        com.example.unbegrenzt.fharmaapp.actividades.Farmacia.class);
+                intent.putExtra("farmaciaValue",farmacias.get(position));
+                startActivity(intent);
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        }));
         CardItems.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        //MyAdapter adapter = new MyAdapter(new String[]{"Example One", "Example Two", "Example Three", "Example Four", "Example Five" , "Example Six" , "Example Seven"});
-        CardItems.setAdapter(new AdapterGridcard(farmacias,getApplicationContext()));
         CardItems.setItemAnimator(new DefaultItemAnimator());
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
-                LinearLayoutManager.VERTICAL, false);
-        CardItems.setLayoutManager(layoutManager);
+        CardItems.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
