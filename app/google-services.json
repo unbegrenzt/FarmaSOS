@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1093267980974",
+    "firebase_url": "https://fharmaapp.firebaseio.com",
+    "project_id": "fharmaapp",
+    "storage_bucket": "fharmaapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1093267980974:android:2c82490e4da5aa64",
+        "android_client_info": {
+          "package_name": "com.example.unbegrenzt.fharmaapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1093267980974-5kausbqbpbjde0g3r7mocflqlo5blc41.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.unbegrenzt.fharmaapp",
+            "certificate_hash": "42521280efaea8a3e48affc274cd424e3834e5cf"
+          }
+        },
+        {
+          "client_id": "1093267980974-rut5ojqd3von9l546s8ie6lhidp1hh0l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1093267980974-rut5ojqd3von9l546s8ie6lhidp1hh0l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

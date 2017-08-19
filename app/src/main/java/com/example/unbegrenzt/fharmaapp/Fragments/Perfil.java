@@ -48,12 +48,10 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.unbegrenzt.fharmaapp.Adapter.AdapterCnClick;
+
 import com.example.unbegrenzt.fharmaapp.Adapter.AdapterFarma;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
-import com.example.unbegrenzt.fharmaapp.touchlistener.ClicklistenerFarma;
-import com.example.unbegrenzt.fharmaapp.touchlistener.ItemClickListener;
 import com.example.unbegrenzt.fharmaapp.touchlistener.ItemClickSupport;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
