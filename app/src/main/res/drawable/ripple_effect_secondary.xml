@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 07-05-17 06:01 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 07-05-17 06:01 PM
+  -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true" android:drawable="@color/gray"/>
+    <item android:state_pressed="true" android:drawable="@color/color_base"/>
+    <item android:drawable="@drawable/button_normal"/>
+</selector>

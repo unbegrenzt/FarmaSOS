@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/heaader"
+        android:layout_width="@dimen/headers"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@color/color_de_texto"
+        android:textIsSelectable="false"
+        android:layout_above="@+id/subheader"
+        android:textSize="@dimen/texto_headline_2"
+        android:text="Your lab, everywhere"
+        android:layout_marginBottom="@dimen/Between_header_subheader"
+        android:textAlignment="center"/>
+
+    <TextView
+        android:id="@+id/subheader"
+        android:layout_width="@dimen/subheaders"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@color/color_de_texto"
+        android:layout_marginBottom="@dimen/Between_Button_Copy"
+        android:text="Use everyday objects in your experiments"
+        android:textSize="@dimen/texto_subhead1_3A"
+        android:layout_above="@+id/BotonInicio"
+        android:textAlignment="center"/>
+
+    <Button
+        android:id="@+id/BotonInicio"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/dot2"
+        android:layout_centerInParent="true"
+        android:text="@string/continuar"
+        android:textAllCaps="false"
+        android:background="@drawable/ripple_effect_face"
+        android:layout_marginBottom="@dimen/dot_marginbotom"
+        android:textSize="@dimen/text_face"
+        android:onClick="start"/>
+
+
+    <ImageView
+        android:id="@+id/dot1"
+        android:layout_width="@dimen/dot_10dp"
+        android:layout_height="@dimen/dot_10dp"
+        android:background="@drawable/nonselecteditem_dot"
+        android:layout_toLeftOf="@+id/dot2"
+        android:layout_marginRight="@dimen/dot_sep_3dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="@dimen/dot_marginbotom"/>
+
+    <ImageView
+        android:id="@+id/dot2"
+        android:layout_width="@dimen/dot_10dp"
+        android:layout_height="@dimen/dot_10dp"
+        android:background="@drawable/nonselecteditem_dot"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="@dimen/dot_marginbotom"/>
+
+    <ImageView
+        android:id="@+id/dot3"
+        android:layout_width="@dimen/dot_10dp"
+        android:layout_height="@dimen/dot_10dp"
+        android:background="@drawable/nonselecteditem_dot"
+        android:layout_toRightOf="@+id/dot2"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/dot_sep_3dp"
+        android:layout_marginBottom="@dimen/dot_marginbotom"/>
+
+</RelativeLayout>

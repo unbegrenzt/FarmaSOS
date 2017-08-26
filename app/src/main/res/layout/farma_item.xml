@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-26-17 09:00 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 06-26-17 09:00 PM
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp">
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:id="@+id/Cardtitle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="Lo nuevo"
+        android:layout_marginBottom="5dp"
+        android:textColor="@color/secondary_text1"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_marginTop="5dp"
+            android:id="@+id/recycler_cards"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/Cardtitle1"/>
+
+        <android.support.v4.widget.Space
+            android:layout_width="3dp"
+            android:layout_height="3dp"
+            android:layout_below="@+id/recycler_cards"/>
+
+</RelativeLayout>

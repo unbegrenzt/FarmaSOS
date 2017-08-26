@@ -1,0 +1,230 @@
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 07-13-17 10:41 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 07-13-17 10:41 PM
+  -->
+
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_de_texto"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.unbegrenzt.fharmaapp.actividades.Farmacia"
+    tools:showIn="@layout/tienda">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:id="@+id/photoperfil"
+            android:src="@drawable/ic_map"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_toEndOf="@+id/photoperfil"
+            android:layout_toRightOf="@+id/photoperfil"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/nameTextView"
+                android:maxLines="1"
+                android:layout_centerVertical="true"
+                android:text="Item"
+                android:layout_marginLeft="@dimen/dot_10dp"
+                android:textColor="@color/color_no_seleccion"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/disp"
+                android:text="Abierto"
+                android:layout_below="@+id/nameTextView"
+                android:layout_alignLeft="@+id/nameTextView"
+                android:layout_alignStart="@+id/nameTextView" />
+
+            <ImageView
+                android:id="@+id/ic_disp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_local_green"
+                android:layout_toRightOf="@+id/nameTextView"
+                android:layout_marginLeft="20dp"
+                android:layout_alignParentBottom="true"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fotoslocal"
+            android:layout_below="@+id/photoperfil"
+            android:visibility="gone">
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/administrador"
+            android:layout_below="@+id/fotoslocal">
+
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/ic_location"
+                android:id="@+id/des"/>
+
+            <TextView
+                android:id="@+id/st"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dirección"
+                android:layout_toRightOf="@+id/des"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="30dp"
+                android:textColor="@color/secondary_text1"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/des"
+                android:layout_below="@+id/st"
+                android:layout_marginRight="10dp"
+                android:text="sadaddadadsadadas"
+                android:textColor="@color/color_no_seleccion"
+                android:layout_marginTop="10dp"
+                android:id="@+id/direccion"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"/>
+
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/ic_phone"
+                android:layout_below="@+id/direccion"
+                android:id="@+id/dos" />
+
+            <TextView
+                android:layout_below="@+id/direccion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/dos"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="25dp"
+                android:id="@+id/ados"
+                android:text="Telefono"
+                android:textColor="@color/secondary_text1"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8512477"
+                android:id="@+id/telefono"
+                android:layout_below="@+id/ados"
+                android:layout_toRightOf="@+id/dos"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/color_no_seleccion"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"/>
+
+            <!--Turno-->
+
+            <ImageView
+                android:id="@+id/cvb"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_below="@+id/telefono"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/ic_clock"/>
+
+            <TextView
+                android:id="@+id/rt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tu_no"
+                android:layout_toRightOf="@+id/cvb"
+                android:layout_marginTop="15dp"
+                android:textColor="@color/secondary_text1"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                android:layout_below="@+id/telefono"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Entrada:"
+                android:layout_marginTop="18dp"
+                android:layout_below="@id/rt"
+                android:layout_toRightOf="@+id/cvb"
+                android:textColor="@color/color_no_seleccion"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.SearchResult.Subtitle"
+                android:id="@+id/Entrada"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="@color/color_no_seleccion"
+                android:layout_marginTop="15dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                android:layout_below="@id/rt"
+                android:layout_toRightOf="@+id/Entrada"
+                android:layout_marginLeft="15dp"
+                android:id="@+id/hora_entrada"/>
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Salida:"
+                android:layout_marginTop="12dp"
+                android:layout_below="@+id/Entrada"
+                android:layout_toRightOf="@+id/cvb"
+                android:textColor="@color/color_no_seleccion"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.SearchResult.Subtitle"
+                android:id="@+id/Salida" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="@color/color_no_seleccion"
+                android:layout_marginLeft="15dp"
+                android:layout_below="@+id/hora_entrada"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Headline"
+                android:layout_toRightOf="@+id/Salida"
+                android:id="@+id/hora_salida"/>
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</android.support.v4.widget.NestedScrollView>

@@ -1,4 +1,44 @@
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-03-17 12:29 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 05-08-17 10:42 PM
+  -->
+
 <resources>
-    <string name="app_name">FharmaApp</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="app_name">PharmaSOS</string>
+    <string name="facebook_app_id">446267069084972</string>
+    <string name="fb_login_protocol_scheme">fb446267069084972</string>
+    <string name="Máx_preg">Máximo de preguntas excedido</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="explor_n_l_map">Explora el app</string>
+    <string name="encuentra">Obtén información de un local</string>
+    <string name="farma_q_busca">Libreria de fármacos</string>
+    <string name="farmaco">Informate acerca del fármaco que nescesitas</string>
+    <string name="no_conex">Sin conexión</string>
+    <string name="local_disp">puedes tenerlo todo de forma local en tu dispositivo</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="catalog">Catálogo</string>
+    <string name="f_rmacos">Fármacos</string>
+    <string name="comun_cate">Comunícate</string>
+    <string name="comparte">Comparte</string>
+    <string name="val_ranos">Valóranos</string>
+    <string name="men">Menú</string>
+    <string name="continuar">Continuar</string>
+    <string name="hom">Home</string>
+    <string name="map">Mapa</string>
+    <string name="farm">Fármaco</string>
+    <string name="per">Perfil</string>
+    <string name="inicia_sesion">Inicia Sesión </string>
+    <string name="an">Aún no te has conectado!</string>
+    <string name="least">Mínimo 3 caracteres</string>
+    <string name="tu_no">Turno</string>
+    <string name="get_ref_farma">farmacias</string>
+    <string name="title_activity_farmacia">Farmacia</string>
+    <string name="title_activity_maps_activityas">Map</string>
 </resources>

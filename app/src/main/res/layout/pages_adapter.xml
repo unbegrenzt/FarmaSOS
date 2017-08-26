@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/backbottom"
+            android:background="@color/color_de_texto"
+            android:id="@+id/backtop"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/tamaño_bottom"
+            android:id="@+id/backbottom"
+            android:layout_alignParentBottom="true"
+            android:background="@color/color_no_seleccion"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/tamaño_bottom"
+            android:background="@drawable/descarga"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:id="@+id/imagen"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

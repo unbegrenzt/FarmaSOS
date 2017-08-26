@@ -1,20 +1,31 @@
+/*
+ * Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-03-17 12:29 PM
+ * Copyright (c) 2017. All rights reserved.
+ *
+ * Last modified 05-28-17 02:05 PM
+ */
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+        classpath 'com.google.gms:google-services:3.1.0'
     }
 }
 
 allprojects {
     repositories {
         jcenter()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
 }
 

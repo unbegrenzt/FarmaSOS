@@ -1,6 +1,13 @@
+<!--
+  ~ Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-03-17 12:29 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 04-30-17 11:05 AM
+  -->
+
 <resources>
     <!--
-    TODO: Before you run your application, you need a Google Maps API key.
+    Before you run your application, you need a Google Maps API key.
 
     To get one, follow this link, follow the directions and press "Create" at the end:
 
@@ -21,6 +28,6 @@
     string in this file.
     -->
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
-         AIzaSyDny2DEIpGFgqq8d6VdS5siv_eWq9OEGMM
+         AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ
     </string>
 </resources>
