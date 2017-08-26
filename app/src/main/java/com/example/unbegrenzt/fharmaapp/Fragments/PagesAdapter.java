@@ -41,7 +41,6 @@ public class PagesAdapter extends Fragment {
 
     private int color_top;
     private int color_bot;
-    private int index;
     private int image;
 
     private ImageView Top_Color, Bottom_Color, imagen;
@@ -52,10 +51,8 @@ public class PagesAdapter extends Fragment {
      * @param color
      *            background color
      * @param image
-     *@param index
-     *            index page  @return a new page
      */
-    public static PagesAdapter newInstance(int color, int color_bot, int image, int index) {
+    public static PagesAdapter newInstance(int color, int color_bot, int image) {
 
         // Instantiate a new fragment
         PagesAdapter fragment = new PagesAdapter();
@@ -65,7 +62,6 @@ public class PagesAdapter extends Fragment {
         bundle.putInt(BACKGROUND_COLOR, color);
         bundle.putInt(BACKGROUND_COLOR_BOT,color_bot);
         bundle.putInt(IMAGE, image);
-        bundle.putInt(INDEX, index);
         fragment.setArguments(bundle);
         fragment.setRetainInstance(true);
         return fragment;
@@ -79,9 +75,6 @@ public class PagesAdapter extends Fragment {
         // Load parameters when the initial creation of the fragment is done
         //this.color = (getArguments() != null) ? getArguments().getInt(
           //      BACKGROUND_COLOR) : Color.BLUE;
-
-        this.index = (getArguments() != null) ? getArguments().getInt(INDEX)
-                : -1;
 
     }
 

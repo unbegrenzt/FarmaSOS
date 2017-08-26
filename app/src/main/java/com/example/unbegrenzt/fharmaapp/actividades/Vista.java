@@ -55,10 +55,9 @@ public class Vista extends FragmentActivity implements ViewPager.OnPageChangeLis
         ViewPagerAdapter adapter = new ViewPagerAdapter(
                 getSupportFragmentManager());
 
-        adapter.addFragment(PagesAdapter.newInstance(getResources().getColor(R.color.color_acentuado)
+        /*adapter.addFragment(PagesAdapter.newInstance(getResources().getColor(R.color.color_acentuado)
                 ,getResources().getColor(R.color.acentuado_oscuro),
-                    getResources().getIdentifier("descarga" , "drawable", getPackageName())
-                        ,0));
+                    getResources().getIdentifier("descarga" , "drawable", getPackageName())));
 
         adapter.addFragment(PagesAdapter.newInstance(getResources().getColor(R.color.color_acentuado)
                 ,getResources().getColor(R.color.acentuado_oscuro),
@@ -68,7 +67,7 @@ public class Vista extends FragmentActivity implements ViewPager.OnPageChangeLis
         adapter.addFragment(PagesAdapter.newInstance(getResources().getColor(R.color.color_acentuado)
                 ,getResources().getColor(R.color.acentuado_oscuro),
                     getResources().getIdentifier("descarga2" , "drawable", getPackageName())
-                        ,2));
+                        ,2));*/
 
         this.pager.setAdapter(adapter);
         this.pager.addOnPageChangeListener(this);
