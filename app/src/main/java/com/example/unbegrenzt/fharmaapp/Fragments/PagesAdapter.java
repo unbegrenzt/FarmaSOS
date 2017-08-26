@@ -52,15 +52,15 @@ public class PagesAdapter extends Fragment {
      *            background color
      * @param image
      */
-    public static PagesAdapter newInstance(int color, int color_bot, int image) {
+    public static PagesAdapter newInstance(/*int color, int color_bot,*/ int image) {
 
         // Instantiate a new fragment
         PagesAdapter fragment = new PagesAdapter();
 
         // Save the parameters
         Bundle bundle = new Bundle();
-        bundle.putInt(BACKGROUND_COLOR, color);
-        bundle.putInt(BACKGROUND_COLOR_BOT,color_bot);
+        //bundle.putInt(BACKGROUND_COLOR, color);
+        //bundle.putInt(BACKGROUND_COLOR_BOT,color_bot);
         bundle.putInt(IMAGE, image);
         fragment.setArguments(bundle);
         fragment.setRetainInstance(true);
@@ -85,12 +85,12 @@ public class PagesAdapter extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.pages_adapter, container, false);
 
-        Top_Color = (ImageView)rootView.findViewById(R.id.backtop);
-        Top_Color.setBackgroundColor(getArguments().getInt(BACKGROUND_COLOR));
+        //Top_Color = (ImageView)rootView.findViewById(R.id.backtop);
+        //Top_Color.setBackgroundColor(getArguments().getInt(BACKGROUND_COLOR));
 
-        Bottom_Color = (ImageView)rootView.findViewById(R.id.backbottom);
-        Bottom_Color.setBackgroundColor(getArguments()
-                .getInt(BACKGROUND_COLOR_BOT));
+        //Bottom_Color = (ImageView)rootView.findViewById(R.id.backbottom);
+        //Bottom_Color.setBackgroundColor(getArguments()
+                //.getInt(BACKGROUND_COLOR_BOT));
 
         imagen = (ImageView)rootView.findViewById(R.id.imagen);
         imagen.setBackgroundResource(getArguments().getInt(IMAGE));
