@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by unbegrenzt for Jorge Luis Morales Centeno on 08-27-17 12:28 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 08-27-17 12:28 PM
+  -->
+
+<!--creada para hacer dinamica la presentación de la intro-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+            android:layout_height="257dp"
+            android:layout_width="match_parent"
+            android:layout_centerInParent="true"
+            android:src="@drawable/descarga"
+            android:id="@+id/imagen"
+            android:contentDescription="Mapa_intro"/>
+
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imagen"
+        android:layout_centerInParent="true"
+        android:text="@string/intro1"
+        android:textAlignment="center"
+        android:textColor="@color/color_no_seleccion"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"/>
+
+
+</RelativeLayout>

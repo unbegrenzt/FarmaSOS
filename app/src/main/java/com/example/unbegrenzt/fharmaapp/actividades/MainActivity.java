@@ -22,7 +22,7 @@ import java.io.OutputStreamWriter;
 public class MainActivity extends AppCompatActivity {
 
     //Clase que presenta el SplashScreen si es primera vez nos dirigimos a una
-    //vista guiada sino al vista screen
+    //vista guiada sino al menu principal
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         if (texto.compareTo("no es primera vez") == 0) {
                             fin.close();
-                            Intent intent = new Intent(MainActivity.this, Navigation.class);
+                            Intent intent = new Intent(MainActivity.this, Principal_map.class);
                             startActivity(intent);
                             finish();
                         }else{
@@ -74,12 +74,12 @@ public class MainActivity extends AppCompatActivity {
                         fout.write(cadena);
                         fout.close();
 
-                        Intent intent = new Intent(MainActivity.this, Vista.class);
+                        Intent intent = new Intent(MainActivity.this, Intro.class);
                         startActivity(intent);
                         finish();
                     } catch (Exception edx) {
                         edx.printStackTrace();
-                        Intent intent = new Intent(MainActivity.this, Vista.class);
+                        Intent intent = new Intent(MainActivity.this, Intro.class);
                         startActivity(intent);
                         finish();
                     }

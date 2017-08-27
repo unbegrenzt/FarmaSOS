@@ -34,11 +34,15 @@
     <string name="map">Mapa</string>
     <string name="farm">Fármaco</string>
     <string name="per">Perfil</string>
-    <string name="inicia_sesion">Inicia Sesión </string>
+    <string name="inicia_sesion">Inicia Sesión</string>
     <string name="an">Aún no te has conectado!</string>
     <string name="least">Mínimo 3 caracteres</string>
     <string name="tu_no">Turno</string>
     <string name="get_ref_farma">farmacias</string>
     <string name="title_activity_farmacia">Farmacia</string>
     <string name="title_activity_maps_activityas">Map</string>
+    <string name="title_activity_principal_map">FarmaSOS</string>
+    <string name="intro1">Encuentra una farmacía abierta de forma ágil</string>
+    <string name="intro2">Consulta información de esa farmacia en tiempo real</string>
+    <string name="intro3">Haz compras electrónicas</string>
 </resources>

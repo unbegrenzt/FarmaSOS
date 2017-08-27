@@ -30,37 +30,24 @@ public class PagesAdapter extends Fragment {
     /**
      * Key to insert the background color into the mapping of a Bundle.
      */
-    private static final String BACKGROUND_COLOR = "color_top";
-    private static final String BACKGROUND_COLOR_BOT = "color_bot";
     private static final String IMAGE = "image";
+    private static final String DESCRIP = "descrip";
 
-    /**
-     * Key to insert the index page into the mapping of a Bundle.
-     */
-    private static final String INDEX = "index";
-
-    private int color_top;
-    private int color_bot;
-    private int image;
-
-    private ImageView Top_Color, Bottom_Color, imagen;
+    private ImageView imagen;
 
     /**
      * Instances a new fragment with a background color and an index page.
      *
-     * @param color
-     *            background color
      * @param image
      */
-    public static PagesAdapter newInstance(/*int color, int color_bot,*/ int image) {
+    public static PagesAdapter newInstance(String descripsion, int image) {
 
         // Instantiate a new fragment
         PagesAdapter fragment = new PagesAdapter();
 
         // Save the parameters
         Bundle bundle = new Bundle();
-        //bundle.putInt(BACKGROUND_COLOR, color);
-        //bundle.putInt(BACKGROUND_COLOR_BOT,color_bot);
+        bundle.putString(DESCRIP, descripsion);
         bundle.putInt(IMAGE, image);
         fragment.setArguments(bundle);
         fragment.setRetainInstance(true);
@@ -83,7 +70,7 @@ public class PagesAdapter extends Fragment {
                              Bundle savedInstanceState) {
 
         ViewGroup rootView = (ViewGroup) inflater.inflate(
-                R.layout.pages_adapter, container, false);
+                R.layout.intro_layout, container, false);
 
         //Top_Color = (ImageView)rootView.findViewById(R.id.backtop);
         //Top_Color.setBackgroundColor(getArguments().getInt(BACKGROUND_COLOR));

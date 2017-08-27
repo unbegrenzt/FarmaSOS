@@ -8,6 +8,7 @@
 package com.example.unbegrenzt.fharmaapp.actividades;
 
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,8 +18,9 @@ import com.example.unbegrenzt.fharmaapp.Fragments.PagesAdapter;
 import com.example.unbegrenzt.fharmaapp.Fragments.SampleSlide;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.github.paolorotolo.appintro.AppIntro;
+import com.github.paolorotolo.appintro.AppIntro2;
 
-public class Intro extends AppIntro {
+public class Intro extends AppIntro2 {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,25 +28,22 @@ public class Intro extends AppIntro {
         //Actyvity para crearla intro del app
 
         //cargando fragments
-        addSlide(/*getResources().getColor(R.color.color_acentuado)
-                ,getResources().getColor(R.color.acentuado_oscuro),
-                getResources().getIdentifier("descarga" , "drawable", getPackageName()))*/
-                SampleSlide.newInstance(R.layout.fragment_tienda_frag));
+        //TODO: cambiar las imágenes que utilizaremos
+        addSlide(PagesAdapter.newInstance(getResources().getString(R.string.intro1),
+                getResources().getIdentifier("descarga1","drawable", getPackageName())));
 
-        addSlide(PagesAdapter.newInstance(/*getResources().getColor(R.color.color_acentuado)
-                ,getResources().getColor(R.color.acentuado_oscuro),*/
-                getResources().getIdentifier("descarga1" , "drawable", getPackageName())));
+        addSlide(PagesAdapter.newInstance(getResources().getString(R.string.intro2),
+                getResources().getIdentifier("ic_info_red","drawable", getPackageName())));
 
-        addSlide(PagesAdapter.newInstance(/*getResources().getColor(R.color.color_acentuado)
-                ,getResources().getColor(R.color.acentuado_oscuro),*/
+        addSlide(PagesAdapter.newInstance(getResources().getString(R.string.intro3),
                 getResources().getIdentifier("descarga2" , "drawable", getPackageName())));
 
         //cambio de color en las barras
         setBarColor(Color.parseColor(String.valueOf(R.color.primary_dark1)));
-        setSeparatorColor(Color.parseColor(String.valueOf(R.color.primary1)));
+        //setSeparatorColor(Color.parseColor(String.valueOf(R.color.primary1)));
 
-        //cinf
-        //setFadeAnimation();
+        //configuro la animación
+        setFadeAnimation();
     }
 
     @Override
@@ -57,6 +56,9 @@ public class Intro extends AppIntro {
     public void onDonePressed(Fragment currentFragment) {
         super.onDonePressed(currentFragment);
         // Do something when users tap on Done button.
+        Intent intent = new Intent(Intro.this, Principal_map.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
