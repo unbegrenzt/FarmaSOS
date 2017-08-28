@@ -8,62 +8,77 @@
 package com.example.unbegrenzt.fharmaapp.actividades;
 
 
+import android.Manifest;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-
-import com.example.unbegrenzt.fharmaapp.Fragments.PagesAdapter;
-import com.example.unbegrenzt.fharmaapp.Fragments.SampleSlide;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import com.example.unbegrenzt.fharmaapp.R;
-import com.github.paolorotolo.appintro.AppIntro;
-import com.github.paolorotolo.appintro.AppIntro2;
+import com.rubengees.introduction.IntroductionBuilder;
+import com.rubengees.introduction.Slide;
+import com.rubengees.introduction.interfaces.OnSlideListener;
 
-public class Intro extends AppIntro2 {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Intro extends FragmentActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Actyvity para crearla intro del app
-
         //cargando fragments
-        //TODO: cambiar las imágenes que utilizaremos
-        addSlide(PagesAdapter.newInstance(getResources().getString(R.string.intro1),
-                getResources().getIdentifier("descarga1","drawable", getPackageName())));
+        new IntroductionBuilder(this)
+                .withSlides(generateSlides())
+                .withOnSlideListener(new OnSlideListener() {
+                    @Override
+                    public void onSlideChanged(int from, int to) {
+                        if (from == 0 && to == 1) {
+                            if (ActivityCompat.checkSelfPermission(Intro.this,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-        addSlide(PagesAdapter.newInstance(getResources().getString(R.string.intro2),
-                getResources().getIdentifier("ic_info_red","drawable", getPackageName())));
+                                ActivityCompat.requestPermissions(Intro.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 12);
+                            }
+                        }
+                    }
+                }).introduceMyself();
 
-        addSlide(PagesAdapter.newInstance(getResources().getString(R.string.intro3),
-                getResources().getIdentifier("descarga2" , "drawable", getPackageName())));
-
-        //cambio de color en las barras
-        setBarColor(Color.parseColor(String.valueOf(R.color.primary_dark1)));
-        //setSeparatorColor(Color.parseColor(String.valueOf(R.color.primary1)));
-
-        //configuro la animación
-        setFadeAnimation();
     }
 
     @Override
-    public void onSkipPressed(Fragment currentFragment) {
-        super.onSkipPressed(currentFragment);
-        // Do something when users tap on Skip button.
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == IntroductionBuilder.INTRODUCTION_REQUEST_CODE && resultCode == RESULT_OK) {
+
+            Intent intent = new Intent(Intro.this, Principal_map.class);
+            startActivity(intent);
+
+        }
     }
 
-    @Override
-    public void onDonePressed(Fragment currentFragment) {
-        super.onDonePressed(currentFragment);
-        // Do something when users tap on Done button.
-        Intent intent = new Intent(Intro.this, Principal_map.class);
-        startActivity(intent);
-        finish();
-    }
+    //TODO: cambiar las imágenes que utilizaremos
+    private List<Slide> generateSlides() {
+        List<Slide> result = new ArrayList<>();
 
-    @Override
-    public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
-        super.onSlideChanged(oldFragment, newFragment);
-        // Do something when the slide changes.
+        result.add(new Slide()
+                .withDescription(getResources().getString(R.string.intro1)).
+                        withColorResource(R.color.color_acentuado)
+                .withImage(R.drawable.descarga)
+        );
+
+        result.add(new Slide()
+                .withDescription(getResources().getString(R.string.intro2))
+                .withColorResource(R.color.primary_dark1)
+                .withImage(R.drawable.ic_farmaco)
+        );
+
+        result.add(new Slide()
+                .withDescription(getResources().getString(R.string.intro3))
+                .withColorResource(R.color.color_base)
+                .withImage(R.drawable.ic_add_location)
+        );
+
+        return result;
     }
 }

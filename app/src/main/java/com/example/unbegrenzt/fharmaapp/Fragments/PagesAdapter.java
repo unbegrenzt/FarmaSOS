@@ -7,6 +7,7 @@
 
 package com.example.unbegrenzt.fharmaapp.Fragments;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import android.widget.TextView;
 import com.example.unbegrenzt.fharmaapp.R;
 
 
@@ -34,6 +36,7 @@ public class PagesAdapter extends Fragment {
     private static final String DESCRIP = "descrip";
 
     private ImageView imagen;
+    private TextView texto;
 
     /**
      * Instances a new fragment with a background color and an index page.
@@ -79,11 +82,20 @@ public class PagesAdapter extends Fragment {
         //Bottom_Color.setBackgroundColor(getArguments()
                 //.getInt(BACKGROUND_COLOR_BOT));
 
-        imagen = (ImageView)rootView.findViewById(R.id.imagen);
-        imagen.setBackgroundResource(getArguments().getInt(IMAGE));
+            imagen = (ImageView)rootView.findViewById(R.id.imagen);
+            imagen.setBackgroundResource(getArguments().getInt(IMAGE));
+
+            texto = (TextView)rootView.findViewById(R.id.texto);
+            texto.setText(getArguments().getString(DESCRIP));
 
         return rootView;
 
     }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
+    }
+
 
 }

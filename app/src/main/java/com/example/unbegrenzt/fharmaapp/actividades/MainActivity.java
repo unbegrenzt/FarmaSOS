@@ -7,17 +7,12 @@
 
 package com.example.unbegrenzt.fharmaapp.actividades;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import android.util.Log;
+import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,10 +21,31 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
+        SharedPreferencesManager.init(getApplicationContext(), true);
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                try {
+
+                int text = SharedPreferencesManager.getInstance().getValue("Test", Integer.class);
+
+                if (text == 3){
+
+                    Intent intent = new Intent(MainActivity.this, Principal_map.class);
+                    startActivity(intent);
+                    finish();
+
+                }else{
+
+                    SharedPreferencesManager.getInstance().putValue("Test", 3);
+
+                    Intent intent = new Intent(MainActivity.this, Intro.class);
+                    startActivity(intent);
+                    finish();
+                }
+
+
+                /*try {
                     InputStream fin = openFileInput("momento.txt");
                     BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
                     String texto = "";
@@ -83,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                         finish();
                     }
-                }
+                }*/
             }
         },500);
         //tiempo en ms en que se presenta el SplashScreen
