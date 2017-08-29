@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                int text = SharedPreferencesManager.getInstance().getValue("Test", Integer.class);
+                int text = SharedPreferencesManager.getInstance().getValue("primera_vez",
+                        Integer.class);
 
                 if (text == 3){
 
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }else{
 
-                    SharedPreferencesManager.getInstance().putValue("Test", 3);
+                    SharedPreferencesManager.getInstance().putValue("primera_vez", 3);
 
                     Intent intent = new Intent(MainActivity.this, Intro.class);
                     startActivity(intent);

@@ -29,21 +29,60 @@ public class Intro extends FragmentActivity{
         super.onCreate(savedInstanceState);
         //Actyvity para crearla intro del app
         //cargando fragments
+
         new IntroductionBuilder(this)
                 .withSlides(generateSlides())
                 .withOnSlideListener(new OnSlideListener() {
                     @Override
                     public void onSlideChanged(int from, int to) {
-                        if (from == 0 && to == 1) {
-                            if (ActivityCompat.checkSelfPermission(Intro.this,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-                                ActivityCompat.requestPermissions(Intro.this,
-                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 12);
-                            }
+                        //generando solicitudes de permisos al usuario
+                        if (from == 0 && to == 1) {
+
+                            askforpermissions();
                         }
+
                     }
                 }).introduceMyself();
+
+    }
+
+    public void askforpermissions(){
+
+        if (ActivityCompat.checkSelfPermission(Intro.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(Intro.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 12);
+        }
+
+        if (ActivityCompat.checkSelfPermission(Intro.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+
+            ActivityCompat.requestPermissions(Intro.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 12);
+        }
+
+        if (ActivityCompat.checkSelfPermission(Intro.this,
+                Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
+
+            ActivityCompat.requestPermissions(Intro.this,
+                    new String[]{Manifest.permission.INTERNET}, 12);
+        }
+
+        if (ActivityCompat.checkSelfPermission(Intro.this,
+                Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED){
+
+            ActivityCompat.requestPermissions(Intro.this,
+                    new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, 12);
+        }
+
+        if (ActivityCompat.checkSelfPermission(Intro.this,
+                Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED){
+
+            ActivityCompat.requestPermissions(Intro.this,
+                    new String[]{Manifest.permission.GET_ACCOUNTS}, 12);
+        }
 
     }
 
