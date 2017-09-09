@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                             fout.write(cad);
                             fout.close();
 
-                            Intent intent = new Intent(MainActivity.this, Vista.class);
+                            Intent intent = new Intent(MainActivity.this, Intro.class);
                             startActivity(intent);
                             finish();
                         }

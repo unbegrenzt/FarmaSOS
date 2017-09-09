@@ -7,14 +7,12 @@
 
 package com.example.unbegrenzt.fharmaapp.actividades;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,10 +20,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.example.unbegrenzt.fharmaapp.Fragments.Map;
 import com.example.unbegrenzt.fharmaapp.R;
 
 public class Principal_map extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private FragmentManager manager;
+    private FragmentTransaction transaction;
+    private Map fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +58,8 @@ public class Principal_map extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        fragment = Map.newInstance();
+        instiantiate();
 
     }
 
@@ -98,7 +105,7 @@ public class Principal_map extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+            fragment = Map.newInstance();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -111,8 +118,20 @@ public class Principal_map extends AppCompatActivity
 
         }
 
+        instiantiate();
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void instiantiate() {
+        if(fragment != null) {
+            manager = getSupportFragmentManager();
+            transaction = manager.beginTransaction();
+            transaction.replace(R.id.frames, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 }

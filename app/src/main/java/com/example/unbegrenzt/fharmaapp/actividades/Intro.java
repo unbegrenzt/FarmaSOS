@@ -49,12 +49,12 @@ public class Intro extends FragmentActivity{
 
     public void askforpermissions(){
 
-        if (ActivityCompat.checkSelfPermission(Intro.this,
+        /*if (ActivityCompat.checkSelfPermission(Intro.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(Intro.this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 12);
-        }
+        }*/
 
         if (ActivityCompat.checkSelfPermission(Intro.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
@@ -77,12 +77,12 @@ public class Intro extends FragmentActivity{
                     new String[]{Manifest.permission.ACCESS_NETWORK_STATE}, 12);
         }
 
-        if (ActivityCompat.checkSelfPermission(Intro.this,
+        /*if (ActivityCompat.checkSelfPermission(Intro.this,
                 Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED){
 
             ActivityCompat.requestPermissions(Intro.this,
                     new String[]{Manifest.permission.GET_ACCOUNTS}, 12);
-        }
+        }*/
 
     }
 
