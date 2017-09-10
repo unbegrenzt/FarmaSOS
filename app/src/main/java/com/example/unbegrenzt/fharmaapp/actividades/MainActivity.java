@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (text == 3){
 
-                    Intent intent = new Intent(MainActivity.this, Principal_map.class);
+                    Intent intent = new Intent(MainActivity.this, Navigation.class);
                     startActivity(intent);
                     finish();
 

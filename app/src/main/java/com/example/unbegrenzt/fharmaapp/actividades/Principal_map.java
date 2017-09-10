@@ -7,6 +7,7 @@
 
 package com.example.unbegrenzt.fharmaapp.actividades;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -26,7 +27,8 @@ import com.example.unbegrenzt.fharmaapp.Fragments.Map;
 import com.example.unbegrenzt.fharmaapp.R;
 
 public class Principal_map extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+            Map.OnFragmentInteractionListener {
 
     private FragmentManager manager;
     private FragmentTransaction transaction;
@@ -104,7 +106,7 @@ public class Principal_map extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        /*if (id == R.id.nav_camera) {
             fragment = Map.newInstance();
         } else if (id == R.id.nav_gallery) {
 
@@ -116,7 +118,7 @@ public class Principal_map extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
-        }
+        }*/
 
         instiantiate();
 
@@ -133,5 +135,10 @@ public class Principal_map extends AppCompatActivity
                     .addToBackStack(null)
                     .commit();
         }
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

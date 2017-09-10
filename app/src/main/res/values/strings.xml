@@ -45,4 +45,5 @@
     <string name="intro1">Encuentra una farmacía abierta de forma ágil</string>
     <string name="intro2">Consulta información de esa farmacia en tiempo real</string>
     <string name="intro3">Haz compras electrónicas</string>
+    <string name="title_activity_fmap">Home</string>
 </resources>
