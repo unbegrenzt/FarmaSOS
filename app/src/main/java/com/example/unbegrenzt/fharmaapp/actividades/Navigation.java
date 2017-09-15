@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -43,7 +44,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
+import com.keiferstone.nonet.Configuration;
+import com.keiferstone.nonet.Monitor;
+import com.keiferstone.nonet.NoNet;
+import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
+import org.aviran.cookiebar2.CookieBar;
+import org.aviran.cookiebar2.OnActionClickListener;
 
 
 public class Navigation extends AppCompatActivity implements izi.OnFragmentInteractionListener,
@@ -58,13 +64,12 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
     private FirebaseAuth.AuthStateListener mAuthListener;
     private boolean isLoged = false;
     private FrameLayout frame;
+    int beforestate = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation);
-
-        frame = (FrameLayout)findViewById(R.id.farma);
 
         //se crea el toolbar
         toolbar = (Toolbar)findViewById(R.id.toolbar);
@@ -96,6 +101,34 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
                 // ...
             }
         };
+
+        //TODO: optimizar bateria
+        //metodo verificador de internet
+        NoNet.monitor(this)
+                .poll()
+                .callback(new Monitor.Callback() {
+                    @Override
+                    public void onConnectionEvent(int connectionStatus) {
+
+                        if (connectionStatus == 101){
+
+                            if (!(beforestate == connectionStatus)) {
+
+                                CookieBar.Build(Navigation.this)
+                                        .setTitle("Mala conexión detectada")
+                                        .setIcon(R.drawable.ic_wifioff)
+                                        .setMessage("Está desconectado de internet")
+                                        .setLayoutGravity(Gravity.TOP)
+                                        .setBackgroundColor(R.color.primary_dark1)
+                                        .setTitleColor(R.color.color_no_seleccion)
+                                        .setMessageColor(R.color.color_de_texto)
+                                        .setDuration(5000)
+                                        .show();
+                            }
+                        }
+                        beforestate = connectionStatus;
+                    }
+                });
 
     }
 
@@ -214,7 +247,7 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
 
         // Manage titles
         bottomNavigation.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
-        bottomNavigation.setCurrentItem(0);
+        bottomNavigation.setCurrentItem(1);
         // Enable the translation of the FloatingActionButton
         //bottomNavigation.manageFloatingActionButtonBehavior(mwnu);
     }
@@ -279,16 +312,16 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
 
 
     public void showtienda(com.example.unbegrenzt.fharmaapp.Objects.Farmacia farmaciasx) {
-        frame.setVisibility(View.VISIBLE);
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.farma, Tienda_frag.newInstance(farmaciasx));
-        transaction.commit();
+        //frame.setVisibility(View.VISIBLE);
+        //FragmentManager manager = getSupportFragmentManager();
+        //FragmentTransaction transaction = manager.beginTransaction();
+        //transaction.replace(R.id.farma, Tienda_frag.newInstance(farmaciasx));
+        //transaction.commit();
     }
 
     public void disposetienda() {
-        if(frame != null)
-        frame.setVisibility(View.GONE);
+        //if(frame != null)
+        //frame.setVisibility(View.GONE);
     }
 
     @Override

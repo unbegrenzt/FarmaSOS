@@ -18,7 +18,7 @@ android {
     buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId "com.example.unbegrenzt.fharmaapp"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         multiDexEnabled true
         versionCode 1
@@ -45,6 +45,9 @@ dependencies {
     compile('com.google.apis:google-api-services-gmail:v1-rev66-1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+    compile 'com.keiferstone:nonet:2.0.4'
+    compile 'org.aviran.cookiebar2:cookiebar2:1.0.5'
+    compile 'com.jackandphantom.android:circularprogressbar:1.2.0'
     compile 'com.github.ittianyu:BottomNavigationViewEx:1.2.1'
     compile 'com.github.rubengees:introduction:1.4.1'
     compile 'com.github.clans:fab:1.6.4'

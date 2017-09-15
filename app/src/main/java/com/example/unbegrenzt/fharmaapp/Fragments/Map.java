@@ -9,6 +9,7 @@ package com.example.unbegrenzt.fharmaapp.Fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -19,16 +20,20 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +67,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.api.services.gmail.model.Thread;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -71,6 +77,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import org.aviran.cookiebar2.CookieBar;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -78,6 +85,7 @@ import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -85,7 +93,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class Map extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
-        com.google.android.gms.location.LocationListener {
+        com.google.android.gms.location.LocationListener,GoogleMap.OnMarkerClickListener {
 
     private OnFragmentInteractionListener mListener;
     private SupportMapFragment fragment;
@@ -170,6 +178,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     private ValueEventListener latlistener;
     private boolean query = false;
     private Marker markerplace;
+    private Thread conexion;
 
     /**
      * fin de declaracion de las variables e inicio de los metodos de la activity
@@ -194,6 +203,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //primero verificamos el acceso a internet
         FragmentManager fm = getChildFragmentManager();
         fragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
         if (fragment == null) {
@@ -201,6 +211,10 @@ public class Map extends Fragment implements OnMapReadyCallback,
             fm.beginTransaction().replace(R.id.map, fragment).commit();
         }
         fragment.getMapAsync(this);
+
+        final ProgressDialog progressDialog = new ProgressDialog(getApplicationContext(),
+                R.style.AppTheme);
+
         databaseFarma = FirebaseDatabase.getInstance().getReference
                 (getString(R.string.get_ref_farma));
 
@@ -817,10 +831,14 @@ public class Map extends Fragment implements OnMapReadyCallback,
                     double distancia = Math.sqrt((x + y));
                     Log.i("entro",String.valueOf(distancia));
                     if(distancia <= 0.0000490){
+                        Toast.makeText(getApplicationContext(),"aquiii",Toast.LENGTH_LONG)
+                                .show();
                         ((Navigation)getActivity()).showtienda(farmaciasx);
                         break;
                     }else{
-                        ( (Navigation)getActivity()).disposetienda();
+                        Toast.makeText(getApplicationContext(),"aquiiiz112",Toast.LENGTH_LONG)
+                                .show();
+                        ((Navigation)getActivity()).disposetienda();
                     }
                 }
             }
@@ -914,6 +932,27 @@ public class Map extends Fragment implements OnMapReadyCallback,
         updateLocationUI();
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        // Retrieve the data from the marker.
+        Integer clickCount = (Integer) marker.getTag();
+
+        // Check if a click count was set, then display the click count.
+        if (clickCount != null) {
+            clickCount = clickCount + 1;
+            marker.setTag(clickCount);
+            Toast.makeText(getApplicationContext(),
+                    marker.getTitle() +
+                            " has been clicked " + clickCount + " times.",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        // Return false to indicate that we have not consumed the event and that we wish
+        // for the default behavior to occur (which is for the camera to move such that the
+        // marker is centered and for the marker's info window to open, if it has one).
+        return false;
+
+    }
 
 
     public interface OnFragmentInteractionListener {

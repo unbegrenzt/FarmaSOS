@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }*/
             }
-        },500);
+        },200);
         //tiempo en ms en que se presenta el SplashScreen
     }
 

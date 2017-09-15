@@ -90,7 +90,7 @@ public class Intro extends FragmentActivity{
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == IntroductionBuilder.INTRODUCTION_REQUEST_CODE && resultCode == RESULT_OK) {
 
-            Intent intent = new Intent(Intro.this, FMap.class);
+            Intent intent = new Intent(Intro.this, Navigation.class);
             startActivity(intent);
 
         }
