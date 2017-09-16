@@ -799,14 +799,42 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
         //se quita la brujula
         mMap.getUiSettings().setCompassEnabled(true);
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        /*mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
+                //esta logica aplica al tocar el mapa
                 query = false;
                 if(markerplace != null)markerplace.remove();
                 markerplace = mMap.addMarker(new MarkerOptions()
                         .position(latLng));
                 doQuery(redondear(latLng.latitude),redondear(latLng.longitude));
+            }
+        });*/
+
+        new android.os.Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                databaseFarma.addValueEventListener(listener = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.i("entro","entro");
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            com.example.unbegrenzt.fharmaapp.Objects.Farmacia farmaciasx = postSnapshot.getValue(com.example.unbegrenzt.fharmaapp.Objects.Farmacia.class);
+                            double lat_2 = Double.parseDouble(farmaciasx.getLat());
+                            double longitud_2 = Double.parseDouble(farmaciasx.getLong());
+
+                            LatLng posi = new LatLng(lat_2,longitud_2);
+
+                            mMap.addMarker(new MarkerOptions().position(posi).title(farmaciasx.getmName()));
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
     }

@@ -65,6 +65,7 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
     private boolean isLoged = false;
     private FrameLayout frame;
     int beforestate = 0;
+    private FloatingActionButton buttom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +84,9 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
 
         bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnTabSelectedListener(this);
+
+        //instancia del float buttom
+        buttom = (FloatingActionButton) findViewById(R.id.butflot);
         this.CreateItems();
 
         getWindow().setBackgroundDrawable(null);
@@ -248,6 +252,8 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
         // Manage titles
         bottomNavigation.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
         bottomNavigation.setCurrentItem(1);
+
+        bottomNavigation.manageFloatingActionButtonBehavior(buttom);
         // Enable the translation of the FloatingActionButton
         //bottomNavigation.manageFloatingActionButtonBehavior(mwnu);
     }
