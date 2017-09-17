@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Toast;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.actividades.Navigation;
 import com.facebook.CallbackManager;
@@ -23,6 +24,8 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 /**
@@ -36,6 +39,10 @@ import com.facebook.login.widget.LoginButton;
 public class perfil_off extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private static final int LOGIN_SUCCESS = 64206;
+
+    private static final int OK = -1;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -97,8 +104,7 @@ public class perfil_off extends Fragment {
                 // App code
                 //se pasa el token de facebook a firebase
                 ((Navigation)getActivity()).handleFacebookAccessToken(loginResult.getAccessToken());
-                ((Navigation)getActivity()).isLog(true);
-                ((Navigation)getActivity()).refresh();
+
             }
 
             @Override
@@ -120,6 +126,16 @@ public class perfil_off extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
+        if(requestCode == LOGIN_SUCCESS){
+            if(resultCode == OK){
+
+                //((Navigation)getActivity()).refresh(1);
+                //aqui se parsea al perfil normal
+                Toast.makeText(getApplicationContext(),"logged",Toast.LENGTH_LONG).show();
+
+            }
+
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

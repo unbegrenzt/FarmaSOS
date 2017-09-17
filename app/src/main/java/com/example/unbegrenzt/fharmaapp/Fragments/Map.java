@@ -20,26 +20,19 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.actividades.Navigation;
@@ -49,11 +42,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.*;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
@@ -62,22 +51,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.*;
 import com.google.api.services.gmail.model.Thread;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 import com.squareup.picasso.Picasso;
-import org.aviran.cookiebar2.CookieBar;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -85,7 +64,6 @@ import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -93,7 +71,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class Map extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
-        com.google.android.gms.location.LocationListener,GoogleMap.OnMarkerClickListener {
+        com.google.android.gms.location.LocationListener,GoogleMap.OnMarkerClickListener{
 
     private OnFragmentInteractionListener mListener;
     private SupportMapFragment fragment;
@@ -211,9 +189,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
             fm.beginTransaction().replace(R.id.map, fragment).commit();
         }
         fragment.getMapAsync(this);
-
-        final ProgressDialog progressDialog = new ProgressDialog(getApplicationContext(),
-                R.style.AppTheme);
 
         databaseFarma = FirebaseDatabase.getInstance().getReference
                 (getString(R.string.get_ref_farma));
@@ -711,7 +686,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     }
 
     //mueve la camara a tu ubicación
-    private void move_to_my_pos() {
+    public void move_to_my_pos() {
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(pos).zoom(16).build();
         mMap.animateCamera(CameraUpdateFactory
@@ -771,17 +746,24 @@ public class Map extends Fragment implements OnMapReadyCallback,
     @Override
     public void onDetach() {
         super.onDetach();
+        Field childFragmentManager = null;
         try {
-            Field childFragmentManager = Fragment.class
+            childFragmentManager = Fragment.class
                     .getDeclaredField("mChildFragmentManager");
-            childFragmentManager.setAccessible(true);
-            childFragmentManager.set(this, null);
-
         } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+        if (childFragmentManager != null) {
+            childFragmentManager.setAccessible(true);
+        }
+        try {
+            if (childFragmentManager != null) {
+                childFragmentManager.set(this, null);
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -802,14 +784,55 @@ public class Map extends Fragment implements OnMapReadyCallback,
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                query = false;
+                /*query = false;
                 if(markerplace != null)markerplace.remove();
                 markerplace = mMap.addMarker(new MarkerOptions()
                         .position(latLng));
-                doQuery(redondear(latLng.latitude),redondear(latLng.longitude));
+                doQuery(redondear(latLng.latitude),redondear(latLng.longitude));*/
             }
         });
+        Markerspdate();
+
     }
+
+    private void Markerspdate(){
+
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+
+                        databaseFarma.addValueEventListener(listener = new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                                    com.example.unbegrenzt.fharmaapp.Objects.Farmacia farmaciasx = postSnapshot.getValue(com.example.unbegrenzt.fharmaapp.Objects.Farmacia.class);
+                                    double lat_2 = Double.parseDouble(farmaciasx.getLat());
+                                    double longitud_2 = Double.parseDouble(farmaciasx.getLong());
+
+                                    LatLng gg = new LatLng(lat_2,longitud_2);
+
+                                    mMap.addMarker(new MarkerOptions()
+                                            .position(gg).title(farmaciasx.getmName()).snippet(farmaciasx.getID()));
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+
+                }
+                , 100);
+
+    }
+
+
 
     private void doQuery(final double latitud, final double longitud) {
         //Query querylat = databaseFarma.orderByChild("lat").equalTo(latitud);
@@ -934,6 +957,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+
         // Retrieve the data from the marker.
         Integer clickCount = (Integer) marker.getTag();
 
