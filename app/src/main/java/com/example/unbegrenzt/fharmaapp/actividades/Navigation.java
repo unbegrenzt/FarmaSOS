@@ -386,9 +386,9 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
                 }*/
 
                 if (viewPager.getCurrentItem() != 1){
-                    fab.setVisibility(View.GONE);
-                }else {
                     fab.setVisibility(View.VISIBLE);
+                }else {
+                    fab.setVisibility(View.GONE);
                 }
 
                 viewPager.setCurrentItem(position, false);
