@@ -8,9 +8,7 @@
 package com.example.unbegrenzt.fharmaapp.actividades;
 
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -20,8 +18,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
@@ -31,7 +27,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
 import com.example.unbegrenzt.fharmaapp.Adapter.DemoViewPagerAdapter;
 import com.example.unbegrenzt.fharmaapp.Fragments.Map;
@@ -46,7 +41,6 @@ import com.example.unbegrenzt.fharmaapp.Fragments.Perfil;
 import com.example.unbegrenzt.fharmaapp.Fragments.farmacos;
 import com.example.unbegrenzt.fharmaapp.Fragments.perfil_off;
 import com.example.unbegrenzt.fharmaapp.R;
-import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -54,12 +48,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.keiferstone.nonet.Configuration;
 import com.keiferstone.nonet.Monitor;
 import com.keiferstone.nonet.NoNet;
-import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
 import org.aviran.cookiebar2.CookieBar;
-import org.aviran.cookiebar2.OnActionClickListener;
 
 import java.util.ArrayList;
 
@@ -358,7 +349,7 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
 
                     Fragment fragment = adapter.getItem(1);
                     if (fragment != null && fragment instanceof Map) {
-                        ((Map) fragment).move_to_my_pos();
+                        ((Map) fragment).farm_cercana();
                     }
 
                 }
