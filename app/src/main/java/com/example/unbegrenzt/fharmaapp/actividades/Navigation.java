@@ -11,13 +11,15 @@ package com.example.unbegrenzt.fharmaapp.actividades;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -25,9 +27,12 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
+import com.example.unbegrenzt.fharmaapp.Adapter.DemoViewPagerAdapter;
 import com.example.unbegrenzt.fharmaapp.Fragments.Map;
 import com.example.unbegrenzt.fharmaapp.Fragments.Tienda_frag;
 import com.example.unbegrenzt.fharmaapp.Fragments.izi;
+import com.example.unbegrenzt.fharmaapp.animaciones.FABehavior;
 import com.facebook.AccessToken;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -36,7 +41,6 @@ import com.example.unbegrenzt.fharmaapp.Fragments.Perfil;
 import com.example.unbegrenzt.fharmaapp.Fragments.farmacos;
 import com.example.unbegrenzt.fharmaapp.Fragments.perfil_off;
 import com.example.unbegrenzt.fharmaapp.R;
-import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -44,18 +48,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.keiferstone.nonet.Configuration;
 import com.keiferstone.nonet.Monitor;
 import com.keiferstone.nonet.NoNet;
-import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
 import org.aviran.cookiebar2.CookieBar;
-import org.aviran.cookiebar2.OnActionClickListener;
+
+import java.util.ArrayList;
 
 
 public class Navigation extends AppCompatActivity implements izi.OnFragmentInteractionListener,
         Map.OnFragmentInteractionListener, farmacos.OnFragmentInteractionListener,
             Perfil.OnFragmentInteractionListener,perfil_off.OnFragmentInteractionListener
-                ,AHBottomNavigation.OnTabSelectedListener, Tienda_frag.OnFragmentInteractionListener{
+        ,Tienda_frag.OnFragmentInteractionListener{
 
     AHBottomNavigation bottomNavigation;
     Toolbar toolbar;
@@ -65,7 +68,15 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
     private boolean isLoged = false;
     private FrameLayout frame;
     int beforestate = 0;
-    private FloatingActionButton buttom;
+
+    // UI
+    private AHBottomNavigationViewPager viewPager;
+    private FloatingActionButton floatingActionButton;
+    private Handler handler = new Handler();
+    private DemoViewPagerAdapter adapter;
+    private ArrayList<AHBottomNavigationItem> bottomNavigationItems = new ArrayList<>();
+    private Fragment currentFragment;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,13 +92,7 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
         mAuth = FirebaseAuth.getInstance();
 
 
-
-        bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
-        bottomNavigation.setOnTabSelectedListener(this);
-
-        //instancia del float buttom
-        buttom = (FloatingActionButton) findViewById(R.id.butflot);
-        this.CreateItems();
+        initUI();
 
         getWindow().setBackgroundDrawable(null);
 
@@ -227,6 +232,8 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
 
     private void CreateItems(){
 
+        viewPager = (AHBottomNavigationViewPager) findViewById(R.id.view_pager);
+
         //creando los items
         AHBottomNavigationItem FarmaItem = new AHBottomNavigationItem(getString(R.string.hom),
                 R.drawable.ic_home);
@@ -253,7 +260,7 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
         bottomNavigation.setTitleState(AHBottomNavigation.TitleState.SHOW_WHEN_ACTIVE);
         bottomNavigation.setCurrentItem(1);
 
-        bottomNavigation.manageFloatingActionButtonBehavior(buttom);
+        bottomNavigation.manageFloatingActionButtonBehavior(floatingActionButton);
         // Enable the translation of the FloatingActionButton
         //bottomNavigation.manageFloatingActionButtonBehavior(mwnu);
     }
@@ -263,9 +270,165 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
 
     }
 
+    public void showOrHideBottomNavigation(boolean show) {
+        if (show) {
+            bottomNavigation.restoreBottomNavigation(true);
+        } else {
+            bottomNavigation.hideBottomNavigation(true);
+        }
+    }
+
+    /**
+     * Show or hide selected item background
+     */
+    public void updateSelectedBackgroundVisibility(boolean isVisible) {
+        bottomNavigation.setSelectedBackgroundVisible(isVisible);
+    }
+
+
+    public void setForceTitleHide(boolean forceTitleHide) {
+        AHBottomNavigation.TitleState state = forceTitleHide ? AHBottomNavigation.TitleState.ALWAYS_HIDE : AHBottomNavigation.TitleState.ALWAYS_SHOW;
+        bottomNavigation.setTitleState(state);
+    }
+
+
+    public int getBottomNavigationNbItems() {
+        return bottomNavigation.getItemsCount();
+    }
+
+    private void initUI() {
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        }
+
+        //intancias
+        bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
+        viewPager = (AHBottomNavigationViewPager) findViewById(R.id.view_pager);
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.floating_action_button);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        AHBottomNavigationItem tienda = new AHBottomNavigationItem(getString(R.string.hom),
+                R.drawable.ic_mall);
+
+        AHBottomNavigationItem mapa = new AHBottomNavigationItem(getString(R.string.map)
+                , R.drawable.ic_map);
+
+        AHBottomNavigationItem perfil = new AHBottomNavigationItem(getString(R.string.per)
+                , R.drawable.ic_profile);
+
+        bottomNavigationItems.add(tienda);
+        bottomNavigationItems.add(mapa);
+        bottomNavigationItems.add(perfil);
+
+        bottomNavigation.addItems(bottomNavigationItems);
+
+
+        bottomNavigation.manageFloatingActionButtonBehavior(floatingActionButton);
+        bottomNavigation.setTranslucentNavigationEnabled(true);
+
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (viewPager.getCurrentItem() == 1) {
+                    Fragment fragment = adapter.getItem(1);
+                    if (fragment != null && fragment instanceof Map) {
+                        ((Map) fragment).move_to_my_pos();
+                    }
+                }
+            }
+        });
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (viewPager.getCurrentItem() == 1) {
+
+                    Fragment fragment = adapter.getItem(1);
+                    if (fragment != null && fragment instanceof Map) {
+                        ((Map) fragment).farm_cercana();
+                    }
+
+                }
+
+            }
+        });
+
+
+
+        bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
+            @Override
+            public boolean onTabSelected(int position, boolean wasSelected) {
+
+                /*if (currentFragment == null) {
+                    currentFragment = adapter.getCurrentFragment();
+                }
+
+                if (wasSelected) {
+                    currentFragment.refresh();
+                    return true;
+                }
+
+                if (currentFragment != null) {
+                    currentFragment.willBeHidden();
+                }*/
+
+                if (viewPager.getCurrentItem() != 1){
+                    fab.setVisibility(View.VISIBLE);
+                }else {
+                    fab.setVisibility(View.GONE);
+                }
+
+                viewPager.setCurrentItem(position, false);
+
+                if (currentFragment == null) {
+                    return true;
+                }
+
+                currentFragment = adapter.getCurrentFragment();
+                //currentFragment.willBeDisplayed();
+
+                return true;
+            }
+        });
+
+		/*
+		bottomNavigation.setOnNavigationPositionListener(new AHBottomNavigation.OnNavigationPositionListener() {
+			@Override public void onPositionChange(int y) {
+				Log.d("DemoActivity", "BottomNavigation Position: " + y);
+			}
+		});
+		*/
+
+        viewPager.setOffscreenPageLimit(4);
+        adapter = new DemoViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(adapter);
+
+        currentFragment = adapter.getCurrentFragment();
+
+        bottomNavigation.setCurrentItem(1);
+
+    }
+
+    //posicionamos el otro floating buttom
+    public void manageoveranotherfab(FloatingActionButton fab) {
+        if (fab.getParent() instanceof CoordinatorLayout) {
+            FABehavior fabBehavior = new FABehavior(fab.getHeight());
+            ((CoordinatorLayout.LayoutParams) fab.getLayoutParams())
+                    .setBehavior(fabBehavior);
+        }
+    }
+
     @Override
-    public boolean onTabSelected(int position, boolean wasSelected) {
-        Fragment fragment = null;
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
+    }
+
+        /*Fragment fragment = null;
 
         if (position == 0) {
             //mwnu.setVisibility(View.GONE);
@@ -292,7 +455,7 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
             /*fragment = new farmacos();
             setTitle(getString(R.string.farm));*/
 
-        } else if (position == 3) {
+        /*} else if (position == 3) {
             //si la persona se logea ser presenta su perfil en
             //caso contrario se muestra un sms de que debe conectarse
 
@@ -302,19 +465,20 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.frag, fragment);
-        transaction.commit();
-
-        return true;
-    }
+        transaction.commit();*/
 
     public boolean isLog(boolean log) {
         return this.isLoged = log;
     }
 
-    public void refresh(){
-        bottomNavigation.setCurrentItem(3);
-        bottomNavigation.refresh();
-    }
+
+    //hacemos que las instancias creadas en el adaptador se actualizen
+    /*public void refresh(int pos){
+
+        adapter.refreshpos(pos);
+        viewPager.refreshDrawableState();
+
+    }*/
 
 
     public void showtienda(com.example.unbegrenzt.fharmaapp.Objects.Farmacia farmaciasx) {

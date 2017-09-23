@@ -20,26 +20,26 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
-
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.constant.AvoidType;
+import com.akexorcist.googledirection.constant.TransportMode;
+import com.akexorcist.googledirection.model.Direction;
+import com.directions.route.*;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.actividades.Navigation;
@@ -49,35 +49,18 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.*;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.*;
 import com.google.api.services.gmail.model.Thread;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 import com.squareup.picasso.Picasso;
-import org.aviran.cookiebar2.CookieBar;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -85,15 +68,15 @@ import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.google.android.gms.location.places.Places.PlaceDetectionApi;
 
 
 public class Map extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
-        com.google.android.gms.location.LocationListener,GoogleMap.OnMarkerClickListener {
+        com.google.android.gms.location.LocationListener,GoogleMap.OnMarkerClickListener{
 
     private OnFragmentInteractionListener mListener;
     private SupportMapFragment fragment;
@@ -179,6 +162,16 @@ public class Map extends Fragment implements OnMapReadyCallback,
     private boolean query = false;
     private Marker markerplace;
     private Thread conexion;
+    private ValueEventListener listener2;
+    private double dist_corta = 0;
+    private int foot_before = 0;
+    private double farmlat;
+    private double farmlong;
+    private List<Polyline> polylines;
+
+    private static final int[] COLORS = new int[]{
+            R.color.primary_dark1,R.color.primary1,R.color.primary_text1,
+            R.color.accent1,R.color.primary_dark_material_light};
 
     /**
      * fin de declaracion de las variables e inicio de los metodos de la activity
@@ -212,9 +205,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
         }
         fragment.getMapAsync(this);
 
-        final ProgressDialog progressDialog = new ProgressDialog(getApplicationContext(),
-                R.style.AppTheme);
-
         databaseFarma = FirebaseDatabase.getInstance().getReference
                 (getString(R.string.get_ref_farma));
 
@@ -241,6 +231,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
         buildLocationSettingsRequest();
         //updatelistener();
         //AddPlace();
+        polylines = new ArrayList<>();
     }
 
     private void AddPlace() {
@@ -355,6 +346,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
         mGoogleApiClient.disconnect();
 
         if(listener != null)databaseFarma.removeEventListener(listener);
+        if(listener2 != null)databaseFarma.removeEventListener(listener2);
     }
     /*
      * terminan los metodos de la activity e inician los recurrentes a las api y demas
@@ -370,7 +362,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
      * Creamos el @param GoogleApiClient. usamos el metodo {@code #addApi} para pedir
      * acceso a las API's requeridas.
      */
-    protected synchronized void buildGoogleApiClient() {
+    private synchronized void buildGoogleApiClient() {
 
         mGoogleApiClient = new GoogleApiClient
                 .Builder(getApplicationContext())
@@ -711,7 +703,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     }
 
     //mueve la camara a tu ubicación
-    private void move_to_my_pos() {
+    public void move_to_my_pos() {
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(pos).zoom(16).build();
         mMap.animateCamera(CameraUpdateFactory
@@ -771,17 +763,24 @@ public class Map extends Fragment implements OnMapReadyCallback,
     @Override
     public void onDetach() {
         super.onDetach();
+        Field childFragmentManager = null;
         try {
-            Field childFragmentManager = Fragment.class
+            childFragmentManager = Fragment.class
                     .getDeclaredField("mChildFragmentManager");
-            childFragmentManager.setAccessible(true);
-            childFragmentManager.set(this, null);
-
         } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+        if (childFragmentManager != null) {
+            childFragmentManager.setAccessible(true);
+        }
+        try {
+            if (childFragmentManager != null) {
+                childFragmentManager.set(this, null);
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -799,33 +798,39 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
         //se quita la brujula
         mMap.getUiSettings().setCompassEnabled(true);
-        /*mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                //esta logica aplica al tocar el mapa
-                query = false;
+                /*query = false;
                 if(markerplace != null)markerplace.remove();
                 markerplace = mMap.addMarker(new MarkerOptions()
                         .position(latLng));
-                doQuery(redondear(latLng.latitude),redondear(latLng.longitude));
+                */
             }
-        });*/
+        });
+        Markerspdate();
 
-        new android.os.Handler().post(new Runnable() {
+    }
+
+    private void Markerspdate() {
+
+        new java.lang.Thread(new Runnable() {
             @Override
             public void run() {
                 databaseFarma.addValueEventListener(listener = new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.i("entro","entro");
+
                         for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                             com.example.unbegrenzt.fharmaapp.Objects.Farmacia farmaciasx = postSnapshot.getValue(com.example.unbegrenzt.fharmaapp.Objects.Farmacia.class);
                             double lat_2 = Double.parseDouble(farmaciasx.getLat());
                             double longitud_2 = Double.parseDouble(farmaciasx.getLong());
 
-                            LatLng posi = new LatLng(lat_2,longitud_2);
+                            LatLng gg = new LatLng(lat_2, longitud_2);
 
-                            mMap.addMarker(new MarkerOptions().position(posi).title(farmaciasx.getmName()));
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(gg).title(farmaciasx.getmName()).snippet(farmaciasx.getID()));
+
 
                         }
                     }
@@ -836,37 +841,207 @@ public class Map extends Fragment implements OnMapReadyCallback,
                     }
                 });
             }
-        });
+        }).start();
+
     }
 
-    private void doQuery(final double latitud, final double longitud) {
+
+    public void farm_cercana() {
         //Query querylat = databaseFarma.orderByChild("lat").equalTo(latitud);
         //Query querylong = databaseFarma.orderByChild("long").equalTo(longitud);
 
-        databaseFarma.addValueEventListener(listener = new ValueEventListener() {
+        databaseFarma.addValueEventListener(listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.i("entro","entro");
+                Log.i("entro", "entro");
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     com.example.unbegrenzt.fharmaapp.Objects.Farmacia farmaciasx = postSnapshot.getValue(com.example.unbegrenzt.fharmaapp.Objects.Farmacia.class);
+
                     double lat_2 = Double.parseDouble(farmaciasx.getLat());
                     double longitud_2 = Double.parseDouble(farmaciasx.getLong());
-                    double x = lat_2 - latitud;
+                    double x = lat_2 - pos.latitude;
                     x = x * x;
-                    double y = longitud_2 - longitud;
+                    double y = longitud_2 - pos.longitude;
                     y = y * y;
-
                     double distancia = Math.sqrt((x + y));
-                    Log.i("entro",String.valueOf(distancia));
-                    if(distancia <= 0.0000490){
-                        Toast.makeText(getApplicationContext(),"aquiii",Toast.LENGTH_LONG)
-                                .show();
-                        ((Navigation)getActivity()).showtienda(farmaciasx);
-                        break;
-                    }else{
-                        Toast.makeText(getApplicationContext(),"aquiiiz112",Toast.LENGTH_LONG)
-                                .show();
-                        ((Navigation)getActivity()).disposetienda();
+
+
+                    if (foot_before == 0) {
+
+                        dist_corta = distancia;
+                        foot_before = 1;
+
+                    } else {
+                        foot_before = 0;
+                    }
+
+                    if (dist_corta <= distancia) {
+                        farmlat = lat_2;
+                        farmlong = longitud_2;
+                        //TODO: falta optimizar y personalizar la api
+
+                        LatLng start = new LatLng(18.015365, -77.499382);
+                        LatLng waypoint = new LatLng(18.01455, -77.499333);
+                        LatLng end = new LatLng(18.012590, -77.500659);
+                        Routing routing = new Routing.Builder()
+                                .travelMode(Routing.TravelMode.DRIVING)
+                                .withListener(new RoutingListener() {
+                                    @Override
+                                    public void onRoutingFailure(RouteException e) {
+                                        Toast.makeText(getApplicationContext(),
+                                                e.getMessage(),
+                                                Toast.LENGTH_LONG).show();
+                                    }
+
+                                    @Override
+                                    public void onRoutingStart() {
+
+                                    }
+
+                                    @Override
+                                    public void onRoutingSuccess(ArrayList<Route> arrayList, int i) {
+                                        CameraUpdate center = CameraUpdateFactory.newLatLng(
+                                                new LatLng(18.01455, -77.499333));
+                                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+
+                                        mMap.moveCamera(center);
+
+
+                                        if(polylines.size()>0) {
+                                            for (Polyline poly : polylines) {
+                                                poly.remove();
+                                            }
+                                        }
+
+                                        polylines = new ArrayList<>();
+                                        //add route(s) to the map.
+                                        for (int j = 0; j <arrayList.size(); j++) {
+
+                                            //In case of more than 5 alternative routes
+                                            int colorIndex = j % COLORS.length;
+
+                                            PolylineOptions polyOptions = new PolylineOptions();
+                                            polyOptions.color(getResources().getColor(COLORS[colorIndex]));
+                                            polyOptions.width(10 + j * 3);
+                                            polyOptions.addAll(arrayList.get(j).getPoints());
+                                            Polyline polyline = mMap.addPolyline(polyOptions);
+                                            polylines.add(polyline);
+
+                                            Toast.makeText(getApplicationContext(),"Route "+ (j+1) +": distance - "
+                                                    + arrayList.get(j).getDistanceValue()+": duration - "
+                                                    + arrayList.get(j).getDurationValue(),Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        // Start marker
+                                        MarkerOptions options = new MarkerOptions();
+                                        options.position(new LatLng(18.01455, -77.499333));
+                                        mMap.addMarker(options);
+
+                                        // End marker
+                                        options = new MarkerOptions();
+                                        options.position(new LatLng(18.012590, -77.500659));
+                                        mMap.addMarker(options);
+                                    }
+
+                                    @Override
+                                    public void onRoutingCancelled() {
+
+                                    }
+                                })
+                                .waypoints(/*new LatLng(pos.latitude, pos.longitude)
+                                        , new LatLng(farmlat, farmlong)*/start,end)
+                                .key("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
+                                .build();
+                        routing.execute();
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(waypoint).zoom(16).build();
+                        mMap.animateCamera(CameraUpdateFactory
+                                .newCameraPosition(cameraPosition));
+                        /*GoogleDirection.withServerKey("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
+                                .from(new LatLng(pos.latitude, pos.longitude))
+                                .to(new LatLng(farmlat, farmlong))
+                                .transportMode(TransportMode.DRIVING)
+                                .execute(new DirectionCallback() {
+                                    @Override
+                                    public void onDirectionSuccess(Direction direction, String rawBody) {
+                                        if (direction.isOK()) {
+                                            // Do something
+                                        } else {
+                                            // Do something
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onDirectionFailure(Throwable t) {
+                                        // Do something
+                                    }
+                                });*/
+
+                    } else {
+                        farmlat = lat_2;
+                        farmlong = longitud_2;
+                        LatLng start = new LatLng(18.015365, -77.499382);
+                        LatLng waypoint = new LatLng(18.01455, -77.499333);
+                        LatLng end = new LatLng(18.012590, -77.500659);
+                        Routing routing = new Routing.Builder()
+                                .travelMode(Routing.TravelMode.DRIVING)
+                                .withListener(new RoutingListener() {
+                                    @Override
+                                    public void onRoutingFailure(RouteException e) {
+                                        Toast.makeText(getApplicationContext(),
+                                                e.getMessage(),
+                                                Toast.LENGTH_LONG).show();
+                                    }
+
+                                    @Override
+                                    public void onRoutingStart() {
+
+                                    }
+
+                                    @Override
+                                    public void onRoutingSuccess(ArrayList<Route> arrayList, int i) {
+
+                                    }
+
+                                    @Override
+                                    public void onRoutingCancelled() {
+
+                                    }
+                                })
+                                .waypoints(/*new LatLng(pos.latitude, pos.longitude)
+                                        , new LatLng(farmlat, farmlong)*/start,waypoint,end)
+                                .key("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
+                                .build();
+                        routing.execute();
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(waypoint).zoom(16).build();
+                        mMap.animateCamera(CameraUpdateFactory
+                                .newCameraPosition(cameraPosition));
+                        /*GoogleDirection.withServerKey("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
+                                .from(new LatLng(pos.latitude, pos.longitude))
+                                .to(new LatLng(farmlat, farmlong))
+                                .transportMode(TransportMode.DRIVING)
+                                .execute(new DirectionCallback() {
+                                    @Override
+                                    public void onDirectionSuccess(Direction direction, String rawBody) {
+                                        if (direction.isOK()) {
+                                            // Do something
+                                        } else {
+                                            // Do something
+                                            Toast.makeText(getApplicationContext()
+                                                    ,direction.getStatus(),
+                                                    Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onDirectionFailure(Throwable t) {
+                                        // Do something
+                                        Toast.makeText(getApplicationContext()
+                                        ,t.getMessage(),Toast.LENGTH_LONG).show();
+                                    }
+                                });*/
+
                     }
                 }
             }
@@ -876,35 +1051,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
             }
         });
-        /*querylat.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    //TODO:query sabe si existe esa pos o no
-                    query = true;
-                }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        querylong.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    //TODO:query sabe si existe esa pos o no
-                    query = true;
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });*/
     }
 
     @Override
@@ -962,6 +1109,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+
         // Retrieve the data from the marker.
         Integer clickCount = (Integer) marker.getTag();
 
@@ -981,7 +1129,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
         return false;
 
     }
-
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name

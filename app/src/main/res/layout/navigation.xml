@@ -5,14 +5,13 @@
   ~
   ~ Last modified 06-10-17 07:42 PM
   -->
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:design="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
-    tools:context="com.example.unbegrenzt.fharmaapp.actividades.Navigation">
+<android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        tools:context="com.example.unbegrenzt.fharmaapp.actividades.Navigation">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -27,11 +26,32 @@
     </android.support.design.widget.AppBarLayout>
 
 
-    <FrameLayout
-        android:id="@+id/frag"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    <com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager
+            android:id="@+id/view_pager"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floating_action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|bottom"
+            android:layout_marginBottom="88dp"
+            android:src="@drawable/ic_my_location"
+            app:useCompatPadding="true"/>
+
+
+    <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|bottom"
+            android:layout_marginBottom="135dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_near"
+            app:useCompatPadding="true"
+            android:id="@+id/fab"
+            android:layout_alignParentRight="true"/>
 
     <FrameLayout
         android:id="@+id/frag2"
