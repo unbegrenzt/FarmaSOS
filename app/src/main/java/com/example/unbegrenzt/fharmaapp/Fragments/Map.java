@@ -67,8 +67,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import noman.googleplaces.NRPlaces;
+import noman.googleplaces.PlaceType;
+import noman.googleplaces.PlacesException;
+import noman.googleplaces.PlacesListener;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.google.android.gms.location.places.Places.PlaceDetectionApi;
@@ -846,11 +852,67 @@ public class Map extends Fragment implements OnMapReadyCallback,
     }
 
 
-    public void farm_cercana() {
+    public int farm_cercana(int radius) {
+        final int[] primeravezx2 = {0};
+        new NRPlaces.Builder()
+                .listener(new PlacesListener() {
+                    @Override
+                    public void onPlacesFailure(PlacesException e) {
+                        if (e.getMessage().compareToIgnoreCase("ZERO_RESULTS") == 0 ) {
+                            if (primeravezx2[0] == 0){
+                                Log.e("ggizi", "hay");
+                                primeravezx2[0] = 1;
+                            }
+
+                        }
+                    }
+
+                    @Override
+                    public void onPlacesStart() {
+                        Toast.makeText(getApplicationContext(), "iniciado",
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onPlacesSuccess(List<noman.googleplaces.Place> places) {
+                        for(int x = 0;x < places.size(); x++){
+                            //TODO:metelo en un arraylist imprimi si esta vacio sino vacialo e imprimi
+                        }
+                        /*if(String.valueOf(places.size()).compareToIgnoreCase("ZERO_RESULTS") == 0){
+                            Log.e("ggreizi",String.valueOf(places.size()));
+                            Log.e("ggreizi","no hay");
+                        }else {
+                            Log.e("ggreizi","hay");
+                        }*/
+                        /*Log.e("ggreizi",String.valueOf(places.size()));
+                        noman.googleplaces.Place pl = places.get(0);
+                        Log.e("ggreizi",pl.getIcon());
+                        Log.e("ggreizi",pl.getName());
+                        Log.e("ggreizi",pl.getPlaceId());
+                        Log.e("ggreizi",pl.getVicinity());
+                        Log.e("ggreizi", Arrays.toString(pl.getTypes()));*/
+                    }
+
+                    @Override
+                    public void onPlacesFinished() {
+                        Toast.makeText(getApplicationContext(), "finalizado",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .key("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
+                .latlng(pos.latitude, pos.longitude)
+                .radius(radius)
+                .type(PlaceType.PHARMACY)
+                .build()
+                .execute();
+        return radius;
+    }
+
+
         //Query querylat = databaseFarma.orderByChild("lat").equalTo(latitud);
         //Query querylong = databaseFarma.orderByChild("long").equalTo(longitud);
 
-        databaseFarma.addValueEventListener(listener2 = new ValueEventListener() {
+        /*databaseFarma.addValueEventListener(listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.i("entro", "entro");
@@ -949,7 +1011,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
                                     }
                                 })
                                 .waypoints(/*new LatLng(pos.latitude, pos.longitude)
-                                        , new LatLng(farmlat, farmlong)*/start,end)
+                                        , new LatLng(farmlat, farmlong)*/ /*start,end)
                                 .key("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
                                 .build();
                         routing.execute();
@@ -977,7 +1039,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
                                     }
                                 });*/
 
-                    } else {
+                    /*} else {
                         farmlat = lat_2;
                         farmlong = longitud_2;
                         LatLng start = new LatLng(18.015365, -77.499382);
@@ -1009,7 +1071,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
                                     }
                                 })
                                 .waypoints(/*new LatLng(pos.latitude, pos.longitude)
-                                        , new LatLng(farmlat, farmlong)*/start,waypoint,end)
+                                        , new LatLng(farmlat, farmlong)*/ /*start,waypoint,end)
                                 .key("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
                                 .build();
                         routing.execute();
@@ -1041,18 +1103,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
                                         ,t.getMessage(),Toast.LENGTH_LONG).show();
                                     }
                                 });*/
-
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
