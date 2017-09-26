@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by unbegrenzt for Jorge Luis Morales Centeno on 09-24-17 12:26 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 09-24-17 12:26 PM
+  -->
+
+<resources>
+    <declare-styleable name="CustomBottomSheetBehavior">
+        <attr name="anchorPoint" format="dimension"/>
+    </declare-styleable>
+</resources>

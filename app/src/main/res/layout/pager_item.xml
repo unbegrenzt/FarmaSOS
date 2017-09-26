@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by unbegrenzt for Jorge Luis Morales Centeno on 09-25-17 03:28 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 09-25-17 03:28 PM
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical" android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/imageView"
+            android:scaleType="centerCrop"/>
+</LinearLayout>

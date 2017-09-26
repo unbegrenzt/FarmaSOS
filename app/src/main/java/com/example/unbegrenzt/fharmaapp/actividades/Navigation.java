@@ -338,6 +338,15 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
                         ((Map) fragment).move_to_my_pos();
                     }
                 }
+
+                if (viewPager.getCurrentItem() == 0) {
+                    Fragment fragment = adapter.getItem(0);
+                    if (fragment != null && fragment instanceof izi) {
+                        Intent intent = new Intent(Navigation.this, ggeasyy.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
             }
         });
 
@@ -349,7 +358,7 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
 
                     Fragment fragment = adapter.getItem(1);
                     if (fragment != null && fragment instanceof Map) {
-                        ((Map) fragment).farm_cercana(100);
+                        ((Map) fragment).farm_cercana(200);
                     }
 
                 }

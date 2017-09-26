@@ -77,6 +77,10 @@
                 android:name=".actividades.Intro"
                 android:label="Bienvenido!"
                 android:screenOrientation="portrait"/>
+
+        <activity
+                android:name=".actividades.ggeasyy"
+                android:screenOrientation="portrait"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

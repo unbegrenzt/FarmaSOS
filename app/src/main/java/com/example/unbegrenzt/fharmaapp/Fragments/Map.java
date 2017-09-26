@@ -8,8 +8,8 @@
 package com.example.unbegrenzt.fharmaapp.Fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -22,7 +22,6 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -34,15 +33,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
-import com.akexorcist.googledirection.DirectionCallback;
-import com.akexorcist.googledirection.GoogleDirection;
-import com.akexorcist.googledirection.constant.AvoidType;
-import com.akexorcist.googledirection.constant.TransportMode;
-import com.akexorcist.googledirection.model.Direction;
-import com.directions.route.*;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
-import com.example.unbegrenzt.fharmaapp.actividades.Navigation;
+import com.example.unbegrenzt.fharmaapp.actividades.ggeasyy;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -52,40 +45,41 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.*;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
 import com.google.api.services.gmail.model.Thread;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.*;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import noman.googleplaces.NRPlaces;
+import noman.googleplaces.PlaceType;
+import noman.googleplaces.PlacesException;
+import noman.googleplaces.PlacesListener;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import noman.googleplaces.NRPlaces;
-import noman.googleplaces.PlaceType;
-import noman.googleplaces.PlacesException;
-import noman.googleplaces.PlacesListener;
-
 import static com.facebook.FacebookSdk.getApplicationContext;
-import static com.google.android.gms.location.places.Places.PlaceDetectionApi;
 
 
 public class Map extends Fragment implements OnMapReadyCallback,
+        GoogleMap.OnInfoWindowClickListener,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
         com.google.android.gms.location.LocationListener,GoogleMap.OnMarkerClickListener{
 
     private OnFragmentInteractionListener mListener;
-    private SupportMapFragment fragment;
     private static final int PLACE_PICKER_REQUEST = 1;
 
     /**
@@ -98,10 +92,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
      */
     private GoogleMap mMap;
     /**
-     * Objeto que contiene la barra de busqueda
-     */
-    private PlaceAutocompleteFragment autocompleteFragment;
-    /**
      * Marker que muestra las actualizaciones de ubicacion del usuario
      */
     private Marker MiUbicacion;
@@ -109,52 +99,52 @@ public class Map extends Fragment implements OnMapReadyCallback,
     /**
      * Lista de Markers de los locales
      */
-    private List<Marker> locales;
+    private List<noman.googleplaces.Place> locales;
     /**
      * Numero enlazado ala caja de dialogo para configurar el gps.
      */
-    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
+    private static final int REQUEST_CHECK_SETTINGS = 0x1;
     /**
      * El intervalo deseado para actualizaciones de ubicación. Inexacta. Las actualizaciones pueden
      * ser más o menos muy frecuentes.
      */
-    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 3000;
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 1500;
     /**
      * el intervalo de tiempo más rapido para las actualizaciones de ubicación
      */
-    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 1000;
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 1000;
     /**
      * variables "clave" para almacenar el estado de la actividad en el bundle
      */
-    protected final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
-    protected final static String KEY_LOCATION = "location";
-    protected final static String KEY_LAST_UPDATED_TIME_STRING = "last-updated-time-string";
+    private final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
+    private final static String KEY_LOCATION = "location";
+    private final static String KEY_LAST_UPDATED_TIME_STRING = "last-updated-time-string";
     /**
      * provee el punto de acceso a la Google Play services.
      */
-    protected GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
     /**
      * Almacena parámetros de peticiones al FusedLocationProviderApi.
      */
-    protected LocationRequest mLocationRequest;
+    private LocationRequest mLocationRequest;
     /**
      * Almacena los tipos de servicios de localización interesados en el cliente que se está
      * utilizando. Se utiliza para determinar la configuración, para comprobar el si el
      * dispositivo tiene una configuración óptima ubicación.
      */
-    protected LocationSettingsRequest mLocationSettingsRequest;
+    private LocationSettingsRequest mLocationSettingsRequest;
     /**
      * Posee los datos de la ubicacion actual
      */
-    protected Location mCurrentLocation;
+    private Location mCurrentLocation;
     /**
      * Realiza un seguimiento del estado de las actualizaciones de solicitud de ubicación
      */
-    protected Boolean mRequestingLocationUpdates;
+    private Boolean mRequestingLocationUpdates;
     /**
      * El tiempo en que se actualiza la ubicación y se representada como una cadena.
      */
-    protected String mLastUpdateTime;
+    private String mLastUpdateTime;
     private boolean primeravez = true;
     private LatLng pos;
     private Uri photo;
@@ -162,7 +152,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
     private ValueEventListener listener;
     private Marker places;
     private int x = 0;
-    private LatLng posloc;
     private boolean primeravez_token = true;
     private ValueEventListener latlistener;
     private boolean query = false;
@@ -175,9 +164,13 @@ public class Map extends Fragment implements OnMapReadyCallback,
     private double farmlong;
     private List<Polyline> polylines;
 
+    @SuppressLint("PrivateResource")
     private static final int[] COLORS = new int[]{
             R.color.primary_dark1,R.color.primary1,R.color.primary_text1,
             R.color.accent1,R.color.primary_dark_material_light};
+    private ArrayList<Marker> Markers;
+    private int radio = 0;
+    private Marker clicked;
 
     /**
      * fin de declaracion de las variables e inicio de los metodos de la activity
@@ -195,8 +188,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.map, container, false);
-        return rootView;
+        return inflater.inflate(R.layout.map, container, false);
     }
 
     @Override
@@ -204,7 +196,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
         super.onActivityCreated(savedInstanceState);
         //primero verificamos el acceso a internet
         FragmentManager fm = getChildFragmentManager();
-        fragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
+        SupportMapFragment fragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
         if (fragment == null) {
             fragment = SupportMapFragment.newInstance();
             fm.beginTransaction().replace(R.id.map, fragment).commit();
@@ -218,7 +210,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
         mRequestingLocationUpdates = false;
         mLastUpdateTime = "";
 
-        locales = new ArrayList<>();
+        locales = new ArrayList<noman.googleplaces.Place>();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -238,6 +230,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
         //updatelistener();
         //AddPlace();
         polylines = new ArrayList<>();
+        Markers = new ArrayList<>();
     }
 
     private void AddPlace() {
@@ -255,7 +248,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
 
     //pedimos si hay algun cambio en la base de datos
-    private void updatelistener() {
+    /*private void updatelistener() {
         databaseFarma.addValueEventListener(listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -293,7 +286,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
                             izi.setSnippet("Cerrada");
                         }*/
-                    }
+                    /*}
                     contador++;
                 }
                 primeravez_token = false;
@@ -385,7 +378,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
      * un {@link com.google.android.gms.location.LocationSettingsRequest} es usado para revisar
      * si un dispositivo posee las configuraciones de ubicacion requeridas.
      */
-    protected void buildLocationSettingsRequest() {
+    private void buildLocationSettingsRequest() {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
         mLocationSettingsRequest = builder.build();
@@ -567,9 +560,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
                     Farmacia local = new Farmacia(ID, address, latitud, longitud, name, telefono,
                             placetypes,false,website);
                     databaseFarma.child(id).setValue(local);
-                }else{
-                    //TODO:enviar al request manual
-                    valid = false;
                 }
 
             }
@@ -629,8 +619,8 @@ public class Map extends Fragment implements OnMapReadyCallback,
     }
 
     //TODO:cambiar logica para todos los markers
-    private void addMarker(Farmacia farmacia){
-        posloc = new LatLng(Double.parseDouble(farmacia.getLat()),Double.parseDouble(
+    /*private void addMarker(Farmacia farmacia){
+        LatLng posloc = new LatLng(Double.parseDouble(farmacia.getLat()), Double.parseDouble(
                 farmacia.getLong()));
 
         if(x == 1){
@@ -649,10 +639,10 @@ public class Map extends Fragment implements OnMapReadyCallback,
                     .title(farmacia.getmName()).snippet("Cerrada"));
         }
         x = 1;
-    }
+    }*/
 
     //creamos un custom marker
-    private Bitmap getMarkerBitmapFromView(String url) {
+    /*private Bitmap getMarkerBitmapFromView(String url) {
 
         View customMarkerView = ((LayoutInflater)getActivity().
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE))
@@ -679,7 +669,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
         customMarkerView.draw(canvas);
         return returnedBitmap;
 
-    }
+    }*/
 
     private Bitmap getMarkerBitmapFromView(Uri url) {
 
@@ -804,6 +794,8 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
         //se quita la brujula
         mMap.getUiSettings().setCompassEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(true);
+        mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -812,13 +804,158 @@ public class Map extends Fragment implements OnMapReadyCallback,
                 markerplace = mMap.addMarker(new MarkerOptions()
                         .position(latLng));
                 */
+                getlocation(latLng);
             }
         });
-        Markerspdate();
+        //Markerspdate();
 
     }
 
-    private void Markerspdate() {
+    private void getlocation(final LatLng loc) {
+        //TODO: utiliza  la otra api porque esta funciona pero para un tipo especifico de local
+        new NRPlaces.Builder()
+                .listener(new PlacesListener() {
+                    @Override
+                    public void onPlacesFailure(PlacesException e) {
+                        Log.e("ggizi2",e.getMessage());
+                    }
+
+                    @Override
+                    public void onPlacesStart() {
+
+                    }
+
+                    @Override
+                    public void onPlacesSuccess(final List<noman.googleplaces.Place> places) {
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                noman.googleplaces.Place place = places.get(0);
+
+                                if (clicked != null) {
+                                    clicked.remove();
+                                }
+
+                                clicked = mMap.addMarker(new MarkerOptions()
+                                        .title(place.getName())
+                                        .snippet("Click para mas información")
+                                        .position(new LatLng(place.getLatitude(), place.getLongitude())));
+
+
+                                CameraPosition cameraPosition = new CameraPosition.Builder()
+                                        .target(new LatLng(loc.latitude, loc.longitude)).zoom(14).build();
+                                mMap.animateCamera(CameraUpdateFactory
+                                        .newCameraPosition(cameraPosition));
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onPlacesFinished() {
+
+                    }
+                })
+                .key("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
+                .latlng(pos.latitude, pos.longitude)
+                .radius(500)
+                .type(PlaceType.ACCOUNTING)
+                .type(PlaceType.AIRPORT)
+                .type(PlaceType.AMUSEMENT_PARK)
+                .type(PlaceType.AQUARIUM)
+                .type(PlaceType.ART_GALLERY)
+                .type(PlaceType.ATM)
+                .type(PlaceType.BAKERY)
+                .type(PlaceType.BANK)
+                .type(PlaceType.BAR)
+                .type(PlaceType.BEAUTY_SALON)
+                .type(PlaceType.BICYCLE_STORE)
+                .type(PlaceType.BOOK_STORE)
+                .type(PlaceType.BOWLING_ALLEY)
+                .type(PlaceType.BUS_STATION)
+                .type(PlaceType.CAFE)
+                .type(PlaceType.CAMPGROUND)
+                .type(PlaceType.CAR_DEALER)
+                .type(PlaceType.CAR_RENTAL)
+                .type(PlaceType.CAR_REPAIR)
+                .type(PlaceType.CAR_WASH)
+                .type(PlaceType.CASINO)
+                .type(PlaceType.CEMETERY)
+                .type(PlaceType.CHURCH)
+                .type(PlaceType.CITY_HALL)
+                .type(PlaceType.CLOTHING_STORE)
+                .type(PlaceType.CONVENIENCE_STORE)
+                .type(PlaceType.COURTHOUSE)
+                .type(PlaceType.DENTIST)
+                .type(PlaceType.DEPARTMENT_STORE)
+                .type(PlaceType.DOCTOR)
+                .type(PlaceType.ELECTRICIAN)
+                .type(PlaceType.ELECTRONICS_STORE)
+                .type(PlaceType.EMBASSY)
+                .type(PlaceType.FINANCE)
+                .type(PlaceType.FIRE_STATION)
+                .type(PlaceType.FLORIST)
+                .type(PlaceType.FUNERAL_HOME)
+                .type(PlaceType.FURNITURE_STORE)
+                .type(PlaceType.GAS_STATION)
+                .type(PlaceType.GYM)
+                .type(PlaceType.HAIR_CARE)
+                .type(PlaceType.HARDWARE_STORE)
+                .type(PlaceType.HINDU_TEMPLE)
+                .type(PlaceType.HOME_GOODS_STORE)
+                .type(PlaceType.HOSPITAL)
+                .type(PlaceType.INSURANCE_AGENCY)
+                .type(PlaceType.JEWELRY_STORE)
+                .type(PlaceType.LAUNDRY)
+                .type(PlaceType.LAWYER)
+                .type(PlaceType.LIBRARY)
+                .type(PlaceType.LIQUOR_STORE)
+                .type(PlaceType.LOCAL_GOVERNMENT_OFFICE)
+                .type(PlaceType.LOCKSMITH)
+                .type(PlaceType.LODGING)
+                .type(PlaceType.MEAL_DELIVERY)
+                .type(PlaceType.MEAL_TAKEAWAY)
+                .type(PlaceType.MOSQUE)
+                .type(PlaceType.MOVIE_RENTAL)
+                .type(PlaceType.MOVIE_THEATER)
+                .type(PlaceType.MOVING_COMPANY)
+                .type(PlaceType.MUSEUM)
+                .type(PlaceType.NIGHT_CLUB)
+                .type(PlaceType.PAINTER)
+                .type(PlaceType.PARK)
+                .type(PlaceType.PARKING)
+                .type(PlaceType.PET_STORE)
+                .type(PlaceType.PHARMACY)
+                .type(PlaceType.PHYSIOTHERAPIST)
+                .type(PlaceType.PLUMBER)
+                .type(PlaceType.POLICE)
+                .type(PlaceType.POST_OFFICE)
+                .type(PlaceType.REAL_ESTATE_AGENCY)
+                .type(PlaceType.RESTAURANT)
+                .type(PlaceType.ROOFING_CONTRACTOR)
+                .type(PlaceType.RV_PARK)
+                .type(PlaceType.SCHOOL)
+                .type(PlaceType.SHOE_STORE)
+                .type(PlaceType.SHOPPING_MALL)
+                .type(PlaceType.SPA)
+                .type(PlaceType.STADIUM)
+                .type(PlaceType.STORAGE)
+                .type(PlaceType.STORE)
+                .type(PlaceType.SUBWAY_STATION)
+                .type(PlaceType.SYNAGOGUE)
+                .type(PlaceType.TAXI_STAND)
+                .type(PlaceType.TRAIN_STATION)
+                .type(PlaceType.TRANSIT_STATION)
+                .type(PlaceType.TRAVEL_AGENCY)
+                .type(PlaceType.UNIVERSITY)
+                .type(PlaceType.VETERINARY_CARE)
+                .type(PlaceType.ZOO)
+                .build()
+                .execute();
+    }
+
+    /*private void Markerspdate() {
 
         new java.lang.Thread(new Runnable() {
             @Override
@@ -849,11 +986,12 @@ public class Map extends Fragment implements OnMapReadyCallback,
             }
         }).start();
 
-    }
+    }*/
 
 
-    public int farm_cercana(int radius) {
+    public void farm_cercana(int radius) {
         final int[] primeravezx2 = {0};
+        radio = radius;
         new NRPlaces.Builder()
                 .listener(new PlacesListener() {
                     @Override
@@ -861,23 +999,61 @@ public class Map extends Fragment implements OnMapReadyCallback,
                         if (e.getMessage().compareToIgnoreCase("ZERO_RESULTS") == 0 ) {
                             if (primeravezx2[0] == 0){
                                 Log.e("ggizi", "hay");
+                                try {
+                                    this.finalize();
+                                } catch (Throwable throwable) {
+                                    throwable.printStackTrace();
+                                }
+                                farm_cercana(radio + 250);
                                 primeravezx2[0] = 1;
                             }
-
+                            Log.e("ggizi",String.valueOf(radio));
                         }
                     }
 
                     @Override
                     public void onPlacesStart() {
-                        Toast.makeText(getApplicationContext(), "iniciado",
-                                Toast.LENGTH_SHORT).show();
+
                     }
 
                     @Override
-                    public void onPlacesSuccess(List<noman.googleplaces.Place> places) {
-                        for(int x = 0;x < places.size(); x++){
-                            //TODO:metelo en un arraylist imprimi si esta vacio sino vacialo e imprimi
-                        }
+                    public void onPlacesSuccess(final List<noman.googleplaces.Place> places) {
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                locales.clear();
+                                locales.addAll(places);
+
+                                for(int i = 0; i < Markers.size();i++) {
+                                    Markers.get(0).remove();
+                                }
+
+                                Markers = new ArrayList<>();
+
+                                Log.e("ggizi", "mark in " + String.valueOf(Markers.size()));
+
+                                for (noman.googleplaces.Place place : locales) {
+                                    Markers.add(mMap.addMarker(new MarkerOptions()
+                                            .title(place.getName())
+                                            .snippet("Click para mas información")
+                                            .position(new LatLng(place.getLatitude(), place.getLongitude()))));
+
+                                    //maneja el click del info windows
+                                    Log.e("ggizi", String.valueOf(locales.size()));
+                                }
+                                Log.e("ggizi", "mark out " + String.valueOf(Markers.size()));
+                                ((ggeasyy)getActivity()).disposebox();
+                                CameraPosition cameraPosition = new CameraPosition.Builder()
+                                        .target(new LatLng(pos.latitude,pos.longitude)).zoom((float) 13.5).build();
+                                mMap.animateCamera(CameraUpdateFactory
+                                        .newCameraPosition(cameraPosition));
+                            }
+                        });
+
+
+
                         /*if(String.valueOf(places.size()).compareToIgnoreCase("ZERO_RESULTS") == 0){
                             Log.e("ggreizi",String.valueOf(places.size()));
                             Log.e("ggreizi","no hay");
@@ -895,8 +1071,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
                     @Override
                     public void onPlacesFinished() {
-                        Toast.makeText(getApplicationContext(), "finalizado",
-                                Toast.LENGTH_SHORT).show();
+
                     }
                 })
                 .key("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
@@ -905,7 +1080,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
                 .type(PlaceType.PHARMACY)
                 .build()
                 .execute();
-        return radius;
     }
 
 
@@ -1178,6 +1352,25 @@ public class Map extends Fragment implements OnMapReadyCallback,
         // marker is centered and for the marker's info window to open, if it has one).
         return false;
 
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        //cuando se le da click al ifo windows
+        //recuperamos toda la información posible
+        //para ello buscamos la ubicacion del marcador
+        //de nuestro arraylist obtenemos su llave
+        //y le pedimos a google la información
+        //TODO: mortar la información del lugar
+        //TODO: ademas traza la ruta entre los dos puntos
+        //TODO: codigo para hacerlo esta pero comentariado
+        for (noman.googleplaces.Place place : locales) {
+            if ((place.getLatitude() == marker.getPosition().latitude)
+                    && (place.getLongitude() == marker.getPosition().longitude)){
+
+                place.getPlaceId();
+            }
+        }
     }
 
     public interface OnFragmentInteractionListener {

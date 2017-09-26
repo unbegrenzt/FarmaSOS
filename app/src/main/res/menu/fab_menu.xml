@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by unbegrenzt for Jorge Luis Morales Centeno on 09-25-17 06:38 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 09-25-17 06:38 PM
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:id="@+id/fab_pos"
+            android:icon="@drawable/ic_my_location"
+            android:title="@string/mi_pos" />
+
+    <item
+            android:id="@+id/fab_loc"
+            android:icon="@drawable/ic_near"
+            android:title="@string/lc_mas_cerc" />
+</menu>
