@@ -41,6 +41,10 @@ import com.example.unbegrenzt.fharmaapp.Fragments.Perfil;
 import com.example.unbegrenzt.fharmaapp.Fragments.farmacos;
 import com.example.unbegrenzt.fharmaapp.Fragments.perfil_off;
 import com.example.unbegrenzt.fharmaapp.R;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -488,6 +492,28 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
         viewPager.refreshDrawableState();
 
     }*/
+
+    private void initplacefragmet() {
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i("gg", "Place: " + place.getName());
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i("gg", "An error occurred: " + status);
+            }
+        });
+
+        autocompleteFragment.setText("");
+
+    }
 
 
     public void showtienda(com.example.unbegrenzt.fharmaapp.Objects.Farmacia farmaciasx) {

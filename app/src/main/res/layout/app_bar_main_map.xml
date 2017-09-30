@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Created  by unbegrenzt for Jorge Luis Morales Centeno on 09-24-17 11:30 AM
+  ~ Created  by unbegrenzt for Jorge Luis Morales Centeno on 09-30-17 12:41 PM
   ~ Copyright (c) 2017. All rights reserved.
   ~
-  ~ Last modified 09-24-17 11:30 AM
+  ~ Last modified 09-30-17 12:41 PM
   -->
 
 <android.support.design.widget.CoordinatorLayout
@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context=".actividades.ggeasyy"
+        tools:context=".actividades.Main_map"
         xmlns:custom="http://schemas.android.com/apk/res-auto">
 
     <FrameLayout
@@ -61,24 +61,20 @@
             android:layout_height="wrap_content"
             android:theme="@style/AppTheme.AppBarOverlay"
             app:layout_behavior="@string/ScrollingAppBarLayoutBehavior">
-
-        <android.support.v7.widget.Toolbar
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/toolbar"
+        <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/primary1"
-                app:popupTheme="@style/AppTheme.PopupOverlay">
-
+                android:layout_height="match_parent">
             <fragment
                     android:id="@+id/place_autocomplete_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-            />
-
-
-        </android.support.v7.widget.Toolbar>
+                    android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"/>
+            <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:popupTheme="@style/AppTheme.PopupOverlay"/>
+        </FrameLayout>
 
     </android.support.design.widget.AppBarLayout>
 
@@ -110,7 +106,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"/>
-
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton

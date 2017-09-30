@@ -9,11 +9,9 @@ package com.example.unbegrenzt.fharmaapp.actividades;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -21,6 +19,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -30,9 +29,11 @@ import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.behavior.BottomSheetBehaviorGoogleMapsLike;
 import com.example.unbegrenzt.fharmaapp.behavior.MergedAppBarLayoutBehavior;
 import com.github.ag.floatingactionmenu.OptionsFabLayout;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.nipunbirla.boxloader.BoxLoaderView;
-
-import java.util.List;
 
 public class ggeasyy extends AppCompatActivity implements Map.OnFragmentInteractionListener{
 
@@ -59,7 +60,6 @@ public class ggeasyy extends AppCompatActivity implements Map.OnFragmentInteract
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(" ");
         }
 
         /*
@@ -69,8 +69,39 @@ public class ggeasyy extends AppCompatActivity implements Map.OnFragmentInteract
         initbars();
         loadmap();
         initFabActionMenu();
+        initplacefragmet();
 
     }
+
+    private void initplacefragmet() {
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i("gg", "Place: " + place.getName());
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i("gg", "An error occurred: " + status);
+            }
+        });
+
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_map, menu);
+        return true;
+    }
+
+
 
     private void initbars(){
 
