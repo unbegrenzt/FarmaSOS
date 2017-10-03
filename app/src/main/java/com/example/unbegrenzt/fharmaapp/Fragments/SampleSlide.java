@@ -1,8 +1,8 @@
 /*
- * Created  by LAB-UOL for Jorge Luis Morales Centeno on 08-26-17 01:41 PM
+ * Created  by unbegrenzt for Jorge Luis Morales Centeno on 10-02-17 05:40 PM
  * Copyright (c) 2017. All rights reserved.
  *
- * Last modified 08-26-17 01:41 PM
+ * Last modified 08-27-17 11:45 AM
  */
 
 package com.example.unbegrenzt.fharmaapp.Fragments;

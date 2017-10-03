@@ -62,4 +62,6 @@
     <string name="mi_pos">mi posición</string>
     <string name="lc_mas_cerc">local más cercano</string>
     <string name="title_activity_main_map">Mapa</string>
+    <string name="fondo">click para cambiar fondo</string>
+    <string name="anm">Usuario anónimo</string>
 </resources>

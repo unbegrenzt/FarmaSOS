@@ -32,6 +32,7 @@ android {
             signingConfig signingConfigs.config
         }
     }
+    useLibrary 'org.apache.http.legacy'
 }
 
 dependencies {
@@ -45,6 +46,9 @@ dependencies {
     compile('com.google.apis:google-api-services-gmail:v1-rev66-1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.ndroid.nadim:cool-toast:1.0'
     compile 'com.akexorcist:googledirectionlibrary:1.0.5'
     compile 'com.keiferstone:nonet:2.0.4'
     compile 'org.aviran.cookiebar2:cookiebar2:1.0.5'

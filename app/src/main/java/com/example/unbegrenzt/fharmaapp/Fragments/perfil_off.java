@@ -1,8 +1,8 @@
 /*
- * Created  by Unbegrenzt for Jorge Luis Morales Centeno on 06-20-17 08:17 PM
+ * Created  by unbegrenzt for Jorge Luis Morales Centeno on 10-02-17 05:40 PM
  * Copyright (c) 2017. All rights reserved.
  *
- * Last modified 06-20-17 08:07 PM
+ * Last modified 09-30-17 07:33 PM
  */
 
 package com.example.unbegrenzt.fharmaapp.Fragments;
@@ -40,9 +40,7 @@ public class perfil_off extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private static final int LOGIN_SUCCESS = 64206;
 
-    private static final int OK = -1;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -126,16 +124,7 @@ public class perfil_off extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == LOGIN_SUCCESS){
-            if(resultCode == OK){
 
-                //((Navigation)getActivity()).refresh(1);
-                //aqui se parsea al perfil normal
-                Toast.makeText(getApplicationContext(),"logged",Toast.LENGTH_LONG).show();
-
-            }
-
-        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

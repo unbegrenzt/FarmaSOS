@@ -1,8 +1,8 @@
 /*
- * Created  by unbegrenzt for Jorge Luis Morales Centeno on 09-30-17 12:41 PM
+ * Created  by unbegrenzt for Jorge Luis Morales Centeno on 10-02-17 05:40 PM
  * Copyright (c) 2017. All rights reserved.
  *
- * Last modified 09-30-17 12:41 PM
+ * Last modified 09-30-17 03:29 PM
  */
 
 package com.example.unbegrenzt.fharmaapp.actividades;
@@ -28,6 +28,7 @@ public class Main_map extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_map);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
