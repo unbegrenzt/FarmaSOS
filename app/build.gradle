@@ -48,6 +48,7 @@ dependencies {
     }
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'me.grantland:autofittextview:0.2.0'
     compile 'com.ndroid.nadim:cool-toast:1.0'
     compile 'com.akexorcist:googledirectionlibrary:1.0.5'
     compile 'com.keiferstone:nonet:2.0.4'

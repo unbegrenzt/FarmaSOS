@@ -68,6 +68,7 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
         /**
          * Because we are not moving it, we always return false in this method.
          */
+        child.setVisibility(View.VISIBLE);
 
         if (offset == 0)
             setOffsetValue(parent);

@@ -15,7 +15,15 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         tools:context=".actividades.ggeasyy"
+        app:layout_behavior="@string/beha"
         xmlns:custom="http://schemas.android.com/apk/res-auto">
+
+
+    <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:id="@+id/tienda"/>
 
     <FrameLayout
             android:id="@+id/dummy_framelayout_replacing_map"

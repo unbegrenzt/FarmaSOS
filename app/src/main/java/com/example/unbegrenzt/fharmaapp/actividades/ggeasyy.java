@@ -8,12 +8,16 @@
 package com.example.unbegrenzt.fharmaapp.actividades;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -22,17 +26,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ActivityChooserView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.example.unbegrenzt.fharmaapp.Adapter.ItemPagerAdapter;
 import com.example.unbegrenzt.fharmaapp.Fragments.Map;
+import com.example.unbegrenzt.fharmaapp.Manifest;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.behavior.BottomSheetBehaviorGoogleMapsLike;
 import com.example.unbegrenzt.fharmaapp.behavior.MergedAppBarLayoutBehavior;
@@ -44,31 +47,28 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.github.ag.floatingactionmenu.OptionsFabLayout;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.*;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
+import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
 import com.ndroid.nadim.sahel.CoolToast;
 import com.nipunbirla.boxloader.BoxLoaderView;
+import com.rubengees.introduction.IntroductionBuilder;
 import com.squareup.picasso.Picasso;
+import me.grantland.widget.AutofitTextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ggeasyy extends AppCompatActivity implements
         Map.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener{
-
-
-    int[] mDrawables = {
-            R.drawable.ic_add_location,
-            R.drawable.background_splash,
-            R.drawable.catalogo,
-            R.drawable.cloud_off,
-            R.drawable.ic_exit,
-            R.drawable.ic_clock
-    };
 
     private OptionsFabLayout fabWithOptions;
     private BoxLoaderView boxLoader;
@@ -82,6 +82,10 @@ public class ggeasyy extends AppCompatActivity implements
 
     private static final int LOGIN_SUCCESS = 64206;
     private static final int OK = -1;
+    private View bottomSheet;
+    private Intent i;
+    public FloatingActionButton tienda;
+    private PlaceWS info;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,9 +115,16 @@ public class ggeasyy extends AppCompatActivity implements
         initbars();
         loadmap();
         initFabActionMenu();
-        initplacefragmet();
-        initUIs();
-        initFirebase();
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                initplacefragmet();
+                initUIs();
+                initFirebase();
+            }
+        });
+
 
         //TODO:verificar los permisos al entrar
 
@@ -159,6 +170,20 @@ public class ggeasyy extends AppCompatActivity implements
                 loginButton.performClick();
             }
         });
+
+        tienda = (FloatingActionButton)findViewById(R.id.tienda);
+
+        tienda.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Drawpharma(info);
+            }
+        });
+    }
+
+    public void setInfo(PlaceWS info) {
+
+        this.info = info;
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
@@ -171,6 +196,7 @@ public class ggeasyy extends AppCompatActivity implements
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
+
                         if (!task.isSuccessful()) {
 
                             Toast.makeText(getApplicationContext(), "Autenticación fallida.",
@@ -188,6 +214,7 @@ public class ggeasyy extends AppCompatActivity implements
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == LOGIN_SUCCESS){
+
             if(resultCode == OK){
 
                 //((Navigation)getActivity()).refresh(1);
@@ -196,7 +223,15 @@ public class ggeasyy extends AppCompatActivity implements
                 FirebaseAuth.getInstance().signOut();
                 new CoolToast(ggeasyy.this)
                         .make("Sesión iniciada",CoolToast.INFO,CoolToast.LONG,true);
+
             }
+
+        }
+
+        if (requestCode == 12 && resultCode != OK) {
+
+            new CoolToast(ggeasyy.this)
+                    .make("Permiso porfavor",CoolToast.DANGER,CoolToast.LONG,true);
 
         }
 
@@ -217,8 +252,10 @@ public class ggeasyy extends AppCompatActivity implements
 
                     username.setText(user.getDisplayName());
 
-                    Picasso.with(getApplicationContext()).load(user.getPhotoUrl().toString()).placeholder(R.drawable.ic_download)
-                            .error(R.drawable.ic_person).into(userfoto);
+                    Log.e("ggizi", String.valueOf(user.getProviderData()));
+
+                    Picasso.with(getApplicationContext()).load(user.getPhotoUrl()).placeholder(R.drawable.ic_download)
+                            .error(R.drawable.ic_person).resize(50,50).into(userfoto);
                 }
             }
         };
@@ -262,7 +299,6 @@ public class ggeasyy extends AppCompatActivity implements
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -270,12 +306,10 @@ public class ggeasyy extends AppCompatActivity implements
         return true;
     }
 
-
-
     private void initbars(){
 
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorlayout);
-        View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
+        bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
         behavior = BottomSheetBehaviorGoogleMapsLike.from(bottomSheet);
         behavior.addBottomSheetCallback(new BottomSheetBehaviorGoogleMapsLike.BottomSheetCallback() {
             @Override
@@ -313,19 +347,13 @@ public class ggeasyy extends AppCompatActivity implements
 
         AppBarLayout mergedAppBarLayout = (AppBarLayout) findViewById(R.id.merged_appbarlayout);
         MergedAppBarLayoutBehavior mergedAppBarLayoutBehavior = MergedAppBarLayoutBehavior.from(mergedAppBarLayout);
-        mergedAppBarLayoutBehavior.setToolbarTitle("Title Dummy");
+        mergedAppBarLayoutBehavior.setToolbarTitle(" ");
         mergedAppBarLayoutBehavior.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_COLLAPSED);
             }
         });
-
-        TextView bottomSheetTextView = (TextView) bottomSheet.findViewById(R.id.bottom_sheet_title);
-        bottomSheetTextView.setText("gg izii");
-        ItemPagerAdapter adapter = new ItemPagerAdapter(this,mDrawables);
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setAdapter(adapter);
 
         behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
     }
@@ -336,6 +364,30 @@ public class ggeasyy extends AppCompatActivity implements
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.dummy_framelayout_replacing_map, new Map(), "map");
         transaction.commit();
+
+    }
+
+    private void askforpermissions(){
+        if (ActivityCompat.checkSelfPermission(ggeasyy.this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+
+            ActivityCompat.requestPermissions(ggeasyy.this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 12);
+        }
+
+        if (ActivityCompat.checkSelfPermission(ggeasyy.this,
+                android.Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
+
+            ActivityCompat.requestPermissions(ggeasyy.this,
+                    new String[]{android.Manifest.permission.INTERNET}, 12);
+        }
+
+        if (ActivityCompat.checkSelfPermission(ggeasyy.this,
+                android.Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED){
+
+            ActivityCompat.requestPermissions(ggeasyy.this,
+                    new String[]{android.Manifest.permission.ACCESS_NETWORK_STATE}, 12);
+        }
     }
 
     private void initFabActionMenu() {
@@ -352,6 +404,9 @@ public class ggeasyy extends AppCompatActivity implements
         fabWithOptions.setMainFabOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                askforpermissions();
+
                 if (fabWithOptions.isOptionsMenuOpened())
                     fabWithOptions.closeOptionsMenu();
             }
@@ -444,7 +499,160 @@ public class ggeasyy extends AppCompatActivity implements
         return false;
     }
 
-    public void Drawpharma(PlaceWS body) {
+    private void Drawpharma(final PlaceWS body) {
 
+        behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_COLLAPSED);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                //boton para llamar
+                ImageButton llamar = (ImageButton) bottomSheet.findViewById(R.id.btn_llamar);
+                llamar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (body.getResult().getFormattedPhoneNumber() != null) {
+
+                            Intent i = new Intent(Intent.ACTION_CALL, Uri.parse(String.format("tel:%s", body.getResult().getFormattedPhoneNumber())));
+
+                            if (ActivityCompat.checkSelfPermission(ggeasyy.this, android.Manifest.permission.CALL_PHONE)
+                                    != PackageManager.PERMISSION_GRANTED) {
+
+                                ActivityCompat.requestPermissions(ggeasyy.this,
+                                        new String[]{android.Manifest.permission.CALL_PHONE}, 12);
+
+                            } else {
+                                startActivity(i);
+                            }
+
+                        } else {
+
+                            new CoolToast(ggeasyy.this)
+                                    .make("No se proporcionó", CoolToast.INFO, CoolToast.LONG, true);
+
+                        }
+                    }
+                });
+
+                //logica para guardar
+                final TextView text_guardar = (TextView) bottomSheet.findViewById(R.id.txt_guardar);
+                final ImageButton guardar = (ImageButton) bottomSheet.findViewById(R.id.btn_guardar);
+                if (SharedPreferencesManager.getInstance().getValue(
+                        String.valueOf(body.getResult().getGeometry().getLocation().getLat()) + "," +
+                                String.valueOf(body.getResult().getGeometry().getLocation().getLng()),
+                        PlaceWS.class) != null) {
+
+                    guardar.setImageResource(R.drawable.ic_bookmark_black_36dp);
+                    text_guardar.setText(getString(R.string.olv));
+
+                } else {
+
+                    guardar.setImageResource(R.drawable.ic_bookmark_border_black_36dp);
+                    text_guardar.setText(getString(R.string.keep));
+
+                }
+                guardar.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (SharedPreferencesManager.getInstance().getValue(
+                                String.valueOf(body.getResult().getGeometry().getLocation().getLat()) + "," +
+                                        String.valueOf(body.getResult().getGeometry().getLocation().getLng()),
+                                PlaceWS.class) != null) {
+
+                            SharedPreferencesManager.getInstance().remove(
+                                    String.valueOf(body.getResult().getGeometry().getLocation().getLat()) + "," +
+                                            String.valueOf(body.getResult().getGeometry().getLocation().getLng()));
+
+                            guardar.setImageResource(R.drawable.ic_bookmark_border_black_36dp);
+                            text_guardar.setText(getString(R.string.keep));
+
+                        } else {
+
+                            SharedPreferencesManager.getInstance().putValue(
+                                    String.valueOf(body.getResult().getGeometry().getLocation().getLat()) + "," +
+                                            String.valueOf(body.getResult().getGeometry().getLocation().getLng()),
+                                    body);
+
+                            guardar.setImageResource(R.drawable.ic_bookmark_black_36dp);
+                            text_guardar.setText(getString(R.string.olv));
+
+                        }
+                    }
+                });
+
+                //logica para ir al website
+                ImageButton website = (ImageButton) bottomSheet.findViewById(R.id.btn_website);
+                website.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        if (body.getResult().getWebsite() != null) {
+
+                            Uri uri = Uri.parse(body.getResult().getWebsite());
+
+                            if (ActivityCompat.checkSelfPermission(ggeasyy.this,
+                                    android.Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED
+                                    || ActivityCompat.checkSelfPermission(ggeasyy.this,
+                                    android.Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
+
+                                ActivityCompat.requestPermissions(ggeasyy.this,
+                                        new String[]{android.Manifest.permission.INTERNET}, 12);
+
+                            } else {
+
+                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                startActivity(intent);
+
+                            }
+
+                        } else {
+
+                            new CoolToast(ggeasyy.this)
+                                    .make("No posee", CoolToast.INFO, CoolToast.LONG, true);
+
+                        }
+                    }
+                });
+
+                //configuracion del titulo
+                AutofitTextView titulo = (AutofitTextView) bottomSheet.findViewById(R.id.titulo);
+                titulo.setText(body.getResult().getName());
+
+                //configuracion del subtitulo
+                AutofitTextView subtitulo = (AutofitTextView) bottomSheet.findViewById(R.id.subtitulo);
+                if (body.getResult().getOpeningHours().getOpenNow()) {
+
+                    if (body.getResult().getInternationalPhoneNumber() != null) {
+
+                        subtitulo.setText("Abierto - " + body.getResult().getInternationalPhoneNumber());
+                    } else {
+
+                        subtitulo.setText("Abierto - " + body.getResult().getFormattedAddress());
+                    }
+
+                } else {
+
+                    if (body.getResult().getInternationalPhoneNumber() != null) {
+
+                        subtitulo.setText("Cerrado - " + body.getResult().getInternationalPhoneNumber());
+                    } else {
+
+                        subtitulo.setText("Cerrado - " + body.getResult().getFormattedAddress());
+                    }
+
+                }
+
+                //logica para obtener la imagenes
+                Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
+                if (fragment != null) {
+                    ItemPagerAdapter adapter = new ItemPagerAdapter(getApplicationContext()
+                            ,body.getResult().getPlaceId(),fragment.mGoogleApiClient);
+                    ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+                    viewPager.setAdapter(adapter);
+                }
+
+            }
+        });
     }
 }

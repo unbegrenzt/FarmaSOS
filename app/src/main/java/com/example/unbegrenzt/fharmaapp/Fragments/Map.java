@@ -129,7 +129,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     /**
      * provee el punto de acceso a la Google Play services.
      */
-    private GoogleApiClient mGoogleApiClient;
+    public GoogleApiClient mGoogleApiClient;
     /**
      * Almacena parámetros de peticiones al FusedLocationProviderApi.
      */
@@ -821,8 +821,10 @@ public class Map extends Fragment implements OnMapReadyCallback,
             public void onResponse(Call<PlaceWS> call, Response<PlaceWS> response) {
 
                 if (response.isSuccessful()){
+                    Log.e("ggizi","respuesta");
                     //metodo para dibujar la farmacia en pantalla
-                    ((ggeasyy)getActivity()).Drawpharma(response.body());
+                    ((ggeasyy)getActivity()).setInfo(response.body());
+                    ((ggeasyy)getActivity()).tienda.performClick();
                 }
 
             }

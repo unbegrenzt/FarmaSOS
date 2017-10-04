@@ -15,6 +15,46 @@
       },
       "oauth_client": [
         {
+          "client_id": "1093267980974-rjm7amepneshcrei63mvskl8ukrt4554.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.unbegrenzt.fharmaapp",
+            "certificate_hash": "5e3632eea863cde880346f7c14c12e32aec818dc"
+          }
+        },
+        {
+          "client_id": "1093267980974-evdqf5igci05r42d9imd07fj1eb6otch.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.unbegrenzt.fharmaapp",
+            "certificate_hash": "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8"
+          }
+        },
+        {
+          "client_id": "1093267980974-7ut9hcf61ocl0b95gb0njlfsomhuvpu1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.unbegrenzt.fharmaapp",
+            "certificate_hash": "17a2772fc75c441903c852a50de13bda329e05b5"
+          }
+        },
+        {
+          "client_id": "1093267980974-kgo4vpjthptm2uk2aa5kuru0cik1jlpc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.unbegrenzt.fharmaapp",
+            "certificate_hash": "83b652fa9740846b2b85c442c79a53229034ca21"
+          }
+        },
+        {
+          "client_id": "1093267980974-50thsvt9jul58oesp1mvjeijjvnkd4i4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.unbegrenzt.fharmaapp",
+            "certificate_hash": "6e0cfe9ac7d0c066216b2e297fe17b1a9393b788"
+          }
+        },
+        {
           "client_id": "1093267980974-5kausbqbpbjde0g3r7mocflqlo5blc41.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

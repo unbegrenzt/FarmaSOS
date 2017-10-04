@@ -65,6 +65,7 @@ public class BackdropBottomSheetBehavior<V extends View> extends CoordinatorLayo
          * value changes throught the time, I mean, you can have a {@link android.widget.ImageView}
          * using images with different sizes and you don't want to resize them or so
          */
+
         if (mBottomSheetBehaviorRef == null || mBottomSheetBehaviorRef.get() == null)
             getBottomSheetBehavior(parent);
         /**
