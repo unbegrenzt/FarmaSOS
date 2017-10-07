@@ -28,7 +28,7 @@
 
         <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_marginRight="90dp"
+                android:layout_marginRight="50dp"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:weightSum="1">
@@ -37,7 +37,7 @@
                     android:id="@+id/titulo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Title dummy"
+                    android:text="No proporcionado"
                     android:textColor="@android:color/white"
                     android:maxLines="1"
                     android:textSize="19sp"
@@ -48,7 +48,7 @@
                     android:id="@+id/subtitulo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Title dummy"
+                    android:text="No proporcionado"
                     android:textColor="@android:color/white"
                     android:maxLines="1"
                     android:textSize="15sp"
@@ -165,18 +165,36 @@
             android:layout_height="wrap_content"
             android:background="@drawable/border_bottom">
 
-        <ImageView
+        <LinearLayout
+                android:orientation="vertical"
                 android:id="@+id/establecimiento_icon_sucursales"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@android:drawable/ic_secure"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginStart="16dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
-                android:contentDescription="lock"/>
+                android:contentDescription="lock">
+
+                <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_call_black_36dp"
+                        android:contentDescription="Numero telefonico"/>
+
+                <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_directions_black_36dp"/>
+
+                <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_schedule_black_36dp"/>
+
+        </LinearLayout>
 
 
         <LinearLayout
@@ -192,39 +210,50 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp">
 
-                <Button
-                        android:id="@+id/establecimiento_sucursal_row_button"
-                        android:layout_width="wrap_content"
+                <me.grantland.widget.AutofitTextView
+                        android:id="@+id/info_tel"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Text dummy 1"
+                        android:text="Sin información"
+                        android:layout_marginRight="10dp"
+                        android:maxLines="1"
+                        android:textSize="15sp"
                         android:layout_gravity="center_vertical"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:textAllCaps="false"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black"
+                        autofit:minTextSize="12sp"/>
             </FrameLayout>
 
             <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="48dp">
 
-                <Button
-                        android:layout_width="wrap_content"
+                <me.grantland.widget.AutofitTextView
+                        android:id="@+id/info_direc"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Text dummy 2"
+                        android:text="Sin información"
+                        android:layout_marginRight="10dp"
+                        android:maxLines="1"
+                        android:textSize="15sp"
                         android:layout_gravity="center_vertical"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:textAllCaps="false"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@android:color/black"
+                        autofit:minTextSize="12sp"/>
             </FrameLayout>
 
             <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp">
+                    android:layout_height="wrap_content">
 
-                <Button
+                <TextView
+                        android:id="@+id/info_horario"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Text dummy 3"
+                        android:text="Sin información"
+                        android:textSize="15sp"
                         android:layout_gravity="center_vertical"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:textAllCaps="false"
@@ -244,13 +273,13 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="APACHE LICENSE"
+                android:text="In God We Trust--IGWT"
                 android:layout_gravity="center_vertical"
                 android:textSize="18sp"
                 android:textColor="@android:color/darker_gray"/>
     </FrameLayout>
 
-    <TextView
+    <!--<TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -272,5 +301,5 @@
                 android:text="Your remaining content here"
                 android:textColor="@android:color/white" />
 
-    </FrameLayout>
+    </FrameLayout>-->
 </LinearLayout>

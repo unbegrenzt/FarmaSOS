@@ -32,6 +32,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.actividades.Navigation;
@@ -50,10 +54,7 @@ import com.google.android.gms.location.*;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -86,6 +87,8 @@ public class Map extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
         com.google.android.gms.location.LocationListener,GoogleMap.OnMarkerClickListener{
 
+    private static final int[] COLORS = {R.color.atenuante, R.color.acentuado_oscuro,
+        R.color.primary, R.color.colorAccent,R.color.accent2};
     private OnFragmentInteractionListener mListener;
     private static final int PLACE_PICKER_REQUEST = 1;
 
@@ -143,7 +146,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     /**
      * Posee los datos de la ubicacion actual
      */
-    private Location mCurrentLocation;
+    public Location mCurrentLocation;
     /**
      * Realiza un seguimiento del estado de las actualizaciones de solicitud de ubicación
      */
@@ -162,6 +165,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     private int radio = 0;
     private Marker clicked;
     private Retrofit retrofit;
+    private List<Polyline> polylines;
 
     /**
      * fin de declaracion de las variables e inicio de los metodos de la activity
@@ -784,6 +788,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
         //mMap.getUiSettings().setMapToolbarEnabled(true);
         //mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
         mMap.setOnPoiClickListener(this);
+        mMap.setOnInfoWindowClickListener(this);
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -960,6 +965,84 @@ public class Map extends Fragment implements OnMapReadyCallback,
         }
 
         Markers = new ArrayList<>();
+    }
+
+    public void ir_a(LatLng start, LatLng end){
+
+        Routing routing = new Routing.Builder()
+                .travelMode(Routing.TravelMode.DRIVING)
+                .withListener(new RoutingListener() {
+                    @Override
+                    public void onRoutingFailure(RouteException e) {
+                        Toast.makeText(getApplicationContext(),
+                                e.getMessage()+"gg",
+                                Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onRoutingStart() {
+
+                    }
+
+                    @Override
+                    public void onRoutingSuccess(ArrayList<Route> arrayList, int i) {
+                        /*CameraUpdate center = CameraUpdateFactory.newLatLng(
+                                new LatLng(18.01455, -77.499333));
+                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+
+                        mMap.moveCamera(center);*/
+
+
+                        if(polylines.size()>0) {
+                            for (Polyline poly : polylines) {
+                                poly.remove();
+                            }
+                        }
+
+                        polylines = new ArrayList<>();
+                        //add route(s) to the map.
+                        for (int j = 0; j <arrayList.size(); j++) {
+
+                            //In case of more than 5 alternative routes
+                            int colorIndex = j % COLORS.length;
+
+                            PolylineOptions polyOptions = new PolylineOptions();
+                            polyOptions.color(getResources().getColor(COLORS[colorIndex]));
+                            polyOptions.width(10 + j * 3);
+                            polyOptions.addAll(arrayList.get(j).getPoints());
+                            Polyline polyline = mMap.addPolyline(polyOptions);
+                            polylines.add(polyline);
+
+                            /*Toast.makeText(getApplicationContext(),"Route "+ (j+1) +": distance - "
+                                    + arrayList.get(j).getDistanceValue()+": duration - "
+                                    + arrayList.get(j).getDurationValue(),Toast.LENGTH_SHORT).show();*/
+                        }
+
+                        // Start marker
+                        /*MarkerOptions options = new MarkerOptions();
+                        options.position(new LatLng(18.01455, -77.499333));
+                        mMap.addMarker(options);
+
+                        // End marker
+                        options = new MarkerOptions();
+                        options.position(new LatLng(18.012590, -77.500659));
+                        mMap.addMarker(options);*/
+                    }
+
+                    @Override
+                    public void onRoutingCancelled() {
+
+                    }
+                })
+                .waypoints(start,end)
+                .key("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
+                .build();
+        routing.execute();
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(end).zoom((float) 13.5).build();
+        mMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
+
     }
 
 
@@ -1214,19 +1297,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
     @Override
     public boolean onMarkerClick(Marker marker) {
 
-        // Retrieve the data from the marker.
-        Integer clickCount = (Integer) marker.getTag();
-
-        // Check if a click count was set, then display the click count.
-        if (clickCount != null) {
-            clickCount = clickCount + 1;
-            marker.setTag(clickCount);
-            Toast.makeText(getApplicationContext(),
-                    marker.getTitle() +
-                            " has been clicked " + clickCount + " times.",
-                    Toast.LENGTH_SHORT).show();
-        }
-
         // Return false to indicate that we have not consumed the event and that we wish
         // for the default behavior to occur (which is for the camera to move such that the
         // marker is centered and for the marker's info window to open, if it has one).
@@ -1244,17 +1314,12 @@ public class Map extends Fragment implements OnMapReadyCallback,
         //TODO: mostar la información del lugar
         //TODO: ademas traza la ruta entre los dos puntos
         //TODO: codigo para hacerlo esta pero comentariado
+        Log.e("ggizi","aqui");
         for (final noman.googleplaces.Place place : locales) {
             if ((place.getLatitude() == marker.getPosition().latitude)
-                    && (place.getLongitude() == marker.getPosition().longitude)){
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        SearchPlacebyid(place.getPlaceId());
-                    }
-                });
-
+                    && (place.getLongitude() == marker.getPosition().longitude)) {
+                Log.e("ggizi","aqui");
+                SearchPlacebyid(place.getPlaceId());
             }
         }
     }

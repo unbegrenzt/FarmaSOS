@@ -9,7 +9,6 @@ package com.example.unbegrenzt.fharmaapp.actividades;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,46 +25,39 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ActivityChooserView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.example.unbegrenzt.fharmaapp.Adapter.ItemPagerAdapter;
 import com.example.unbegrenzt.fharmaapp.Fragments.Map;
-import com.example.unbegrenzt.fharmaapp.Manifest;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.behavior.BottomSheetBehaviorGoogleMapsLike;
 import com.example.unbegrenzt.fharmaapp.behavior.MergedAppBarLayoutBehavior;
 import com.example.unbegrenzt.fharmaapp.web_service.clases.PlaceWS;
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
+import com.facebook.*;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.github.ag.floatingactionmenu.OptionsFabLayout;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.*;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
 import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
 import com.ndroid.nadim.sahel.CoolToast;
 import com.nipunbirla.boxloader.BoxLoaderView;
-import com.rubengees.introduction.IntroductionBuilder;
 import com.squareup.picasso.Picasso;
 import me.grantland.widget.AutofitTextView;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ggeasyy extends AppCompatActivity implements
         Map.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener{
@@ -83,7 +75,6 @@ public class ggeasyy extends AppCompatActivity implements
     private static final int LOGIN_SUCCESS = 64206;
     private static final int OK = -1;
     private View bottomSheet;
-    private Intent i;
     public FloatingActionButton tienda;
     private PlaceWS info;
 
@@ -167,7 +158,14 @@ public class ggeasyy extends AppCompatActivity implements
         userfoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 loginButton.performClick();
+                if (AccessToken.getCurrentAccessToken() == null) {
+
+                    username.setText("Usuario anónimo");
+
+                }
+
             }
         });
 
@@ -234,6 +232,10 @@ public class ggeasyy extends AppCompatActivity implements
                     .make("Permiso porfavor",CoolToast.DANGER,CoolToast.LONG,true);
 
         }
+
+
+        Log.e("ggizi",String.valueOf(requestCode) + " + " + String.valueOf(resultCode));
+
 
     }
 
@@ -621,27 +623,81 @@ public class ggeasyy extends AppCompatActivity implements
 
                 //configuracion del subtitulo
                 AutofitTextView subtitulo = (AutofitTextView) bottomSheet.findViewById(R.id.subtitulo);
-                if (body.getResult().getOpeningHours().getOpenNow()) {
+                //TODO:reparar que aveces es nula lareferencia
+                if (body.getResult().getOpeningHours() != null) {
+                    if (body.getResult().getOpeningHours().getOpenNow()) {
 
-                    if (body.getResult().getInternationalPhoneNumber() != null) {
+                        if (body.getResult().getInternationalPhoneNumber() != null) {
 
-                        subtitulo.setText("Abierto - " + body.getResult().getInternationalPhoneNumber());
+                            subtitulo.setText("Abierto - " + body.getResult().getInternationalPhoneNumber());
+                        } else {
+
+                            subtitulo.setText("Abierto - " + body.getResult().getFormattedAddress());
+                        }
+
                     } else {
 
-                        subtitulo.setText("Abierto - " + body.getResult().getFormattedAddress());
-                    }
+                        if (body.getResult().getInternationalPhoneNumber() != null) {
 
+                            subtitulo.setText("Cerrado - " + body.getResult().getInternationalPhoneNumber());
+                        } else {
+
+                            subtitulo.setText("Cerrado - " + body.getResult().getFormattedAddress());
+                        }
+
+                    }
                 } else {
 
                     if (body.getResult().getInternationalPhoneNumber() != null) {
 
-                        subtitulo.setText("Cerrado - " + body.getResult().getInternationalPhoneNumber());
-                    } else {
-
-                        subtitulo.setText("Cerrado - " + body.getResult().getFormattedAddress());
+                        subtitulo.setText(body.getResult().getInternationalPhoneNumber() + " - "+
+                                body.getResult().getFormattedAddress());
                     }
 
                 }
+
+                //para poner a la vista el telefono
+                if (body.getResult().getFormattedPhoneNumber() != null) {
+
+                    AutofitTextView info_cel = (AutofitTextView) bottomSheet.findViewById(R.id.info_tel);
+                    info_cel.setText(body.getResult().getFormattedPhoneNumber());
+                }
+
+                //para poner a la vista la dirección
+                if (body.getResult().getFormattedAddress() !=  null){
+
+                    AutofitTextView info_cel = (AutofitTextView) bottomSheet.findViewById(R.id.info_direc);
+                    info_cel.setText(body.getResult().getFormattedAddress());
+                }
+
+                //para poner el horario
+                if (body.getResult().getOpeningHours() !=  null){
+
+                    TextView info_horario = (TextView) bottomSheet.findViewById(R.id.info_horario);
+                    info_horario.setText(body.getResult().getOpeningHours().getWeekdayText().get(0) + "\n" +
+                        body.getResult().getOpeningHours().getWeekdayText().get(1) + "\n" +
+                            body.getResult().getOpeningHours().getWeekdayText().get(2) + "\n" +
+                            body.getResult().getOpeningHours().getWeekdayText().get(3) + "\n" +
+                            body.getResult().getOpeningHours().getWeekdayText().get(4) + "\n" +
+                            body.getResult().getOpeningHours().getWeekdayText().get(5) + "\n" +
+                            body.getResult().getOpeningHours().getWeekdayText().get(6));
+                }
+
+                //fab para ir al lugar deseado
+                FloatingActionButton ir_a = (FloatingActionButton) findViewById(R.id.ir_a);
+                ir_a.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
+                        if (fragment != null) {
+
+                            fragment.ir_a(new LatLng(fragment.mCurrentLocation.getLatitude(),
+                                    fragment.mCurrentLocation.getLatitude()),
+                                    new LatLng(body.getResult().getGeometry().getLocation().getLat(),
+                                            body.getResult().getGeometry().getLocation().getLng()));
+                        }
+                    }
+                });
 
                 //logica para obtener la imagenes
                 Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
