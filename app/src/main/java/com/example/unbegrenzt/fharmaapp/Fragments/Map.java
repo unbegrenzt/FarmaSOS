@@ -32,10 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
-import com.directions.route.Route;
-import com.directions.route.RouteException;
-import com.directions.route.Routing;
-import com.directions.route.RoutingListener;
+import com.directions.route.*;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.actividades.Navigation;
@@ -166,6 +163,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     private Marker clicked;
     private Retrofit retrofit;
     private List<Polyline> polylines;
+    private Marker busqueda;
 
     /**
      * fin de declaracion de las variables e inicio de los metodos de la activity
@@ -798,6 +796,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
                         .position(latLng));
                 */
                 //getlocation(latLng);
+                ((ggeasyy)getActivity()).behaviordimiss();
             }
         });
 
@@ -823,14 +822,73 @@ public class Map extends Fragment implements OnMapReadyCallback,
         Call<PlaceWS> call = apiService.doPlaces(placeId,APIClient.GOOGLE_PLACE_API_KEY);
         call.enqueue(new Callback<PlaceWS>() {
             @Override
-            public void onResponse(Call<PlaceWS> call, Response<PlaceWS> response) {
+            public void onResponse(Call<PlaceWS> call, final Response<PlaceWS> response) {
 
-                if (response.isSuccessful()){
-                    Log.e("ggizi","respuesta");
-                    //metodo para dibujar la farmacia en pantalla
-                    ((ggeasyy)getActivity()).setInfo(response.body());
-                    ((ggeasyy)getActivity()).tienda.performClick();
-                }
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (response.isSuccessful()){
+                            ((ggeasyy)getActivity()).showbox();
+                            Log.e("ggizi","respuesta");
+                            //metodo para dibujar la farmacia en pantalla
+                            ((ggeasyy)getActivity()).setInfo(response.body());
+                            ((ggeasyy)getActivity()).Drawpharma(response.body());
+                        }
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onFailure(Call<PlaceWS> call, Throwable t) {
+
+                Log.e("error",t.getMessage());
+            }
+        });
+    }
+
+    public void get_search(String placeId){
+
+        PlaceInterface apiService = retrofit.create(PlaceInterface.class);
+
+        Call<PlaceWS> call = apiService.doPlaces(placeId,APIClient.GOOGLE_PLACE_API_KEY);
+        call.enqueue(new Callback<PlaceWS>() {
+            @Override
+            public void onResponse(Call<PlaceWS> call, final Response<PlaceWS> response) {
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (response.isSuccessful()){
+                            ((ggeasyy)getActivity()).showbox();
+                            CameraPosition cameraPosition = new CameraPosition.Builder()
+                                    .target(new LatLng(response.body().getResult().getGeometry().getLocation().getLat(),
+                                            response.body().getResult().getGeometry().getLocation().getLng()))
+                                    .zoom(16).build();
+                            mMap.animateCamera(CameraUpdateFactory
+                                    .newCameraPosition(cameraPosition));
+
+                            //con esto quitamos el marker anterior
+                            if (busqueda != null){
+
+                                busqueda.remove();
+                            }
+
+                            busqueda = mMap.addMarker(new MarkerOptions()
+                                    .title(response.body().getResult().getName())
+                                    .snippet("Click para mas información")
+                                    .position(new LatLng(response.body().getResult().getGeometry().getLocation().getLat(),
+                                            response.body().getResult().getGeometry().getLocation().getLng())));
+
+                            //metodo para dibujar la farmacia en pantalla
+                            ((ggeasyy)getActivity()).setInfo(response.body());
+                            ((ggeasyy)getActivity()).disposebox();
+                            ((ggeasyy)getActivity()).Drawpharma(response.body());
+                        }
+                    }
+                });
+
 
             }
 
@@ -923,7 +981,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
                                 //Log.e("ggizi", "mark out " + String.valueOf(Markers.size()));
                                 ((ggeasyy)getActivity()).disposebox();
                                 CameraPosition cameraPosition = new CameraPosition.Builder()
-                                        .target(new LatLng(pos.latitude,pos.longitude)).zoom((float) 13.5).build();
+                                        .target(new LatLng(pos.latitude,pos.longitude)).zoom((float) 13).build();
                                 mMap.animateCamera(CameraUpdateFactory
                                         .newCameraPosition(cameraPosition));
                             }
@@ -1034,6 +1092,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
                     }
                 })
+                .avoid(AbstractRouting.AvoidKind.HIGHWAYS)
                 .waypoints(start,end)
                 .key("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
                 .build();

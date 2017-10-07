@@ -40,8 +40,10 @@ import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.behavior.BottomSheetBehaviorGoogleMapsLike;
 import com.example.unbegrenzt.fharmaapp.behavior.MergedAppBarLayoutBehavior;
 import com.example.unbegrenzt.fharmaapp.web_service.clases.PlaceWS;
-import com.facebook.*;
-import com.facebook.login.LoginManager;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.github.ag.floatingactionmenu.OptionsFabLayout;
@@ -75,7 +77,6 @@ public class ggeasyy extends AppCompatActivity implements
     private static final int LOGIN_SUCCESS = 64206;
     private static final int OK = -1;
     private View bottomSheet;
-    public FloatingActionButton tienda;
     private PlaceWS info;
 
     @Override
@@ -169,14 +170,7 @@ public class ggeasyy extends AppCompatActivity implements
             }
         });
 
-        tienda = (FloatingActionButton)findViewById(R.id.tienda);
-
-        tienda.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Drawpharma(info);
-            }
-        });
+        //tienda = (FloatingActionButton)findViewById(R.id.tienda);
     }
 
     public void setInfo(PlaceWS info) {
@@ -287,7 +281,11 @@ public class ggeasyy extends AppCompatActivity implements
             @Override
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
-                Log.i("gg", "Place: " + place.getName());
+                Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
+                if (fragment != null) {
+                    Log.e("ggizi","aqui");
+                    fragment.get_search(place.getId());
+                }
             }
 
             @Override
@@ -445,6 +443,10 @@ public class ggeasyy extends AppCompatActivity implements
         boxLoader.setVisibility(View.GONE);
     }
 
+    public void showbox(){
+        boxLoader.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public void onBackPressed() {
 
@@ -501,7 +503,16 @@ public class ggeasyy extends AppCompatActivity implements
         return false;
     }
 
-    private void Drawpharma(final PlaceWS body) {
+    public void behaviordimiss(){
+
+        if (behavior.getState() != BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN){
+
+            behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
+
+        }
+    }
+
+    public void Drawpharma(final PlaceWS body) {
 
         behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_COLLAPSED);
 
@@ -623,7 +634,6 @@ public class ggeasyy extends AppCompatActivity implements
 
                 //configuracion del subtitulo
                 AutofitTextView subtitulo = (AutofitTextView) bottomSheet.findViewById(R.id.subtitulo);
-                //TODO:reparar que aveces es nula lareferencia
                 if (body.getResult().getOpeningHours() != null) {
                     if (body.getResult().getOpeningHours().getOpenNow()) {
 
@@ -706,6 +716,11 @@ public class ggeasyy extends AppCompatActivity implements
                             ,body.getResult().getPlaceId(),fragment.mGoogleApiClient);
                     ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
                     viewPager.setAdapter(adapter);
+                }
+
+                if (boxLoader.getVisibility() == View.VISIBLE){
+
+                    disposebox();
                 }
 
             }
