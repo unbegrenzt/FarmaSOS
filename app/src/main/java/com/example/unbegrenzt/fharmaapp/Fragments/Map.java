@@ -62,9 +62,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
+import com.ndroid.nadim.sahel.CoolToast;
 import com.squareup.picasso.Picasso;
 import noman.googleplaces.NRPlaces;
-import noman.googleplaces.PlaceType;
 import noman.googleplaces.PlacesException;
 import noman.googleplaces.PlacesListener;
 import retrofit2.Call;
@@ -168,6 +168,8 @@ public class Map extends Fragment implements OnMapReadyCallback,
     private Retrofit retrofit;
     private List<Polyline> polylines;
     private Marker busqueda;
+    private List<Marker> keep_sitios;
+    public boolean as_switch = true;
 
     /**
      * fin de declaracion de las variables e inicio de los metodos de la activity
@@ -798,6 +800,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
                 .build();
 
         polylines = new ArrayList<>();
+        keep_sitios = new ArrayList<>();
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -1030,8 +1033,8 @@ public class Map extends Fragment implements OnMapReadyCallback,
     }
 
     private void cleanmarkers() {
-        for(int i = 0; i < Markers.size();i++) {
-            Markers.get(0).remove();
+        for (com.google.android.gms.maps.model.Marker Marker : Markers) {
+            Marker.remove();
         }
 
         Markers = new ArrayList<>();
@@ -1370,21 +1373,104 @@ public class Map extends Fragment implements OnMapReadyCallback,
         //para ello buscamos la ubicacion del marcador
         //de nuestro arraylist obtenemos su llave
         //y le pedimos a google la información
-        //TODO: mostar la información del lugar
-        //TODO: ademas traza la ruta entre los dos puntos
-        //TODO: codigo para hacerlo esta pero comentariado
-        Log.e("ggizi","aqui");
+
         for (final noman.googleplaces.Place place : locales) {
+
+            //para obtener el marcador correcto
             if ((place.getLatitude() == marker.getPosition().latitude)
                     && (place.getLongitude() == marker.getPosition().longitude)) {
-                Log.e("ggizi","aqui");
+
                 SearchPlacebyid(place.getPlaceId());
             }
         }
+
+        for (Marker marker2 : keep_sitios) {
+
+            if ((marker2.getPosition().latitude == marker.getPosition().latitude)
+                    && (marker2.getPosition().longitude == marker.getPosition().longitude)) {
+
+                // codigo que borra los markers offline para no
+                //sobreescribir
+
+                PlaceWS place = SharedPreferencesManager.getInstance()
+                        .getValue(String.valueOf(marker2.getPosition().latitude) + "," +
+                        String.valueOf(marker2.getPosition().longitude),
+                        PlaceWS.class);
+
+                ((ggeasyy)getActivity()).Drawpharma(place);
+
+            }
+        }
+
     }
 
+    public void mis_sitios() {
+
+        if(as_switch) {
+
+            java.util.Map<String, ?> allEntries = SharedPreferencesManager.getInstance().getSharedPreference().getAll();
+            for (java.util.Map.Entry<String, ?> entry : allEntries.entrySet()) {
+                if (entry == null || entry.getValue() == null) continue;
+                PlaceWS sitios = null;
+                try {
+                    sitios = SharedPreferencesManager.getInstance().getValue(entry.getKey(),
+                            PlaceWS.class);
+                } catch (Exception e) {
+                    Log.e("ggizi",e.getMessage());
+                }
+                if (sitios != null) {
+
+                    keep_sitios.add(mMap.addMarker(new MarkerOptions()
+                            .title(sitios.getResult().getName())
+                            .snippet("Click para mas información")
+                            .position(new LatLng(sitios.getResult().getGeometry().getLocation().getLat(),
+                                    sitios.getResult().getGeometry().getLocation().getLng()))));
+
+                }
+            }
+            if (keep_sitios.size() != 0) {
+
+                cleanmarkers();
+
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(keep_sitios.get(0).getPosition().latitude,
+                                keep_sitios.get(0).getPosition().longitude))
+                        .zoom((float) 14.5).build();
+                mMap.animateCamera(CameraUpdateFactory
+                        .newCameraPosition(cameraPosition));
+
+            } else {
+
+                ((ggeasyy)getActivity()).CreatecoolToast("No posee", CoolToast.INFO, CoolToast.LONG, true);
+
+            }
+
+            as_switch = false;
+
+        } else {
+
+            //con esto quitamos los markers
+            CleanKeepSites();
+
+            as_switch = true;
+
+        }
+
+    }
+
+    public void CleanKeepSites() {
+        if (keep_sitios != null) {
+            for (com.google.android.gms.maps.model.Marker Marker : keep_sitios) {
+                Marker.remove();
+            }
+
+            keep_sitios = new ArrayList<>();
+        }
+    }
+
+
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+
         void onFragmentInteraction(Uri uri);
     }
 }

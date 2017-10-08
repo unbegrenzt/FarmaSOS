@@ -89,9 +89,8 @@ public class Main_map extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.terreno) {
+
+        if (id == R.id.terreno) {
 
         } else if (id == R.id.satelite) {
 

@@ -430,6 +430,7 @@ public class ggeasyy extends AppCompatActivity implements
             public void onMiniFabSelected(MenuItem fabItem) {
 
                 final Map fragment;
+
                 switch (fabItem.getItemId()) {
                     case R.id.fab_pos:
                         fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
@@ -444,6 +445,13 @@ public class ggeasyy extends AppCompatActivity implements
 
                             if (SharedPreferencesManager.getInstance().getValue("no_preguntar",
                                     Boolean.class)){
+
+                                // codigo que borra los markers offline para no
+                                //sobreescribir
+
+                                fragment.CleanKeepSites();
+
+                                fragment.as_switch = true;
 
                                 fragment.farm_cercana(500, SharedPreferencesManager.getInstance()
                                         .getValue("recordar_seleccion",String.class));
@@ -476,6 +484,9 @@ public class ggeasyy extends AppCompatActivity implements
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         //obtenemos el estado del checkbox
+                                        fragment.CleanKeepSites();
+
+                                        fragment.as_switch = true;
 
                                         if (checkBox.isChecked()) {
 
@@ -653,10 +664,21 @@ public class ggeasyy extends AppCompatActivity implements
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        Map fragment;
+        final Map fragment;
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
+        if (id == R.id.mis_sitios) {
+
+            fragment = (Map)getSupportFragmentManager().findFragmentByTag("map");
+            if (fragment != null) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        fragment.mis_sitios();
+                    }
+                });
+
+            }
+
         } else if (id == R.id.terreno) {
 
             fragment = (Map)getSupportFragmentManager().findFragmentByTag("map");
@@ -896,10 +918,12 @@ public class ggeasyy extends AppCompatActivity implements
                 //logica para obtener la imagenes
                 Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
                 if (fragment != null) {
+
                     ItemPagerAdapter adapter = new ItemPagerAdapter(getApplicationContext()
                             ,body.getResult().getPlaceId(),fragment.mGoogleApiClient);
                     ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
                     viewPager.setAdapter(adapter);
+
                 }
 
                 if (boxLoader.getVisibility() == View.VISIBLE){
@@ -909,5 +933,10 @@ public class ggeasyy extends AppCompatActivity implements
 
             }
         });
+    }
+
+    public void CreatecoolToast(String texto, int info, int duration, boolean rounded) {
+        new CoolToast(ggeasyy.this)
+                .make(texto, info, duration, rounded);
     }
 }
