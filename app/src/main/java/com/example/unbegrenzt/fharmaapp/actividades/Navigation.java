@@ -362,7 +362,7 @@ public class Navigation extends AppCompatActivity implements izi.OnFragmentInter
 
                     Fragment fragment = adapter.getItem(1);
                     if (fragment != null && fragment instanceof Map) {
-                        ((Map) fragment).farm_cercana(200);
+                        //((Map) fragment).farm_cercana(200);
                     }
 
                 }

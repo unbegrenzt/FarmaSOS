@@ -61,6 +61,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
 import com.squareup.picasso.Picasso;
 import noman.googleplaces.NRPlaces;
 import noman.googleplaces.PlaceType;
@@ -943,7 +944,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
         mMap.setMapType(map_type);
     }
 
-    public void farm_cercana(int radius) {
+    public void farm_cercana(int radius, String tipo) {
         final int[] primeravezx2 = {0};
         radio = radius;
         new NRPlaces.Builder()
@@ -953,7 +954,8 @@ public class Map extends Fragment implements OnMapReadyCallback,
                         if (e.getMessage().compareToIgnoreCase("ZERO_RESULTS") == 0 ) {
                             if (primeravezx2[0] == 0){
 
-                                farm_cercana(radio + 250);
+                                farm_cercana(radio + 250, SharedPreferencesManager.getInstance().getValue("recordar_seleccion",
+                                        String.class));
                                 primeravezx2[0] = 1;
                             }
                         }
@@ -990,7 +992,8 @@ public class Map extends Fragment implements OnMapReadyCallback,
                                 //Log.e("ggizi", "mark out " + String.valueOf(Markers.size()));
                                 ((ggeasyy)getActivity()).disposebox();
                                 CameraPosition cameraPosition = new CameraPosition.Builder()
-                                        .target(new LatLng(pos.latitude,pos.longitude)).zoom((float) 13).build();
+                                        .target(new LatLng(places.get(0).getLatitude(),
+                                                places.get(0).getLongitude())).zoom((float) 14).build();
                                 mMap.animateCamera(CameraUpdateFactory
                                         .newCameraPosition(cameraPosition));
                             }
@@ -1021,7 +1024,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
                 .key("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
                 .latlng(pos.latitude, pos.longitude)
                 .radius(radius)
-                .type(PlaceType.PHARMACY)
+                .type(tipo)
                 .build()
                 .execute();
     }

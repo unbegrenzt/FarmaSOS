@@ -9,6 +9,7 @@ package com.example.unbegrenzt.fharmaapp.actividades;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -61,6 +62,7 @@ import com.ndroid.nadim.sahel.CoolToast;
 import com.nipunbirla.boxloader.BoxLoaderView;
 import com.squareup.picasso.Picasso;
 import me.grantland.widget.AutofitTextView;
+import noman.googleplaces.PlaceType;
 
 public class ggeasyy extends AppCompatActivity implements
         Map.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener{
@@ -96,7 +98,7 @@ public class ggeasyy extends AppCompatActivity implements
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -427,7 +429,7 @@ public class ggeasyy extends AppCompatActivity implements
             @Override
             public void onMiniFabSelected(MenuItem fabItem) {
 
-                Map fragment;
+                final Map fragment;
                 switch (fabItem.getItemId()) {
                     case R.id.fab_pos:
                         fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
@@ -440,12 +442,142 @@ public class ggeasyy extends AppCompatActivity implements
                         fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
                         if (fragment != null) {
 
-                            AlertDialog.Builder mBuilder = new AlertDialog.Builder(ggeasyy.this);
-                            View mView = getLayoutInflater().inflate(R.layout.dialog_spinner, null);
-                            mBuilder.setTitle("Seleccione el local a buscar");
-                            Spinner mSpinner = (Spinner) mView.findViewById(R.id.spinner);
-                            fragment.farm_cercana(500);
-                            boxLoader.setVisibility(View.VISIBLE);
+                            if (SharedPreferencesManager.getInstance().getValue("no_preguntar",
+                                    Boolean.class)){
+
+                                fragment.farm_cercana(500, SharedPreferencesManager.getInstance()
+                                        .getValue("recordar_seleccion",String.class));
+
+                            } else {
+
+                                AlertDialog.Builder mBuilder = new AlertDialog.Builder(ggeasyy.this,
+                                        R.style.dialog_formal);
+                                View mView = getLayoutInflater().inflate(R.layout.dialog_spinner, null);
+                                mBuilder.setTitle("Seleccione el local a buscar");
+                                final Spinner mSpinner = (Spinner) mView.findViewById(R.id.spinner);
+                                final CheckBox checkBox = (CheckBox) mView.findViewById(R.id.recordar_selecc);
+
+                                ArrayAdapter<String> adapter = new ArrayAdapter<>(ggeasyy.this,
+                                        android.R.layout.simple_spinner_item,
+                                        getResources().getStringArray(R.array.local_type));
+                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+                                mSpinner.setAdapter(adapter);
+
+
+                                //para validar checkbox
+                                if (!SharedPreferencesManager.getInstance().getValue("no_preguntar",
+                                        Boolean.class)) {
+
+                                    checkBox.setChecked(false);
+
+                                }
+
+                                mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        //obtenemos el estado del checkbox
+
+                                        if (checkBox.isChecked()) {
+
+                                            //validamos para tener listo el modo fuera de linea
+                                            SharedPreferencesManager.getInstance().putValue("no_preguntar", true);
+
+                                            if (mSpinner.getSelectedItem().toString()
+                                                    .equalsIgnoreCase("Farmacia")) {
+
+                                                SharedPreferencesManager.getInstance().putValue("recordar_seleccion",
+                                                        PlaceType.PHARMACY);
+
+                                                fragment.farm_cercana(500, PlaceType.PHARMACY);
+                                                boxLoader.setVisibility(View.VISIBLE);
+
+                                            } else if (mSpinner.getSelectedItem().toString()
+                                                    .equalsIgnoreCase("Hospital")) {
+
+                                                SharedPreferencesManager.getInstance().putValue("recordar_seleccion",
+                                                        PlaceType.HOSPITAL);
+
+                                                fragment.farm_cercana(500, PlaceType.HOSPITAL);
+                                                boxLoader.setVisibility(View.VISIBLE);
+
+                                            } else if (mSpinner.getSelectedItem().toString()
+                                                    .equalsIgnoreCase("Doctor")) {
+
+                                                SharedPreferencesManager.getInstance().putValue("recordar_seleccion",
+                                                        PlaceType.HOSPITAL);
+
+                                                fragment.farm_cercana(500, PlaceType.DOCTOR);
+                                                boxLoader.setVisibility(View.VISIBLE);
+
+                                            } else if (mSpinner.getSelectedItem().toString()
+                                                    .equalsIgnoreCase("Dentista")) {
+
+                                                SharedPreferencesManager.getInstance().putValue("recordar_seleccion",
+                                                        PlaceType.DENTIST);
+
+                                                fragment.farm_cercana(500, PlaceType.DENTIST);
+                                                boxLoader.setVisibility(View.VISIBLE);
+
+                                            }
+
+                                        } else {
+
+                                            SharedPreferencesManager.getInstance().putValue("no_preguntar", false);
+
+                                            if (mSpinner.getSelectedItem().toString()
+                                                    .equalsIgnoreCase("Farmacia")) {
+
+                                                SharedPreferencesManager.getInstance().putValue("recordar_seleccion",
+                                                        PlaceType.PHARMACY);
+
+                                                fragment.farm_cercana(500, PlaceType.PHARMACY);
+                                                boxLoader.setVisibility(View.VISIBLE);
+
+                                            } else if (mSpinner.getSelectedItem().toString()
+                                                    .equalsIgnoreCase("Hospital")) {
+
+                                                SharedPreferencesManager.getInstance().putValue("recordar_seleccion",
+                                                        PlaceType.HOSPITAL);
+
+                                                fragment.farm_cercana(500, PlaceType.HOSPITAL);
+                                                boxLoader.setVisibility(View.VISIBLE);
+
+                                            } else if (mSpinner.getSelectedItem().toString()
+                                                    .equalsIgnoreCase("Doctor")) {
+
+                                                SharedPreferencesManager.getInstance().putValue("recordar_seleccion",
+                                                        PlaceType.HOSPITAL);
+
+                                                fragment.farm_cercana(500, PlaceType.DOCTOR);
+                                                boxLoader.setVisibility(View.VISIBLE);
+
+                                            } else if (mSpinner.getSelectedItem().toString()
+                                                    .equalsIgnoreCase("Dentista")) {
+
+                                                SharedPreferencesManager.getInstance().putValue("recordar_seleccion",
+                                                        PlaceType.DENTIST);
+
+                                                fragment.farm_cercana(500, PlaceType.DENTIST);
+                                                boxLoader.setVisibility(View.VISIBLE);
+
+                                            }
+
+                                        }
+                                    }
+                                });
+
+                                mBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                        dialogInterface.dismiss();
+                                    }
+                                });
+
+                                mBuilder.setView(mView);
+                                AlertDialog dialog = mBuilder.create();
+                                dialog.show();
+                            }
 
                         }
 

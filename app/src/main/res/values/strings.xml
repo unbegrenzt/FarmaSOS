@@ -68,6 +68,9 @@
     <string name="olv">Olvidar</string>
     <string name="keep">Guardar</string>
     <string-array name="local_type">
-        <item></item>
+        <item>Farmacia</item>
+        <item>Hospital</item>
+        <item>Doctor</item>
+        <item>Dentista</item>
     </string-array>
 </resources>
