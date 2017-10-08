@@ -67,4 +67,7 @@
     <string name="beha">com.example.unbegrenzt.fharmaapp.behavior.BottomSheetBehaviorGoogleMapsLike</string>
     <string name="olv">Olvidar</string>
     <string name="keep">Guardar</string>
+    <string-array name="local_type">
+        <item></item>
+    </string-array>
 </resources>

@@ -8,6 +8,7 @@
 package com.example.unbegrenzt.fharmaapp.actividades;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -32,10 +33,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.example.unbegrenzt.fharmaapp.Adapter.ItemPagerAdapter;
 import com.example.unbegrenzt.fharmaapp.Fragments.Map;
 import com.example.unbegrenzt.fharmaapp.R;
@@ -438,11 +436,19 @@ public class ggeasyy extends AppCompatActivity implements
                         }
                         break;
                     case R.id.fab_loc:
+
                         fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
                         if (fragment != null) {
+
+                            AlertDialog.Builder mBuilder = new AlertDialog.Builder(ggeasyy.this);
+                            View mView = getLayoutInflater().inflate(R.layout.dialog_spinner, null);
+                            mBuilder.setTitle("Seleccione el local a buscar");
+                            Spinner mSpinner = (Spinner) mView.findViewById(R.id.spinner);
                             fragment.farm_cercana(500);
                             boxLoader.setVisibility(View.VISIBLE);
+
                         }
+
                         break;
                     default:
                         break;
@@ -749,9 +755,7 @@ public class ggeasyy extends AppCompatActivity implements
                         Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
                         if (fragment != null) {
 
-                            fragment.ir_a(new LatLng(fragment.mCurrentLocation.getLatitude(),
-                                    fragment.mCurrentLocation.getLatitude()),
-                                    new LatLng(body.getResult().getGeometry().getLocation().getLat(),
+                            fragment.ir_a(new LatLng(body.getResult().getGeometry().getLocation().getLat(),
                                             body.getResult().getGeometry().getLocation().getLng()));
                         }
                     }

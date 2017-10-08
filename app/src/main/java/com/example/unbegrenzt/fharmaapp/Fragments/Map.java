@@ -26,11 +26,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -39,7 +36,6 @@ import com.akexorcist.googledirection.DirectionCallback;
 import com.akexorcist.googledirection.GoogleDirection;
 import com.akexorcist.googledirection.constant.TransportMode;
 import com.akexorcist.googledirection.model.Direction;
-import com.directions.route.*;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.actividades.ggeasyy;
@@ -56,7 +52,10 @@ import com.google.android.gms.location.*;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -148,7 +147,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     /**
      * Posee los datos de la ubicacion actual
      */
-    public Location mCurrentLocation;
+    private Location mCurrentLocation;
     /**
      * Realiza un seguimiento del estado de las actualizaciones de solicitud de ubicación
      */
@@ -165,7 +164,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
     private ArrayList<Marker> Markers;
     private int radio = 0;
-    private Marker clicked;
     private Retrofit retrofit;
     private List<Polyline> polylines;
     private Marker busqueda;
@@ -391,7 +389,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
      * Esas configuraciones son apropiadas para applicaciones cartograficas que muestran
      * actualizaciones de ubicacion en tiempo real.
      */
-    protected void createLocationRequest() {
+    private void createLocationRequest() {
 
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
@@ -434,7 +432,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     /**
      * pide actualizaciones de ubicacion de la FusedLocationApi.
      */
-    protected void startLocationUpdates() {
+    private void startLocationUpdates() {
         LocationServices.SettingsApi.checkLocationSettings(
                 mGoogleApiClient,
                 mLocationSettingsRequest
@@ -703,7 +701,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     /**
      * remueve las actualizaciones de ubicacion de la FusedLocationApi.
      */
-    protected void stopLocationUpdates() {
+    private void stopLocationUpdates() {
         // It is a good practice to remove location requests when the activity is in a paused or
         // stopped state. Doing so helps battery performance and is especially
         // recommended in applications that request frequent location updates.
@@ -940,11 +938,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
     }*/
 
-    public int getMaptype(){
-
-        return mMap.getMapType();
-    }
-
     public void setMaptype(int map_type){
 
         mMap.setMapType(map_type);
@@ -1041,7 +1034,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
         Markers = new ArrayList<>();
     }
 
-    public void ir_a(final LatLng start, final LatLng end){
+    public void ir_a(final LatLng end){
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(end).zoom((float) 14.5).build();
