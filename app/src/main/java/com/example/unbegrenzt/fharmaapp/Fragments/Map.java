@@ -26,21 +26,26 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.constant.TransportMode;
+import com.akexorcist.googledirection.model.Direction;
 import com.directions.route.*;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
-import com.example.unbegrenzt.fharmaapp.actividades.Navigation;
 import com.example.unbegrenzt.fharmaapp.actividades.ggeasyy;
 import com.example.unbegrenzt.fharmaapp.web_service.APIClient;
 import com.example.unbegrenzt.fharmaapp.web_service.api.PlaceInterface;
 import com.example.unbegrenzt.fharmaapp.web_service.clases.PlaceWS;
-import com.example.unbegrenzt.fharmaapp.web_service.clases.Result;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -785,8 +790,16 @@ public class Map extends Fragment implements OnMapReadyCallback,
         mMap.getUiSettings().setCompassEnabled(true);
         //mMap.getUiSettings().setMapToolbarEnabled(true);
         //mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
-        mMap.setOnPoiClickListener(this);
-        mMap.setOnInfoWindowClickListener(this);
+        mMap.setOnPoiClickListener(Map.this);
+        mMap.setOnInfoWindowClickListener(Map.this);
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://maps.googleapis.com/maps/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        polylines = new ArrayList<>();
+
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -796,14 +809,10 @@ public class Map extends Fragment implements OnMapReadyCallback,
                         .position(latLng));
                 */
                 //getlocation(latLng);
-                ((ggeasyy)getActivity()).behaviordimiss();
+                ((ggeasyy) getActivity()).behaviordimiss();
             }
         });
 
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://maps.googleapis.com/maps/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
     }
 
     @Override
@@ -831,7 +840,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
                             ((ggeasyy)getActivity()).showbox();
                             Log.e("ggizi","respuesta");
                             //metodo para dibujar la farmacia en pantalla
-                            ((ggeasyy)getActivity()).setInfo(response.body());
                             ((ggeasyy)getActivity()).Drawpharma(response.body());
                         }
                     }
@@ -882,7 +890,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
                                             response.body().getResult().getGeometry().getLocation().getLng())));
 
                             //metodo para dibujar la farmacia en pantalla
-                            ((ggeasyy)getActivity()).setInfo(response.body());
                             ((ggeasyy)getActivity()).disposebox();
                             ((ggeasyy)getActivity()).Drawpharma(response.body());
                         }
@@ -933,6 +940,15 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
     }*/
 
+    public int getMaptype(){
+
+        return mMap.getMapType();
+    }
+
+    public void setMaptype(int map_type){
+
+        mMap.setMapType(map_type);
+    }
 
     public void farm_cercana(int radius) {
         final int[] primeravezx2 = {0};
@@ -1025,82 +1041,70 @@ public class Map extends Fragment implements OnMapReadyCallback,
         Markers = new ArrayList<>();
     }
 
-    public void ir_a(LatLng start, LatLng end){
+    public void ir_a(final LatLng start, final LatLng end){
 
-        Routing routing = new Routing.Builder()
-                .travelMode(Routing.TravelMode.DRIVING)
-                .withListener(new RoutingListener() {
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(end).zoom((float) 14.5).build();
+        mMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
+
+        GoogleDirection.withServerKey("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
+                .from(new LatLng(pos.latitude, pos.longitude))
+                .to(end)
+                .transportMode(TransportMode.DRIVING)
+                .execute(new DirectionCallback() {
                     @Override
-                    public void onRoutingFailure(RouteException e) {
-                        Toast.makeText(getApplicationContext(),
-                                e.getMessage()+"gg",
-                                Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onRoutingStart() {
-
-                    }
-
-                    @Override
-                    public void onRoutingSuccess(ArrayList<Route> arrayList, int i) {
-                        /*CameraUpdate center = CameraUpdateFactory.newLatLng(
-                                new LatLng(18.01455, -77.499333));
-                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
-
-                        mMap.moveCamera(center);*/
+                    public void onDirectionSuccess(Direction direction, String rawBody) {
+                        if (direction.isOK()) {
+                            // Do something
+                            Log.e("ggizi", "rawbody" + rawBody);
+                            Log.e("ggizi", "status" + direction.getStatus());
+                            Log.e("ggizi", "waypoint" + direction.getGeocodedWaypointList().get(0).getStatus());
 
 
-                        if(polylines.size()>0) {
-                            for (Polyline poly : polylines) {
-                                poly.remove();
+
+                            if(polylines.size()>0) {
+                                for (Polyline poly : polylines) {
+                                    poly.remove();
+                                }
                             }
-                        }
 
-                        polylines = new ArrayList<>();
-                        //add route(s) to the map.
-                        for (int j = 0; j <arrayList.size(); j++) {
+                            polylines = new ArrayList<>();
+                            //add route(s) to the map.
+                            for (int j = 0; j < direction.getRouteList().size(); j++) {
 
-                            //In case of more than 5 alternative routes
-                            int colorIndex = j % COLORS.length;
+                                //In case of more than 5 alternative routes
+                                int colorIndex = j % COLORS.length;
 
-                            PolylineOptions polyOptions = new PolylineOptions();
-                            polyOptions.color(getResources().getColor(COLORS[colorIndex]));
-                            polyOptions.width(10 + j * 3);
-                            polyOptions.addAll(arrayList.get(j).getPoints());
-                            Polyline polyline = mMap.addPolyline(polyOptions);
-                            polylines.add(polyline);
+                                PolylineOptions polyOptions = new PolylineOptions();
+                                polyOptions.color(getResources().getColor(COLORS[colorIndex]));
+                                polyOptions.width(10 + j * 3);
+                                polyOptions.addAll(direction.getRouteList().get(j)
+                                        .getOverviewPolyline().getPointList());
+                                Polyline polyline = mMap.addPolyline(polyOptions);
+                                polylines.add(polyline);
 
                             /*Toast.makeText(getApplicationContext(),"Route "+ (j+1) +": distance - "
                                     + arrayList.get(j).getDistanceValue()+": duration - "
                                     + arrayList.get(j).getDurationValue(),Toast.LENGTH_SHORT).show();*/
+                            }
+                            Log.e("ggizi","success");
+
+                        } else {
+                            // Do something
+                            Toast.makeText(getApplicationContext()
+                                    ,direction.getStatus(),
+                                    Toast.LENGTH_LONG).show();
                         }
-
-                        // Start marker
-                        /*MarkerOptions options = new MarkerOptions();
-                        options.position(new LatLng(18.01455, -77.499333));
-                        mMap.addMarker(options);
-
-                        // End marker
-                        options = new MarkerOptions();
-                        options.position(new LatLng(18.012590, -77.500659));
-                        mMap.addMarker(options);*/
                     }
 
                     @Override
-                    public void onRoutingCancelled() {
-
+                    public void onDirectionFailure(Throwable t) {
+                        // Do something
+                        Toast.makeText(getApplicationContext()
+                                ,t.getMessage(),Toast.LENGTH_LONG).show();
                     }
-                })
-                .avoid(AbstractRouting.AvoidKind.HIGHWAYS)
-                .waypoints(start,end)
-                .key("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
-                .build();
-        routing.execute();
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(end).zoom((float) 13.5).build();
-        mMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
+                });
 
     }
 

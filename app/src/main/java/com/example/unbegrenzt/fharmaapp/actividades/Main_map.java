@@ -91,11 +91,11 @@ public class Main_map extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.terreno) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.satelite) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.normal) {
 
         } else if (id == R.id.nav_share) {
 

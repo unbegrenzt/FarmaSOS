@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by unbegrenzt for Jorge Luis Morales Centeno on 10-07-17 05:29 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 10-07-17 05:29 PM
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:id="@+id/fab_tierra"
+            android:icon="@drawable/ic_terrain_black_24dp"
+            android:title="Tierra" />
+
+    <item
+            android:id="@+id/fab_satelite"
+            android:icon="@drawable/ic_satellite_black_24dp"
+            android:title="Satélite" />
+    <item
+            android:id="@+id/fab_normal"
+            android:icon="@drawable/ic_map_black_24dp"
+            android:title="Normal" />
+</menu>

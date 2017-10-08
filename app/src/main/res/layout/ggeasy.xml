@@ -19,11 +19,21 @@
         xmlns:custom="http://schemas.android.com/apk/res-auto">
 
 
-    <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:id="@+id/tienda"/>
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <com.github.ag.floatingactionmenu.OptionsFabLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="?attr/actionBarSize"
+                android:gravity="top|left"
+                android:id="@+id/layers"
+                custom:src="@drawable/ic_layers_black_24dp"
+                custom:color="@color/accent1"
+                custom:options_menu="@menu/fab_layer"/>
+
+    </FrameLayout>
 
     <FrameLayout
             android:id="@+id/dummy_framelayout_replacing_map"

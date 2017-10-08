@@ -25,6 +25,25 @@
                 android:id="@+id/nav_manage"
                 android:icon="@drawable/ic_menu_manage"
                 android:title="Tools"/>
+
+        <item
+                android:title="Tipo de Mapa">
+            <menu>
+                <item
+                        android:id="@+id/terreno"
+                        android:icon="@drawable/ic_terrain_black_24dp"
+                        android:title="Terreno" />
+                <item
+                        android:id="@+id/satelite"
+                        android:icon="@drawable/ic_satellite_black_24dp"
+                        android:title="Satelite" />
+                <item
+                        android:id="@+id/normal"
+                        android:icon="@drawable/ic_map_black_24dp"
+                        android:title="Normal" />
+            </menu>
+        </item>
+
     </group>
 
     <item android:title="Communicate">
@@ -32,11 +51,11 @@
             <item
                     android:id="@+id/nav_share"
                     android:icon="@drawable/ic_menu_share"
-                    android:title="Share"/>
+                    android:title="Contribuir"/>
             <item
                     android:id="@+id/nav_send"
                     android:icon="@drawable/ic_menu_send"
-                    android:title="Send"/>
+                    android:title="Retribución"/>
         </menu>
     </item>
 

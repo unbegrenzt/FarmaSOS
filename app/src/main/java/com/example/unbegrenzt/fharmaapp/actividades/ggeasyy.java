@@ -7,10 +7,12 @@
 
 package com.example.unbegrenzt.fharmaapp.actividades;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -51,6 +53,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -64,6 +67,7 @@ import me.grantland.widget.AutofitTextView;
 public class ggeasyy extends AppCompatActivity implements
         Map.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener{
 
+    private static final int PICK_IMAGE = 100;
     private OptionsFabLayout fabWithOptions;
     private BoxLoaderView boxLoader;
     private BottomSheetBehaviorGoogleMapsLike<View> behavior;
@@ -77,7 +81,7 @@ public class ggeasyy extends AppCompatActivity implements
     private static final int LOGIN_SUCCESS = 64206;
     private static final int OK = -1;
     private View bottomSheet;
-    private PlaceWS info;
+    private ImageView userportada;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +132,7 @@ public class ggeasyy extends AppCompatActivity implements
         //iniciamos las vistas del usuario actual
         userfoto = (ImageView)navigationView.getHeaderView(0).findViewById(R.id.foto_perfil);
         username = (TextView)navigationView.getHeaderView(0).findViewById(R.id.name);
+        userportada = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.fondo);
 
         loginButton = (LoginButton)navigationView.getHeaderView(0).findViewById(R.id.login_button2);
         loginButton.setReadPermissions("email","public_profile");
@@ -148,11 +153,13 @@ public class ggeasyy extends AppCompatActivity implements
             @Override
             public void onCancel() {
                 // App code
+
             }
 
             @Override
             public void onError(FacebookException exception) {
                 // App code
+
             }
         });
 
@@ -161,21 +168,22 @@ public class ggeasyy extends AppCompatActivity implements
             public void onClick(View view) {
 
                 loginButton.performClick();
-                if (AccessToken.getCurrentAccessToken() == null) {
-
-                    username.setText("Usuario anónimo");
-
-                }
 
             }
         });
 
-        //tienda = (FloatingActionButton)findViewById(R.id.tienda);
+        userportada.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                OpenGallery();
+            }
+        });
     }
 
-    public void setInfo(PlaceWS info) {
-
-        this.info = info;
+    private void OpenGallery(){
+        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        startActivityForResult(gallery, PICK_IMAGE);
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
@@ -227,8 +235,12 @@ public class ggeasyy extends AppCompatActivity implements
 
         }
 
+        if(resultCode == Activity.RESULT_OK && requestCode == PICK_IMAGE && data != null){
 
-        Log.e("ggizi",String.valueOf(requestCode) + " + " + String.valueOf(resultCode));
+            Picasso.with(getApplicationContext()).load(data.getData()).placeholder(R.drawable.cloud_off)
+                    .resize(userportada.getWidth(),userportada.getHeight())
+                    .into(userportada);
+        }
 
 
     }
@@ -420,7 +432,7 @@ public class ggeasyy extends AppCompatActivity implements
                 Map fragment;
                 switch (fabItem.getItemId()) {
                     case R.id.fab_pos:
-                        fragment = (Map)getSupportFragmentManager().findFragmentByTag("map");
+                        fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
                         if (fragment != null) {
                             fragment.move_to_my_pos();
                         }
@@ -461,7 +473,7 @@ public class ggeasyy extends AppCompatActivity implements
 
             fabWithOptions.closeOptionsMenu();
 
-        } else if(boxLoader.getVisibility() == View.VISIBLE){
+        } else if (boxLoader.getVisibility() == View.VISIBLE){
 
             boxLoader.setVisibility(View.GONE);
 
@@ -498,14 +510,50 @@ public class ggeasyy extends AppCompatActivity implements
 
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        Map fragment;
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.terreno) {
+
+            fragment = (Map)getSupportFragmentManager().findFragmentByTag("map");
+            if (fragment != null) {
+                fragment.setMaptype(GoogleMap.MAP_TYPE_TERRAIN);
+            }
+
+        } else if (id == R.id.satelite) {
+
+            fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
+            if (fragment != null) {
+                fragment.setMaptype(GoogleMap.MAP_TYPE_HYBRID);
+            }
+
+        } else if (id == R.id.normal) {
+
+            fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
+            if (fragment != null) {
+                fragment.setMaptype(GoogleMap.MAP_TYPE_NORMAL);
+            }
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     public void behaviordimiss(){
 
-        if (behavior.getState() != BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN){
+        if (behavior.getState() == BottomSheetBehaviorGoogleMapsLike.STATE_COLLAPSED){
 
             behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
 
