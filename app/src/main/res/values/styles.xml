@@ -21,7 +21,7 @@
         <item name="android:colorBackground">@color/icons1</item>
         <item name="android:textColorPrimaryInverse">@color/dark</item>
         <item name="android:windowBackground">?android:attr/colorBackground</item>
-        <item name="android:alertDialogTheme">@style/YourAlertDialogTheme</item>
+        <item name="android:alertDialogTheme">@style/dialog_formal</item>
 
     </style>
 

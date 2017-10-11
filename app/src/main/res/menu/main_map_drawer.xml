@@ -49,13 +49,13 @@
     <item android:title="Communicate">
         <menu>
             <item
-                    android:id="@+id/nav_share"
-                    android:icon="@drawable/ic_menu_share"
+                    android:id="@+id/contribuir"
+                    android:icon="@drawable/ic_people_black_24dp"
                     android:title="Contribuir"/>
             <item
-                    android:id="@+id/nav_send"
+                    android:id="@+id/comentarios"
                     android:icon="@drawable/ic_menu_send"
-                    android:title="Retribución"/>
+                    android:title="Comentarios"/>
         </menu>
     </item>
 

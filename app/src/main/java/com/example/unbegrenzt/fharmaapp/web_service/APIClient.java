@@ -16,11 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 public class APIClient {
 
-    private static Retrofit retrofit = null;
-
     public static final String GOOGLE_PLACE_API_KEY = "AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ";
-
-    public static String base_url = "https://maps.googleapis.com/maps/api/";
 
     public static Retrofit getClient() {
 
@@ -29,8 +25,9 @@ public class APIClient {
         OkHttpClient client = new OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).addInterceptor(interceptor).build();
 
 
-        retrofit = null;
+        Retrofit retrofit = null;
 
+        String base_url = "https://maps.googleapis.com/maps/api/";
         retrofit = new Retrofit.Builder()
                 .baseUrl(base_url)
                 .addConverterFactory(GsonConverterFactory.create())

@@ -7,17 +7,17 @@
 
 <resources>
     <string name="app_name">PharmaSOS</string>
-    <string name="facebook_app_id">446267069084972</string>
-    <string name="fb_login_protocol_scheme">fb446267069084972</string>
+    <string name="facebook_app_id" translatable="false">214759825709607</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb214759825709607</string>
     <string name="Máx_preg">Máximo de preguntas excedido</string>
 
-    <string name="MergedAppBarLayoutBehavior">com.example.unbegrenzt.fharmaapp.behavior.MergedAppBarLayoutBehavior
+    <string name="MergedAppBarLayoutBehavior" translatable="false">com.example.unbegrenzt.fharmaapp.behavior.MergedAppBarLayoutBehavior
     </string>
-    <string name="ScrollAwareFABBehavior">com.example.unbegrenzt.fharmaapp.behavior.ScrollAwareFABBehavior</string>
-    <string name="BottomSheetBehaviorGoogleMapsLike">
+    <string name="ScrollAwareFABBehavior" translatable="false">com.example.unbegrenzt.fharmaapp.behavior.ScrollAwareFABBehavior</string>
+    <string name="BottomSheetBehaviorGoogleMapsLike" translatable="false">
         com.example.unbegrenzt.fharmaapp.behavior.BottomSheetBehaviorGoogleMapsLike
     </string>
-    <string name="BackDropBottomSheetBehavior">com.example.unbegrenzt.fharmaapp.behavior.BackdropBottomSheetBehavior
+    <string name="BackDropBottomSheetBehavior" translatable="false">com.example.unbegrenzt.fharmaapp.behavior.BackdropBottomSheetBehavior
     </string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="explor_n_l_map">Explora el app</string>
@@ -26,13 +26,13 @@
     <string name="farmaco">Informate acerca del fármaco que nescesitas</string>
     <string name="no_conex">Sin conexión</string>
     <string name="toolbar_name">Sin conexión</string>
-    <string name="ScrollingAppBarLayoutBehavior">
+    <string name="ScrollingAppBarLayoutBehavior" translatable="false">
         com.example.unbegrenzt.fharmaapp.behavior.ScrollingAppBarLayoutBehavior
     </string>
     <string name="local_disp">puedes tenerlo todo de forma local en tu dispositivo</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
     <string name="catalog">Catálogo</string>
@@ -51,17 +51,17 @@
     <string name="least">Mínimo 3 caracteres</string>
     <string name="tu_no">Turno</string>
     <string name="get_ref_farma">farmacias</string>
-    <string name="title_activity_farmacia">Farmacia</string>
-    <string name="title_activity_maps_activityas">Map</string>
-    <string name="title_activity_principal_map">FarmaSOS</string>
+    <string name="title_activity_farmacia" translatable="false">Farmacia</string>
+    <string name="title_activity_maps_activityas" translatable="false">Map</string>
+    <string name="title_activity_principal_map" translatable="false">FarmaSOS</string>
     <string name="intro1">Encuentra una farmacía abierta de forma ágil</string>
     <string name="intro2">Consulta información de esa farmacia en tiempo real</string>
     <string name="intro3">Haz compras electrónicas</string>
-    <string name="title_activity_fmap">Home</string>
-    <string name="key_binding_default_toolbar_name">toolbarname</string>
+    <string name="title_activity_fmap" translatable="false">Home</string>
+    <string name="key_binding_default_toolbar_name" translatable="false">toolbarname</string>
     <string name="mi_pos">mi posición</string>
     <string name="lc_mas_cerc">local más cercano</string>
-    <string name="title_activity_main_map">Mapa</string>
+    <string name="title_activity_main_map" translatable="false">Mapa</string>
     <string name="fondo">click para cambiar fondo</string>
     <string name="anm">Usuario anónimo</string>
     <string name="beha">com.example.unbegrenzt.fharmaapp.behavior.BottomSheetBehaviorGoogleMapsLike</string>

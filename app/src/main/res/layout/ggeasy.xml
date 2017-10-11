@@ -18,23 +18,6 @@
         app:layout_behavior="@string/beha"
         xmlns:custom="http://schemas.android.com/apk/res-auto">
 
-
-    <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        <com.github.ag.floatingactionmenu.OptionsFabLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="?attr/actionBarSize"
-                android:gravity="top|left"
-                android:id="@+id/layers"
-                custom:src="@drawable/ic_layers_black_24dp"
-                custom:color="@color/accent1"
-                custom:options_menu="@menu/fab_layer"/>
-
-    </FrameLayout>
-
     <FrameLayout
             android:id="@+id/dummy_framelayout_replacing_map"
             android:layout_width="match_parent"
@@ -137,7 +120,7 @@
             android:layout_width="wrap_content"
             app:layout_anchor="@id/bottom_sheet"
             app:layout_anchorGravity="top|right|end"
-            android:src="@drawable/ic_action_go"
+            android:src="@drawable/ic_directions_black_24dp"
             android:layout_margin="@dimen/fab_margin"
             app:layout_behavior="@string/ScrollAwareFABBehavior"
             android:clickable="true"/>

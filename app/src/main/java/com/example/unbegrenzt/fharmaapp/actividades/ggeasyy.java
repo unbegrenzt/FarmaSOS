@@ -37,14 +37,12 @@ import android.view.View;
 import android.widget.*;
 import com.example.unbegrenzt.fharmaapp.Adapter.ItemPagerAdapter;
 import com.example.unbegrenzt.fharmaapp.Fragments.Map;
+import com.example.unbegrenzt.fharmaapp.Objects.Comentario;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.behavior.BottomSheetBehaviorGoogleMapsLike;
 import com.example.unbegrenzt.fharmaapp.behavior.MergedAppBarLayoutBehavior;
 import com.example.unbegrenzt.fharmaapp.web_service.clases.PlaceWS;
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
+import com.facebook.*;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.github.ag.floatingactionmenu.OptionsFabLayout;
@@ -57,6 +55,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
 import com.ndroid.nadim.sahel.CoolToast;
 import com.nipunbirla.boxloader.BoxLoaderView;
@@ -82,6 +82,7 @@ public class ggeasyy extends AppCompatActivity implements
     private static final int OK = -1;
     private View bottomSheet;
     private ImageView userportada;
+    private AccessTokenTracker accessTokenTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +98,9 @@ public class ggeasyy extends AppCompatActivity implements
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -179,6 +182,31 @@ public class ggeasyy extends AppCompatActivity implements
                 OpenGallery();
             }
         });
+
+
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken,
+                                                       AccessToken currentAccessToken) {
+
+                if (currentAccessToken == null) {
+
+                    FirebaseAuth.getInstance().signOut();
+
+                    Picasso.with(getApplicationContext()).load(R.drawable.ic_person).placeholder(R.drawable.ic_download)
+                            .error(R.drawable.ic_person).resize(40, 40).into(userfoto);
+
+                    username.setText("Usuario anónimo");
+
+                    Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
+                    if (fragment != null) {
+                        fragment.photo = Uri.parse("ggsdar");
+                    }
+
+                }
+            }
+        };
+
     }
 
     private void OpenGallery(){
@@ -217,10 +245,7 @@ public class ggeasyy extends AppCompatActivity implements
 
             if(resultCode == OK){
 
-                //((Navigation)getActivity()).refresh(1);
-                //aqui se parsea al perfil normal
-                //esto por si habia alguien ya en firebase
-                FirebaseAuth.getInstance().signOut();
+
                 new CoolToast(ggeasyy.this)
                         .make("Sesión iniciada",CoolToast.INFO,CoolToast.LONG,true);
 
@@ -238,10 +263,9 @@ public class ggeasyy extends AppCompatActivity implements
         if(resultCode == Activity.RESULT_OK && requestCode == PICK_IMAGE && data != null){
 
             Picasso.with(getApplicationContext()).load(data.getData()).placeholder(R.drawable.cloud_off)
-                    .resize(userportada.getWidth(),userportada.getHeight())
+                    .error(R.drawable.ic_person).resize(userportada.getWidth(),userportada.getHeight())
                     .into(userportada);
         }
-
 
     }
 
@@ -263,7 +287,13 @@ public class ggeasyy extends AppCompatActivity implements
                     Log.e("ggizi", String.valueOf(user.getProviderData()));
 
                     Picasso.with(getApplicationContext()).load(user.getPhotoUrl()).placeholder(R.drawable.ic_download)
-                            .error(R.drawable.ic_person).resize(50,50).into(userfoto);
+                            .error(R.drawable.ic_person).resize(80,80).into(userfoto);
+
+                    Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
+                    if (fragment != null) {
+                        fragment.photo = user.getPhotoUrl();
+                        fragment.updateLocationUI();
+                    }
                 }
             }
         };
@@ -274,6 +304,7 @@ public class ggeasyy extends AppCompatActivity implements
         super.onStart();
 
         mAuth.addAuthStateListener(mAuthListener);
+        accessTokenTracker.startTracking();
 
     }
 
@@ -283,6 +314,11 @@ public class ggeasyy extends AppCompatActivity implements
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+        if (accessTokenTracker != null){
+
+            accessTokenTracker.stopTracking();
+        }
+
     }
 
     private void initplacefragmet() {
@@ -292,7 +328,6 @@ public class ggeasyy extends AppCompatActivity implements
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
                 Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
                 if (fragment != null) {
                     Log.e("ggizi","aqui");
@@ -302,12 +337,9 @@ public class ggeasyy extends AppCompatActivity implements
 
             @Override
             public void onError(Status status) {
-                // TODO: Handle the error.
                 Log.i("gg", "An error occurred: " + status);
             }
         });
-
-        //TODO:cambiar los colores grises de la toolbar
 
     }
 
@@ -340,7 +372,7 @@ public class ggeasyy extends AppCompatActivity implements
                         Log.d("bottomsheet-", "STATE_ANCHOR_POINT");
                         break;
                     case BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN:
-                        Log.d("bottomsheet-", "STATE_HIDDEN");
+                        fabWithOptions.setVisibility(View.VISIBLE);
                         break;
                     case BottomSheetBehaviorGoogleMapsLike.STATE_SETTLING:
                         Log.d("bottomsheet", "STATE_SETTLING");
@@ -449,10 +481,6 @@ public class ggeasyy extends AppCompatActivity implements
                                 // codigo que borra los markers offline para no
                                 //sobreescribir
 
-                                fragment.CleanKeepSites();
-
-                                fragment.as_switch = true;
-
                                 fragment.farm_cercana(500, SharedPreferencesManager.getInstance()
                                         .getValue("recordar_seleccion",String.class));
 
@@ -484,9 +512,8 @@ public class ggeasyy extends AppCompatActivity implements
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         //obtenemos el estado del checkbox
-                                        fragment.CleanKeepSites();
 
-                                        fragment.as_switch = true;
+                                        //TODO: AQUI LIMPIA INTERFACE
 
                                         if (checkBox.isChecked()) {
 
@@ -661,7 +688,7 @@ public class ggeasyy extends AppCompatActivity implements
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item)  {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         final Map fragment;
@@ -702,13 +729,97 @@ public class ggeasyy extends AppCompatActivity implements
 
         } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.comentarios) {
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+            if (user != null){
+
+                comentario_dialog();
+
+            } else {
+
+                face_dialog();
+
+            }
+
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void face_dialog() {
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(ggeasyy.this,
+                R.style.dialog_formal);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_face, null);
+        mBuilder.setTitle("Inicia Sesión");
+
+
+        mBuilder.setPositiveButton("Iniciar sesión", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                loginButton.performClick();
+
+            }
+        });
+
+        mBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                dialogInterface.dismiss();
+            }
+        });
+
+        mBuilder.setView(mView);
+        AlertDialog dialog = mBuilder.create();
+        dialog.show();
+    }
+
+    private void comentario_dialog() {
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(ggeasyy.this,
+                R.style.dialog_formal);
+        View mView = getLayoutInflater().inflate(R.layout.sugerencia_dialog, null);
+        mBuilder.setTitle("Sugiere una actualización");
+        final EditText sugerencia = (EditText) mView.findViewById(R.id.suggest);
+
+
+        mBuilder.setPositiveButton("Enviar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                DatabaseReference databaseFarma;
+                databaseFarma = FirebaseDatabase.getInstance().getReference("comentarios");
+                String id = databaseFarma.push().getKey();
+
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                assert user != null;
+                Comentario comentario = new Comentario(user.getUid(), String.valueOf(sugerencia.getText()));
+
+                databaseFarma.child(id).setValue(comentario);
+
+            }
+        });
+
+        mBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                dialogInterface.dismiss();
+            }
+        });
+
+        mBuilder.setView(mView);
+        AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
     }
 
     public void behaviordimiss(){
@@ -723,6 +834,8 @@ public class ggeasyy extends AppCompatActivity implements
     public void Drawpharma(final PlaceWS body) {
 
         behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_COLLAPSED);
+        fabWithOptions.closeOptionsMenu();
+        fabWithOptions.setVisibility(View.GONE);
 
         runOnUiThread(new Runnable() {
             @Override

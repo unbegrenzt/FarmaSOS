@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by unbegrenzt for Jorge Luis Morales Centeno on 10-10-17 03:18 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 10-10-17 03:18 PM
+  -->
+
+<resources>
+    <string name="app_name">PharmaSOS</string>
+    <string name="val_ranos">Valóranos</string>
+    <string name="tu_no">Turno</string>
+    <string name="toolbar_name">Sin conexión</string>
+    <string name="per">Perfil</string>
+    <string name="olv">Olvidar</string>
+    <string name="no_conex">Sin conexión</string>
+    <string name="mi_pos">mi posición</string>
+    <string name="men">Menú</string>
+    <string name="map">Mapa</string>
+    <string name="local_disp">puedes tenerlo todo de forma local en tu dispositivo</string>
+    <string name="least">Mínimo 3 caracteres</string>
+    <string name="lc_mas_cerc">local más cercano</string>
+    <string name="keep">Guardar</string>
+    <string name="intro3">Haz compras electrónicas</string>
+    <string name="intro2">Consulta información de esa farmacia en tiempo real</string>
+    <string name="intro1">Encuentra una farmacía abierta de forma ágil</string>
+    <string name="inicia_sesion">Inicia Sesión</string>
+    <string name="hom">Home</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="get_ref_farma">farmacias</string>
+    <string name="fondo">click para cambiar fondo</string>
+</resources>

@@ -26,6 +26,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,7 @@ import com.akexorcist.googledirection.DirectionCallback;
 import com.akexorcist.googledirection.GoogleDirection;
 import com.akexorcist.googledirection.constant.TransportMode;
 import com.akexorcist.googledirection.model.Direction;
+import com.example.unbegrenzt.fharmaapp.Interfaces.Clean;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.actividades.ggeasyy;
@@ -43,8 +45,6 @@ import com.example.unbegrenzt.fharmaapp.web_service.APIClient;
 import com.example.unbegrenzt.fharmaapp.web_service.api.PlaceInterface;
 import com.example.unbegrenzt.fharmaapp.web_service.clases.PlaceWS;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -57,8 +57,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
@@ -91,7 +89,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
     private static final int[] COLORS = {R.color.atenuante, R.color.acentuado_oscuro,
         R.color.primary, R.color.colorAccent,R.color.accent2};
-    private OnFragmentInteractionListener mListener;
     private static final int PLACE_PICKER_REQUEST = 1;
 
     /**
@@ -159,7 +156,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     private String mLastUpdateTime;
     private boolean primeravez = true;
     private LatLng pos;
-    private Uri photo;
+    public Uri photo;
     private DatabaseReference databaseFarma;
 
 
@@ -169,7 +166,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
     private List<Polyline> polylines;
     private Marker busqueda;
     private List<Marker> keep_sitios;
-    public boolean as_switch = true;
 
     /**
      * fin de declaracion de las variables e inicio de los metodos de la activity
@@ -211,11 +207,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
         locales = new ArrayList<>();
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            photo = user.getPhotoUrl();
-        }
-
         // actualizamos a partir de un instancia guardada
         updateValuesFromBundle(savedInstanceState);
 
@@ -227,11 +218,10 @@ public class Map extends Fragment implements OnMapReadyCallback,
         buildLocationSettingsRequest();
         //updatelistener();
         //AddPlace();
-        List<Polyline> polylines = new ArrayList<>();
         Markers = new ArrayList<>();
     }
 
-    private void AddPlace() {
+    /*private void AddPlace() {
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
         try {
             startActivityForResult(builder.build(getActivity()), PLACE_PICKER_REQUEST);
@@ -241,7 +231,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
         } catch (GooglePlayServicesNotAvailableException e) {
             Log.i("asdf",e.getMessage());
         }
-    }
+    }*/
 
 
 
@@ -515,7 +505,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
                 Place place = PlacePicker.getPlace(getApplicationContext(),data);
                 String id = databaseFarma.push().getKey();
                 LatLng coord = place.getLatLng();
-                int x = 0;
                 boolean valid = true;
                 String ID, address, latitud, longitud, name, telefono, website;
                 List<Integer> placetypes;
@@ -573,7 +562,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
      * configura el valor de los campos UI para la ubicacion  latitude, longitude y el ultimo
      * momento de actualizacion.
      */
-    private void updateLocationUI() {
+    public void updateLocationUI() {
         if (mCurrentLocation != null) {
 
             /*
@@ -601,10 +590,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
         pos = new LatLng(latitude,longitude);
         if(primeravez){
             move_to_my_pos();
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (user != null) {
-                photo = user.getPhotoUrl();
-            }
             primeravez = false;
         }
         if(MiUbicacion != null)MiUbicacion.remove();
@@ -728,12 +713,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -743,11 +722,11 @@ public class Map extends Fragment implements OnMapReadyCallback,
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
+        if  (!(context instanceof OnFragmentInteractionListener)) {
+
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
+
         }
     }
 
@@ -880,10 +859,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
                                     .newCameraPosition(cameraPosition));
 
                             //con esto quitamos el marker anterior
-                            if (busqueda != null){
-
-                                busqueda.remove();
-                            }
+                            CleanInterface(Clean.FRAGMENT_SEARCH);
 
                             busqueda = mMap.addMarker(new MarkerOptions()
                                     .title(response.body().getResult().getName())
@@ -907,6 +883,15 @@ public class Map extends Fragment implements OnMapReadyCallback,
                 Log.e("error",t.getMessage());
             }
         });
+    }
+
+    private void cleansearch(){
+
+        if (busqueda != null){
+
+            busqueda.remove();
+        }
+
     }
 
     /*private void Markerspdate() {
@@ -979,7 +964,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
                                 locales.clear();
                                 locales.addAll(places);
 
-                                cleanmarkers();
+                                CleanInterface(Clean.FARM_CERCANA);
 
                                 //Log.e("ggizi", "mark in " + String.valueOf(Markers.size()));
 
@@ -1040,6 +1025,16 @@ public class Map extends Fragment implements OnMapReadyCallback,
         Markers = new ArrayList<>();
     }
 
+    private void cleanpolylines(){
+        if(polylines.size()>0) {
+            for (Polyline poly : polylines) {
+                poly.remove();
+            }
+        }
+
+        polylines = new ArrayList<>();
+    }
+
     public void ir_a(final LatLng end){
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -1061,14 +1056,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
                             Log.e("ggizi", "waypoint" + direction.getGeocodedWaypointList().get(0).getStatus());
 
 
-
-                            if(polylines.size()>0) {
-                                for (Polyline poly : polylines) {
-                                    poly.remove();
-                                }
-                            }
-
-                            polylines = new ArrayList<>();
+                            CleanInterface(Clean.BEFORE_ROUTE);
                             //add route(s) to the map.
                             for (int j = 0; j < direction.getRouteList().size(); j++) {
 
@@ -1076,12 +1064,12 @@ public class Map extends Fragment implements OnMapReadyCallback,
                                 int colorIndex = j % COLORS.length;
 
                                 PolylineOptions polyOptions = new PolylineOptions();
-                                polyOptions.color(getResources().getColor(COLORS[colorIndex]));
+                                polyOptions.color(ContextCompat.getColor(getApplicationContext(),COLORS[colorIndex]));
                                 polyOptions.width(10 + j * 3);
                                 polyOptions.addAll(direction.getRouteList().get(j)
                                         .getOverviewPolyline().getPointList());
-                                Polyline polyline = mMap.addPolyline(polyOptions);
-                                polylines.add(polyline);
+                                Polyline poly = mMap.addPolyline(polyOptions);
+                                polylines.add(poly);
 
                             /*Toast.makeText(getApplicationContext(),"Route "+ (j+1) +": distance - "
                                     + arrayList.get(j).getDistanceValue()+": duration - "
@@ -1139,7 +1127,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
                     if (dist_corta <= distancia) {
                         farmlat = lat_2;
                         farmlong = longitud_2;
-                        //TODO: falta optimizar y personalizar la api
 
                         LatLng start = new LatLng(18.015365, -77.499382);
                         LatLng waypoint = new LatLng(18.01455, -77.499333);
@@ -1406,59 +1393,45 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
     public void mis_sitios() {
 
-        if(as_switch) {
-
-            java.util.Map<String, ?> allEntries = SharedPreferencesManager.getInstance().getSharedPreference().getAll();
-            for (java.util.Map.Entry<String, ?> entry : allEntries.entrySet()) {
-                if (entry == null || entry.getValue() == null) continue;
-                PlaceWS sitios = null;
-                try {
-                    sitios = SharedPreferencesManager.getInstance().getValue(entry.getKey(),
-                            PlaceWS.class);
-                } catch (Exception e) {
-                    Log.e("ggizi",e.getMessage());
-                }
-                if (sitios != null) {
-
-                    keep_sitios.add(mMap.addMarker(new MarkerOptions()
-                            .title(sitios.getResult().getName())
-                            .snippet("Click para mas información")
-                            .position(new LatLng(sitios.getResult().getGeometry().getLocation().getLat(),
-                                    sitios.getResult().getGeometry().getLocation().getLng()))));
-
-                }
+        CleanInterface(Clean.MY_SITES);
+        java.util.Map<String, ?> allEntries = SharedPreferencesManager.getInstance().getSharedPreference().getAll();
+        for (java.util.Map.Entry<String, ?> entry : allEntries.entrySet()) {
+            if (entry == null || entry.getValue() == null) continue;
+            PlaceWS sitios = null;
+            try {
+                sitios = SharedPreferencesManager.getInstance().getValue(entry.getKey(),
+                        PlaceWS.class);
+            } catch (Exception e) {
+                Log.e("ggizi", e.getMessage());
             }
-            if (keep_sitios.size() != 0) {
+            if (sitios != null) {
 
-                cleanmarkers();
-
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(keep_sitios.get(0).getPosition().latitude,
-                                keep_sitios.get(0).getPosition().longitude))
-                        .zoom((float) 14.5).build();
-                mMap.animateCamera(CameraUpdateFactory
-                        .newCameraPosition(cameraPosition));
-
-            } else {
-
-                ((ggeasyy)getActivity()).CreatecoolToast("No posee", CoolToast.INFO, CoolToast.LONG, true);
+                keep_sitios.add(mMap.addMarker(new MarkerOptions()
+                        .title(sitios.getResult().getName())
+                        .snippet("Click para mas información")
+                        .position(new LatLng(sitios.getResult().getGeometry().getLocation().getLat(),
+                                sitios.getResult().getGeometry().getLocation().getLng()))));
 
             }
+        }
+        if (keep_sitios.size() != 0) {
 
-            as_switch = false;
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(keep_sitios.get(0).getPosition().latitude,
+                            keep_sitios.get(0).getPosition().longitude))
+                    .zoom((float) 14.5).build();
+            mMap.animateCamera(CameraUpdateFactory
+                    .newCameraPosition(cameraPosition));
 
         } else {
 
-            //con esto quitamos los markers
-            CleanKeepSites();
-
-            as_switch = true;
+            ((ggeasyy) getActivity()).CreatecoolToast("No posee", CoolToast.INFO, CoolToast.LONG, true);
 
         }
 
     }
 
-    public void CleanKeepSites() {
+    private void CleanKeepSites() {
         if (keep_sitios != null) {
             for (com.google.android.gms.maps.model.Marker Marker : keep_sitios) {
                 Marker.remove();
@@ -1466,6 +1439,46 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
             keep_sitios = new ArrayList<>();
         }
+    }
+
+    /**
+     * a pesar de que este metodo parece usarse de forma identica debemos recordar
+     * que para orden y peronalizacion de forma facil y rapida se utiliza una tecnica
+     * como esta
+     */
+    private void CleanInterface(int state){
+
+        switch (state) {
+            case Clean.FARM_CERCANA:
+
+                cleanInterface();
+                break;
+            case Clean.FRAGMENT_SEARCH:
+
+                cleanInterface();
+                break;
+            case Clean.MY_SITES:
+
+                cleanInterface();
+                break;
+            case Clean.BEFORE_ROUTE:
+
+                cleanpolylines();
+                break;
+            default:
+                break;
+
+        }
+
+    }
+
+    private void cleanInterface() {
+
+        CleanKeepSites();
+        cleanpolylines();
+        cleansearch();
+        cleanmarkers();
+
     }
 
 

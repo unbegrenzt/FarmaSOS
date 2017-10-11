@@ -58,16 +58,16 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
                 BottomSheetBehaviorGoogleMapsLike.from(dependency);
                 return true;
             }
-            catch (IllegalArgumentException e){}
+            catch (IllegalArgumentException e){
+                e.printStackTrace();
+            }
         }
         return false;
     }
 
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
-        /**
-         * Because we are not moving it, we always return false in this method.
-         */
+
         child.setVisibility(View.VISIBLE);
 
         if (offset == 0)
@@ -138,10 +138,7 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
         }
     }
 
-    /**
-     * Look into the CoordiantorLayout for the {@link BottomSheetBehaviorGoogleMapsLike}
-     * @param coordinatorLayout with app:layout_behavior= {@link BottomSheetBehaviorGoogleMapsLike}
-     */
+
     private void getBottomSheetBehavior(@NonNull CoordinatorLayout coordinatorLayout) {
 
         for (int i = 0; i < coordinatorLayout.getChildCount(); i++) {

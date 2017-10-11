@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by unbegrenzt for Jorge Luis Morales Centeno on 10-10-17 06:14 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 10-10-17 06:14 PM
+  -->
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp">
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="160dp"
+            android:background="@drawable/background"
+            android:contentDescription="background"/>
+
+    <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+        <EditText android:id="@+id/suggest"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:inputType="textCapWords"
+                  android:hint="Expresa tu comentario"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+
+</LinearLayout>
