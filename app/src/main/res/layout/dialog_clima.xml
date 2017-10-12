@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by unbegrenzt for Jorge Luis Morales Centeno on 10-12-17 06:56 AM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 10-12-17 06:56 AM
+  -->
+
+<android.support.v4.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp">
+
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="160dp"
+                android:background="@drawable/climaask"
+                android:contentDescription="background"
+                android:layout_gravity="center"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:text="¿Cómo está el clima?"
+                android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle"/>
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center">
+
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:orientation="vertical"
+                    android:id="@+id/soleado">
+
+                <TextView
+                        android:id="@+id/text_soleado"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Soleado"
+                        android:layout_gravity="center"
+                        android:textAlignment="center"/>
+
+                <ImageView
+                        android:id="@+id/img_soleado"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_wb_sunny_black_24dp"
+                        android:contentDescription="soleado"/>
+
+                <RadioButton
+                        android:id="@+id/rd_soleado"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:checked="true"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:orientation="vertical"
+                    android:textAlignment="center"
+                    android:id="@+id/nublado">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nublado"
+                        android:layout_gravity="center"
+                        android:id="@+id/texto_nublado"/>
+
+                <ImageView
+                        android:id="@+id/img_nublado"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_cloud_black_24dp"
+                        android:contentDescription="wear"/>
+
+                <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:id="@+id/rd_nublado"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:orientation="vertical"
+                    android:textAlignment="center"
+                    android:id="@+id/lluvioso">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lluvioso"
+                        android:layout_gravity="center"
+                        android:id="@+id/texto_lluvioso"/>
+
+                <ImageView
+                        android:id="@+id/img_lluvioso"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/lluvia"
+                        android:contentDescription="gad"/>
+
+                <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:id="@+id/rd_lluvioso"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

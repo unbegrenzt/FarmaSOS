@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created  by unbegrenzt for Jorge Luis Morales Centeno on 10-11-17 11:38 PM
+  ~ Copyright (c) 2017. All rights reserved.
+  ~
+  ~ Last modified 10-11-17 11:38 PM
+  -->
+
+<android.support.v4.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp">
+
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="150dp"
+                android:background="@drawable/transitask"
+                android:contentDescription="background"
+                android:layout_gravity="center"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:text="¿Cómo está el tráfico?"
+                android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle"/>
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center">
+
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:orientation="vertical"
+                    android:id="@+id/no_se">
+
+                <TextView
+                        android:id="@+id/text_no_se"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No sé"
+                        android:layout_gravity="center"
+                        android:textAlignment="center"/>
+
+                <ImageView
+                        android:id="@+id/img_no_se"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_sentiment_neutral_black_24dp"/>
+
+                <RadioButton
+                        android:id="@+id/rd_no_se"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:checked="true"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:orientation="vertical"
+                    android:textAlignment="center"
+                    android:id="@+id/Bueno">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bueno"
+                        android:layout_gravity="center"
+                        android:id="@+id/texto_bueno"/>
+
+                <ImageView
+                        android:id="@+id/img_bueno"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_sentiment_very_satisfied_black_24dp"/>
+
+                <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:id="@+id/rd_bueno"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:orientation="vertical"
+                    android:textAlignment="center"
+                    android:id="@+id/pesimo">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pésimo"
+                        android:layout_gravity="center"
+                        android:id="@+id/texto_pesimo"/>
+
+                <ImageView
+                        android:id="@+id/img_pesimo"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ic_sentiment_very_dissatisfied_black_24dp"/>
+
+                <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:id="@+id/rd_pesimo"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

@@ -34,6 +34,8 @@
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
+    <string name="GOOGLE_KEY" translatable="false">AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ</string>
+
     <string name="action_settings">Settings</string>
     <string name="catalog">Catálogo</string>
     <string name="f_rmacos">Fármacos</string>

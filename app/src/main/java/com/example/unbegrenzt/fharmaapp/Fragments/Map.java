@@ -38,12 +38,16 @@ import com.akexorcist.googledirection.GoogleDirection;
 import com.akexorcist.googledirection.constant.TransportMode;
 import com.akexorcist.googledirection.model.Direction;
 import com.example.unbegrenzt.fharmaapp.Interfaces.Clean;
+import com.example.unbegrenzt.fharmaapp.Interfaces.RequestType;
+import com.example.unbegrenzt.fharmaapp.Interfaces.lenguaje;
 import com.example.unbegrenzt.fharmaapp.Objects.Farmacia;
+import com.example.unbegrenzt.fharmaapp.Objects.Peticion;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.actividades.ggeasyy;
-import com.example.unbegrenzt.fharmaapp.web_service.APIClient;
+import com.example.unbegrenzt.fharmaapp.web_service.api.DistanceMatrix;
 import com.example.unbegrenzt.fharmaapp.web_service.api.PlaceInterface;
-import com.example.unbegrenzt.fharmaapp.web_service.clases.PlaceWS;
+import com.example.unbegrenzt.fharmaapp.web_service.clases.ObjDistance.DistanceWS;
+import com.example.unbegrenzt.fharmaapp.web_service.clases.ObjPlaceWS.PlaceWS;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -57,6 +61,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
@@ -85,7 +91,8 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class Map extends Fragment implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener, GoogleMap.OnPoiClickListener,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
-        com.google.android.gms.location.LocationListener,GoogleMap.OnMarkerClickListener{
+        com.google.android.gms.location.LocationListener,GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnMapLongClickListener{
 
     private static final int[] COLORS = {R.color.atenuante, R.color.acentuado_oscuro,
         R.color.primary, R.color.colorAccent,R.color.accent2};
@@ -166,6 +173,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     private List<Polyline> polylines;
     private Marker busqueda;
     private List<Marker> keep_sitios;
+    private List<Marker> preguntas;
 
     /**
      * fin de declaracion de las variables e inicio de los metodos de la activity
@@ -598,7 +606,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
     }
 
-    //TODO:cambiar logica para todos los markers
+
     /*private void addMarker(Farmacia farmacia){
         LatLng posloc = new LatLng(Double.parseDouble(farmacia.getLat()), Double.parseDouble(
                 farmacia.getLong()));
@@ -755,7 +763,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
     @Override
     public void onDestroyView() {
-        // TODO Auto-generated method stub
         super.onDestroyView();
     }
 
@@ -772,6 +779,8 @@ public class Map extends Fragment implements OnMapReadyCallback,
         //mMap.getUiSettings().setIndoorLevelPickerEnabled(true);
         mMap.setOnPoiClickListener(Map.this);
         mMap.setOnInfoWindowClickListener(Map.this);
+
+        mMap.setOnMapLongClickListener(Map.this);
 
         retrofit = new Retrofit.Builder()
                 .baseUrl("https://maps.googleapis.com/maps/api/")
@@ -794,6 +803,8 @@ public class Map extends Fragment implements OnMapReadyCallback,
             }
         });
 
+        preguntas = new ArrayList<>();
+
     }
 
     @Override
@@ -809,7 +820,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
     private void SearchPlacebyid(String placeId) {
         PlaceInterface apiService = retrofit.create(PlaceInterface.class);
 
-        Call<PlaceWS> call = apiService.doPlaces(placeId,APIClient.GOOGLE_PLACE_API_KEY);
+        Call<PlaceWS> call = apiService.doPlaces(placeId,lenguaje.ESPANOL,getString(R.string.GOOGLE_KEY));
         call.enqueue(new Callback<PlaceWS>() {
             @Override
             public void onResponse(Call<PlaceWS> call, final Response<PlaceWS> response) {
@@ -819,7 +830,6 @@ public class Map extends Fragment implements OnMapReadyCallback,
                     public void run() {
                         if (response.isSuccessful()){
                             ((ggeasyy)getActivity()).showbox();
-                            Log.e("ggizi","respuesta");
                             //metodo para dibujar la farmacia en pantalla
                             ((ggeasyy)getActivity()).Drawpharma(response.body());
                         }
@@ -841,7 +851,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
         PlaceInterface apiService = retrofit.create(PlaceInterface.class);
 
-        Call<PlaceWS> call = apiService.doPlaces(placeId,APIClient.GOOGLE_PLACE_API_KEY);
+        Call<PlaceWS> call = apiService.doPlaces(placeId, lenguaje.ESPANOL,getString(R.string.GOOGLE_KEY));
         call.enqueue(new Callback<PlaceWS>() {
             @Override
             public void onResponse(Call<PlaceWS> call, final Response<PlaceWS> response) {
@@ -1009,7 +1019,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
 
                     }
                 })
-                .key("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
+                .key(getString(R.string.GOOGLE_KEY))
                 .latlng(pos.latitude, pos.longitude)
                 .radius(radius)
                 .type(tipo)
@@ -1042,7 +1052,7 @@ public class Map extends Fragment implements OnMapReadyCallback,
         mMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
 
-        GoogleDirection.withServerKey("AIzaSyCAiZV-EBK64MkSA3hJngBjACOjfgBY1jQ")
+        GoogleDirection.withServerKey(getString(R.string.GOOGLE_KEY))
                 .from(new LatLng(pos.latitude, pos.longitude))
                 .to(end)
                 .transportMode(TransportMode.DRIVING)
@@ -1478,6 +1488,229 @@ public class Map extends Fragment implements OnMapReadyCallback,
         cleanpolylines();
         cleansearch();
         cleanmarkers();
+
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null){
+
+            ((ggeasyy)getActivity()).peticion_dialog(latLng);
+
+        } else {
+
+            ((ggeasyy)getActivity()).face_dialog();
+
+        }
+    }
+
+    public void peticion(final List<Peticion> peticion) {
+
+        if (peticion.size() != 0 && pos != null){
+
+            Log.e("ggizi","upfirebase");
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    for (final Peticion aPeticion : peticion) {
+
+                        DistanceMatrix apiService = retrofit.create(DistanceMatrix.class);
+
+                        /*List<LatLng> OriginEncode = new ArrayList<>();
+                        OriginEncode.add(pos);
+
+                        List<LatLng> DestEncode = new ArrayList<>();
+                        DestEncode.add(new LatLng(aPeticion.getLatitud(), aPeticion.getLongitud()));*/
+
+                        Call<DistanceWS> call = apiService.getdistance("metric", String.valueOf(pos.latitude
+                                + "," + pos.longitude), String.valueOf(aPeticion.getLatitud() + "," +
+                                aPeticion.getLongitud()), lenguaje.ESPANOL, getString(R.string.GOOGLE_KEY));
+
+                        call.enqueue(new Callback<DistanceWS>() {
+                            @Override
+                            public void onResponse(Call<DistanceWS> call, final Response<DistanceWS> response) {
+
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if(response.isSuccessful()) {
+                                            Log.e("ggizi", String.valueOf(response.body()));
+                                            if (response.body().rows.get(0).elements != null) {
+                                                for (int i = 0; i < response.body().rows.size(); i++) {
+
+                                                    for (int j = 0; j < response.body().rows.get(i).elements.size(); j++) {
+
+                                                        //el valor 600 representa la distancia en metros entre la peticion
+                                                        //y los usuarios
+                                                        if (response.body().rows.get(0).elements.get(0).distance != null) {
+
+                                                            if (response.body().rows.get(0).elements.get(0).distance.value != null) {
+
+                                                                if (response.body().rows.get(i).elements.get(j).distance.value <= 600) {
+
+                                                                    //aqui dibujo la informacion de la petición
+                                                                    Log.e("ggizi", "dialog created");
+                                                                    ((ggeasyy)getActivity()).
+                                                                            create_dialog_peticion(aPeticion,
+                                                                            response.body().rows.get(i).elements.get(j));
+                                                                }
+
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailure(Call<DistanceWS> call, Throwable t) {
+
+                            }
+                        });
+
+                    }
+                }
+            });
+
+        }
+
+    }
+
+    private void addMarkerPregunta(int tipo, LatLng latLng){
+
+        if (tipo == RequestType.TRANSIT){
+
+            ((ggeasyy)getActivity()).create_transit(latLng);
+
+            preguntas.add(mMap.addMarker(new MarkerOptions()
+                    .title("Transito")
+                    .snippet("Click para conocer las respuestas")
+                    .position(new LatLng(latLng.latitude, latLng.longitude))));
+
+
+
+        } else if (tipo == RequestType.CLIMA){
+
+            ((ggeasyy)getActivity()).createclima(latLng);
+
+            preguntas.add(mMap.addMarker(new MarkerOptions()
+                    .title("Clima")
+                    .snippet("Click para conocer las respuestas")
+                    .position(new LatLng(latLng.latitude, latLng.longitude))));
+
+        }
+
+    }
+
+    private void Cleanpreguntas() {
+        if (preguntas != null && preguntas.size() != 0) {
+            for (com.google.android.gms.maps.model.Marker Marker : preguntas) {
+                Marker.remove();
+            }
+
+            preguntas = new ArrayList<>();
+        }
+    }
+
+    //latlng representa el punto donde se creará la peticion
+    // de ese punto a mi posicion solo debe haber de un tipo
+    //porvalor
+    public void verifydistance(final int type, final LatLng latLng) {
+
+        if (preguntas.size() != 5) {
+
+            if (preguntas.size() != 0) {
+
+                for (final Marker marker : preguntas) {
+                    DistanceMatrix apiService = retrofit.create(DistanceMatrix.class);
+
+                    Call<DistanceWS> call = apiService.getdistance("metric", String.valueOf(pos.latitude
+                                    + "," + pos.longitude), String.valueOf(marker.getPosition().latitude + "," +
+                                    marker.getPosition().longitude)
+                            , lenguaje.ESPANOL, getString(R.string.GOOGLE_KEY));
+
+                    call.enqueue(new Callback<DistanceWS>() {
+                        @Override
+                        public void onResponse(Call<DistanceWS> call, final Response<DistanceWS> response) {
+
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (response.isSuccessful()) {
+
+                                        if (response.body().status.compareTo("OK") == 0) {
+
+                                            if (response.body().rows.get(0).elements.get(0) != null) {
+
+                                                if (response.body().rows.get(0).elements.get(0).status.compareTo("OK") == 0) {
+
+                                                    if (response.body().rows.get(0).elements.get(0).distance.value <= 600) {
+
+                                                        if (type == RequestType.TRANSIT) {
+
+
+                                                            if (marker.getTitle().compareTo("Transito") == 0) {
+
+                                                                ((ggeasyy) getActivity()).dialog_No_more();
+
+                                                            } else {
+
+                                                                addMarkerPregunta(type, latLng);
+
+                                                            }
+
+                                                        } else if (type == RequestType.CLIMA) {
+
+                                                            Log.e("ggizi","en marker");
+
+                                                            if (marker.getTitle().compareTo("Clima") == 0) {
+
+                                                                ((ggeasyy) getActivity()).dialog_No_more();
+
+                                                            } else {
+
+                                                                addMarkerPregunta(type, latLng);
+
+                                                            }
+
+                                                        }
+
+                                                    }
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<DistanceWS> call, Throwable t) {
+
+                        }
+                    });
+
+                }
+            }else {
+
+                addMarkerPregunta(type, latLng);
+
+            }
+
+        } else {
+
+            ((ggeasyy)getActivity()).CreateDialogMaxAsk();
+
+        }
 
     }
 

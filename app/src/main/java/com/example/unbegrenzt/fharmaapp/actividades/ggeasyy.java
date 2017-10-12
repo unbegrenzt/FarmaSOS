@@ -37,11 +37,16 @@ import android.view.View;
 import android.widget.*;
 import com.example.unbegrenzt.fharmaapp.Adapter.ItemPagerAdapter;
 import com.example.unbegrenzt.fharmaapp.Fragments.Map;
+import com.example.unbegrenzt.fharmaapp.Interfaces.RequestType;
+import com.example.unbegrenzt.fharmaapp.Interfaces.Respuesta;
 import com.example.unbegrenzt.fharmaapp.Objects.Comentario;
+import com.example.unbegrenzt.fharmaapp.Objects.Peticion;
+import com.example.unbegrenzt.fharmaapp.Objects.Respuestas;
 import com.example.unbegrenzt.fharmaapp.R;
 import com.example.unbegrenzt.fharmaapp.behavior.BottomSheetBehaviorGoogleMapsLike;
 import com.example.unbegrenzt.fharmaapp.behavior.MergedAppBarLayoutBehavior;
-import com.example.unbegrenzt.fharmaapp.web_service.clases.PlaceWS;
+import com.example.unbegrenzt.fharmaapp.web_service.clases.ObjDistance.Element;
+import com.example.unbegrenzt.fharmaapp.web_service.clases.ObjPlaceWS.PlaceWS;
 import com.facebook.*;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -55,14 +60,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.*;
 import com.kingfisher.easy_sharedpreference_library.SharedPreferencesManager;
 import com.ndroid.nadim.sahel.CoolToast;
 import com.nipunbirla.boxloader.BoxLoaderView;
 import com.squareup.picasso.Picasso;
 import me.grantland.widget.AutofitTextView;
 import noman.googleplaces.PlaceType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ggeasyy extends AppCompatActivity implements
         Map.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener{
@@ -83,6 +90,8 @@ public class ggeasyy extends AppCompatActivity implements
     private View bottomSheet;
     private ImageView userportada;
     private AccessTokenTracker accessTokenTracker;
+    private DatabaseReference colaborar;
+    private ValueEventListener colaborarlistenr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +184,9 @@ public class ggeasyy extends AppCompatActivity implements
             }
         });
 
+
+        //TODO: aqui permiso de escritura y lectura en tarjetas sd
+
         userportada.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -197,6 +209,12 @@ public class ggeasyy extends AppCompatActivity implements
                             .error(R.drawable.ic_person).resize(40, 40).into(userfoto);
 
                     username.setText("Usuario anónimo");
+
+                    if (colaborarlistenr != null){
+
+                        colaborar.removeEventListener(colaborarlistenr);
+
+                    }
 
                     Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
                     if (fragment != null) {
@@ -265,6 +283,7 @@ public class ggeasyy extends AppCompatActivity implements
             Picasso.with(getApplicationContext()).load(data.getData()).placeholder(R.drawable.cloud_off)
                     .error(R.drawable.ic_person).resize(userportada.getWidth(),userportada.getHeight())
                     .into(userportada);
+
         }
 
     }
@@ -273,18 +292,46 @@ public class ggeasyy extends AppCompatActivity implements
 
         mAuth = FirebaseAuth.getInstance();
 
+        colaborar = FirebaseDatabase.getInstance().getReference("peticion");
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
                 if (firebaseAuth.getCurrentUser() != null) {
                     // User is signed in
-                    Log.e("ggizi","entre");
                     FirebaseUser user =  firebaseAuth.getCurrentUser();
 
                     username.setText(user.getDisplayName());
 
-                    Log.e("ggizi", String.valueOf(user.getProviderData()));
+                    colaborar.addValueEventListener(colaborarlistenr = new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            int count = 0;
+                            for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                                List<Peticion> peticion = new ArrayList<>();
+                                peticion.add(postSnapshot.getValue(Peticion.class));
+
+                                count ++;
+
+                                if (count == dataSnapshot.getChildrenCount()) {
+                                    Log.e("ggizi","last_info");
+                                    Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
+                                    while (fragment == null){
+                                        Log.e("ggizi","aqui");
+                                    }
+                                    fragment.peticion(peticion);
+
+                                }
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
 
                     Picasso.with(getApplicationContext()).load(user.getPhotoUrl()).placeholder(R.drawable.ic_download)
                             .error(R.drawable.ic_person).resize(80,80).into(userfoto);
@@ -294,6 +341,7 @@ public class ggeasyy extends AppCompatActivity implements
                         fragment.photo = user.getPhotoUrl();
                         fragment.updateLocationUI();
                     }
+
                 }
             }
         };
@@ -317,6 +365,11 @@ public class ggeasyy extends AppCompatActivity implements
         if (accessTokenTracker != null){
 
             accessTokenTracker.stopTracking();
+        }
+        if (colaborarlistenr != null){
+
+            colaborar.removeEventListener(colaborarlistenr);
+
         }
 
     }
@@ -743,7 +796,6 @@ public class ggeasyy extends AppCompatActivity implements
 
             }
 
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -751,7 +803,7 @@ public class ggeasyy extends AppCompatActivity implements
         return true;
     }
 
-    private void face_dialog() {
+    public void face_dialog() {
 
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(ggeasyy.this,
                 R.style.dialog_formal);
@@ -829,6 +881,194 @@ public class ggeasyy extends AppCompatActivity implements
             behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
 
         }
+    }
+
+    public void peticion_dialog(final LatLng latLng){
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(ggeasyy.this,
+                R.style.dialog_formal);
+        View mView = getLayoutInflater().inflate(R.layout.peticion_dialog, null);
+        mBuilder.setTitle("Hacer una pregunta");
+
+        LinearLayout transito = (LinearLayout)mView.findViewById(R.id.transito);
+        final RadioButton rd_transito = (RadioButton)mView.findViewById(R.id.rd_transito);
+
+        LinearLayout clima = (LinearLayout)mView.findViewById(R.id.clima);
+        final RadioButton rd_clima = (RadioButton)mView.findViewById(R.id.rd_clima);
+
+        transito.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                rd_transito.setChecked(true);
+                rd_clima.setChecked(false);
+
+            }
+        });
+
+        rd_transito.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                rd_clima.setChecked(false);
+            }
+        });
+
+        rd_clima.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rd_transito.setChecked(false);
+            }
+        });
+
+        clima.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                rd_transito.setChecked(false);
+                rd_clima.setChecked(true);
+
+            }
+        });
+
+        mBuilder.setPositiveButton("Preguntar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                if(rd_transito.isChecked()){
+
+                    Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
+                    if (fragment != null) {
+
+                        CreateRequest(RequestType.TRANSIT,latLng);
+
+                    }
+
+                }else{
+
+                    Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
+                    if (fragment != null) {
+
+                            Log.e("ggizi", "aquiii");
+                            CreateRequest(RequestType.CLIMA,latLng);
+
+                    }
+
+                }
+
+            }
+        });
+
+        mBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                dialogInterface.dismiss();
+            }
+        });
+
+        mBuilder.setView(mView);
+        AlertDialog dialog = mBuilder.create();
+        dialog.show();
+    }
+
+    private void CreateRequest(int type, LatLng latLng) {
+
+        if (type == RequestType.TRANSIT){
+
+
+            Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
+            if (fragment != null) {
+
+                fragment.verifydistance(type, latLng);
+
+
+            }
+
+            //TODO:se debe ver que los marker no esten a una distancia menor a 600 mts
+            //create_transit(latLng);
+            //Falta contador externo
+
+            //TODO:recorda que solo haga una vez a cada usuario la peticion
+
+
+
+        } else if (type == RequestType.CLIMA){
+
+            //createclima(latLng);
+
+            Map fragment = (Map) getSupportFragmentManager().findFragmentByTag("map");
+            if (fragment != null) {
+
+                Log.e("ggizi","en verificar");
+                fragment.verifydistance(type, latLng);
+
+            }
+
+        }
+
+    }
+
+    public void createclima(LatLng latLng) {
+
+        DatabaseReference databasepet;
+        databasepet = FirebaseDatabase.getInstance().getReference("peticion");
+        String id = databasepet.push().getKey();
+
+        DatabaseReference databaseRespuestas;
+        databaseRespuestas = FirebaseDatabase.getInstance().getReference("respuestas");
+        String idResp = databaseRespuestas.push().getKey();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        assert user != null;
+        Peticion peticion = new Peticion(RequestType.CLIMA, user.getUid(), latLng.latitude, latLng.longitude,
+                idResp);
+
+        List<String> Uid = new ArrayList<>();
+        Uid.add(user.getUid());
+
+        List<Integer> respu = new ArrayList<>();
+        respu.add(Respuesta.MASTER);
+
+        Respuestas resp = new Respuestas(Uid, respu, id);
+
+        databasepet.child(id).setValue(peticion);
+        databaseRespuestas.child(idResp).setValue(resp);
+
+        //TODO:append dialog
+
+    }
+
+    public void create_transit(LatLng latLng) {
+
+        DatabaseReference databasepet;
+        databasepet = FirebaseDatabase.getInstance().getReference("peticion");
+        String id = databasepet.push().getKey();
+
+        DatabaseReference databaseRespuestas;
+        databaseRespuestas = FirebaseDatabase.getInstance().getReference("respuestas");
+        String idResp = databaseRespuestas.push().getKey();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        assert user != null;
+        Peticion peticion = new Peticion(RequestType.TRANSIT, user.getUid(), latLng.latitude, latLng.longitude,
+                idResp);
+
+        List<String> Uid = new ArrayList<>();
+        Uid.add(user.getUid());
+
+        List<Integer> respu = new ArrayList<>();
+        respu.add(Respuesta.MASTER);
+
+        Respuestas resp = new Respuestas(Uid, respu, id);
+
+        databasepet.child(id).setValue(peticion);
+        databaseRespuestas.child(idResp).setValue(resp);
+
+        //TODO: clima needs dialog
+
     }
 
     public void Drawpharma(final PlaceWS body) {
@@ -1051,5 +1291,260 @@ public class ggeasyy extends AppCompatActivity implements
     public void CreatecoolToast(String texto, int info, int duration, boolean rounded) {
         new CoolToast(ggeasyy.this)
                 .make(texto, info, duration, rounded);
+    }
+
+    public void create_dialog_peticion(final Peticion aPeticion, Element element) {
+
+        if (aPeticion.getTipo() == RequestType.TRANSIT) {
+
+            AlertDialog.Builder mBuilder = new AlertDialog.Builder(ggeasyy.this,
+                    R.style.dialog_formal);
+            View mView = getLayoutInflater().inflate(R.layout.dialog_transit, null);
+            mBuilder.setTitle("Contribuye!");
+
+            LinearLayout nose = (LinearLayout)mView.findViewById(R.id.no_se);
+            LinearLayout bueno = (LinearLayout)mView.findViewById(R.id.Bueno);
+            final LinearLayout pesimo = (LinearLayout)mView.findViewById(R.id.pesimo);
+
+            final RadioButton rd_nose = (RadioButton)mView.findViewById(R.id.rd_no_se);
+            final RadioButton rd_bueno = (RadioButton)mView.findViewById(R.id.rd_bueno);
+            final RadioButton rd_pesimo = (RadioButton)mView.findViewById(R.id.rd_pesimo);
+
+            nose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    rd_nose.setChecked(true);
+                    rd_bueno.setChecked(false);
+                    rd_pesimo.setChecked(false);
+
+                }
+            });
+
+            bueno.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    rd_nose.setChecked(false);
+                    rd_bueno.setChecked(true);
+                    rd_pesimo.setChecked(false);
+
+                }
+            });
+
+            pesimo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    rd_nose.setChecked(false);
+                    rd_bueno.setChecked(false);
+                    rd_pesimo.setChecked(true);
+
+                }
+            });
+
+            final View.OnClickListener listener = new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int id = view.getId();
+
+                    switch (id){
+
+                        case R.id.rd_no_se:
+
+                            rd_bueno.setChecked(false);
+                            rd_pesimo.setChecked(false);
+
+                            break;
+
+                        case R.id.rd_bueno:
+
+                            rd_nose.setChecked(false);
+                            rd_pesimo.setChecked(false);
+
+                            break;
+
+                        case R.id.rd_pesimo:
+
+                            rd_nose.setChecked(false);
+                            rd_bueno.setChecked(false);
+
+                            break;
+
+                        default:
+                            break;
+
+                    }
+
+
+                }
+            };
+
+            rd_nose.setOnClickListener(listener);
+            rd_bueno.setOnClickListener(listener);
+            rd_pesimo.setOnClickListener(listener);
+
+            mBuilder.setPositiveButton("Aportar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                    if (rd_bueno.isChecked()){
+
+                        final DatabaseReference respuesta = FirebaseDatabase.getInstance().getReference("respuestas");
+
+                        respuesta.child(aPeticion.getRespuestas()).child("respuesta");
+
+                        ValueEventListener listener2;
+                        respuesta.addListenerForSingleValueEvent(listener2 = new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                respuesta.child(aPeticion.getRespuestas())
+                                        .child("respuesta")
+                                        .child(String.valueOf(dataSnapshot.getChildrenCount()))
+                                        .setValue(Respuesta.YES);
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        respuesta.removeEventListener(listener2);
+
+                    } else if (rd_pesimo.isChecked()) {
+
+                        final DatabaseReference respuesta = FirebaseDatabase.getInstance().getReference("respuestas");
+
+                        respuesta.child(aPeticion.getRespuestas()).child("respuesta");
+
+                        ValueEventListener listener2;
+                        respuesta.addListenerForSingleValueEvent(listener2 = new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                respuesta.child(aPeticion.getRespuestas())
+                                        .child("respuesta")
+                                        .child(String.valueOf(dataSnapshot.getChildrenCount()))
+                                        .setValue(Respuesta.NO);
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        respuesta.removeEventListener(listener2);
+
+                    }
+
+                }
+            });
+
+            mBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                    dialogInterface.dismiss();
+                }
+            });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+
+        } else if (aPeticion.getTipo() == RequestType.CLIMA){
+
+            AlertDialog.Builder mBuilder = new AlertDialog.Builder(ggeasyy.this,
+                    R.style.dialog_formal);
+            View mView = getLayoutInflater().inflate(R.layout.dialog_face, null);
+            mBuilder.setTitle("Inicia Sesión");
+
+
+            mBuilder.setPositiveButton("Iniciar sesión", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                    loginButton.performClick();
+
+                }
+            });
+
+            mBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                    dialogInterface.dismiss();
+                }
+            });
+
+            mBuilder.setView(mView);
+            AlertDialog dialog = mBuilder.create();
+            dialog.show();
+
+        }
+
+    }
+
+    public void dialog_No_more() {
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(ggeasyy.this);
+        mBuilder.setTitle("No permitido");
+
+        mBuilder.setMessage("No es permitido hacer dos preguntas del mismo tipo en un radio menor a 600 metros");
+
+        mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                dialogInterface.dismiss();
+
+            }
+        });
+
+        mBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                dialogInterface.dismiss();
+            }
+        });
+
+        AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
+    }
+
+    public void CreateDialogMaxAsk() {
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(ggeasyy.this);
+        mBuilder.setTitle("No permitido");
+
+        mBuilder.setMessage("No es permitido hacer mas de 5 preguntas por instancia");
+
+        mBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                dialogInterface.dismiss();
+
+            }
+        });
+
+        mBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                dialogInterface.dismiss();
+            }
+        });
+
+        AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
     }
 }
